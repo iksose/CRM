@@ -1,0 +1,10 @@
+<h2>All Campaigns</h2>
+<p>Sort By.....</p>
+
+<ul class="example-animate-container">
+    <li class="animate-repeat" ng-repeat="friend in availableCampaigns">
+      <a ui-sref="home.campaign.details({params:friend.cID})">
+      [{{$index + 1}}] {{friend.cName}} who is {{friend.cDate}} {{friend.status}}
+      </a>
+    </li>
+  </ul>

@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- Our uiRouterSample module defined here -->
+<html lang="en" ng-app="uiRouterSample">
+  <head>
+    <meta charset="utf-8">
+
+    <!-- styles for ng-animate are located here -->
+    <link rel="stylesheet" type="text/css" href="concat/css/myapp.css">
+
+    <script src="concat/vendor.js"></script>
+    <script src="concat/scripts.js"></script>
+
+    <!-- could easily use a custom property of the state here instead of 'name' -->
+    <title ng-bind="$state.current.name + ' - ui-router'">ui-router</title>
+  </head>
+  <body>
+<img class='demo' src='/img/demo.png'>
+
+
+<!-- Here is the main ui-view (unnamed) and will be populate by its immediate children's templates
+     unless otherwise explicitly named views are targeted. It's also employing ng-animate. -->
+<div ui-view class="container slide"></div>
+
+
+<!-- <div ui-view='content' class="container slide" style="padding-top: 80px;"></div> -->
+
+    <hr>
+    <pre>
+      <!-- Here's some values to keep an eye on in the sample in order to understand $state and $stateParams -->
+      $state = {{$state.current.name}}
+      $stateParams = {{$stateParams}}
+      $state full url = {{ $state.$current.url.source }}
+       Username: {{credentials.username}}
+       Group: {{credentials.group}}
+       Admin: {{credentials.admin}}
+       Logged in: {{loggedIn}}
+    </pre>
+  </body>
+</html>
