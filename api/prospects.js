@@ -1,7 +1,3 @@
-exports.returnProspects = function(req, res) {
-
-  console.log("Returning prospects....")
-
 var prospects = [
     {
         "id": 0,
@@ -737,8 +733,16 @@ var prospects = [
 ]
 
 
-return res.send(prospects);
+exports.returnProspects = function(req, res) {
+  console.log("Returning prospects....")
+  setTimeout((function(){
+    return res.send(prospects)
+  }), 1000)
+}
 
-
-
+exports.randomProspect = function(req, res) {
+  console.log("Returning random prospect")
+  setTimeout((function(){
+    return res.send(prospects[2])
+  }), 1000)
 }

@@ -4,77 +4,11 @@ var app = angular.module('uiRouterSample', [
   // 'ngMockE2E',
   'ngResource',
   'ngCookies',
-  'mgcrea.ngStrap'
+  'mgcrea.ngStrap',
+  'ngSanitize',
+  'chieffancypants.loadingBar'
 ])
 
-// .run(function($httpBackend) {
-//     var phones = [{name: 'phone1'}, {name: 'phone2'}];
-//
-//     // var username = {username: "pbajoj", role: "admin"}
-//
-//     var username =
-//
-//     // $httpBackend.whenGET('api/login').respond(username)
-//     $httpBackend.whenGET('api/login').respond(function(){
-//       var succeedOrFail = Math.floor(Math.random() * (10 -1) + 1)
-//       if(succeedOrFail > 3)
-//       return [200, username]
-//       else
-//       return [500, {hello:"world"}]
-//     })
-//
-//     // returns the current list of phones
-//     $httpBackend.whenGET('/phones').respond(phones);
-//
-//     // adds a new phone to the phones array
-//     $httpBackend.whenPOST('/phones').respond(function(method, url, data) {
-//       phones.push(angular.fromJson(data));
-//     });
-//     $httpBackend.whenGET(/^\/templates\//).passThrough();
-//     $httpBackend.whenGET(/^\/views\//).passThrough();
-//     //...
-//
-//     $httpBackend.whenGET('api/users/2/privileges').respond({
-//       "Roles": [
-//       {
-//         "Active": true,
-//         "Name": "Role 1",
-//         "RoleId": 1
-//       },
-//       {
-//         "Active": true,
-//         "Name": "Role 2",
-//         "RoleId": 2
-//       },
-//       {
-//         "Active": false,
-//         "Name": "Role 3",
-//         "RoleId": 3
-//       }
-//       ],
-//       "SubRoles": [
-//       {
-//         "Active": true,
-//         "Name": "SubRole 1",
-//         "RoleId": 1,
-//         "SubRoleId": 1
-//       },
-//       {
-//         "Active": true,
-//         "Name": "SubRole 2",
-//         "RoleId": 1,
-//         "SubRoleId": 2
-//       },
-//       {
-//         "Active": false,
-//         "Name": "SubRole 3",
-//         "RoleId": 1,
-//         "SubRoleId": 3
-//       }
-//       ]
-//       });
-//
-//   })
 
 .run(
   [          '$rootScope', '$state', '$stateParams',
@@ -86,6 +20,9 @@ var app = angular.module('uiRouterSample', [
     // 'contacts.list' or one of its decendents is active.
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
+    $rootScope.credentials = {
+      group: "Undefined"
+    };
     }
   ]
 )
@@ -197,6 +134,16 @@ var app = angular.module('uiRouterSample', [
             }
           }
         })
+        
+        .state('home.campaign.new', {
+          url: 'Campaigns',
+          views: {
+            'content@home': {
+              templateUrl: 'views/newcampaign.html',
+              controller: "campaignController"
+            }
+          }
+        })
 
         .state('home.campaign.details', {
           url: '/details/:params',
@@ -204,6 +151,26 @@ var app = angular.module('uiRouterSample', [
             'content@home': {
               templateUrl: 'views/campaign-details.html',
               controller: "campaignControllerDetails"
+            }
+          }
+        })
+
+        .state('home.tasks', {
+          url: 'Tasks/:taskID',
+          views: {
+            'content': {
+              templateUrl: 'views/tasks.html',
+              controller: "taskController"
+            }
+          }
+        })
+
+        .state('home.admin', {
+          url: 'admin/',
+          views: {
+            'content': {
+              templateUrl: 'views/admin.html',
+              controller: "adminController"
             }
           }
         })

@@ -4,6 +4,7 @@ var express = require('express')
     , userList = require('./api/userlist')
     , campaigns = require('./api/campaigns')
     , prospects = require('./api/prospects')
+    , tasks = require('./api/tasks')
 
 
 var app = module.exports = express();
@@ -36,6 +37,15 @@ app.get('/api/campaigns', campaigns.allCampaigns)
 app.post('/api/singlecampaign', campaigns.singleCampaign)
 
 app.get('/api/prospects', prospects.returnProspects)
+
+app.get('/api/randomProspect', prospects.randomProspect)
+
+app.post('/api/usertasks', tasks.userTasks)
+
+app.post('/api/taskdetails', tasks.singleTask)
+
+app.get('/api/alltasks', tasks.alltasks)
+
 
 server.listen(app.get('port'), function () {
   console.log('Express server listening on port ' + app.get('port'));

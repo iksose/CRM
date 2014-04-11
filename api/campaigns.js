@@ -28,9 +28,12 @@ exports.singleCampaign = function(req, res){
   console.log("get a single campaign...??", req.body)
   var match = _.findWhere(Campaigns, {cID: req.body.params});
 
-  if(match !== undefined){
-    return res.send(match)
-  }else{
-    return res.send(500)
-  }
+  setTimeout((function(){
+    if(match !== undefined){
+      return res.send(match)
+    }else{
+      return res.send(500)
+    }
+  }), 1000)
+
 }

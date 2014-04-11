@@ -16,4 +16,11 @@ angular.module('uiRouterSample')
   }
 
 
+
+
+  $scope.saveTemplate = function(){
+    $state.go('home.campaign')
+  }
+
+
 })

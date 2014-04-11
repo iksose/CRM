@@ -1,7 +1,9 @@
 @import "bootstrap.less";
+// @import 'fontawesome.less';
+@import 'loadingbar.less';
 
 .demo{
-  opacity: .2;
+  opacity: .1;
   z-index: 0;
   position: absolute;
   top: 0;
@@ -11,6 +13,17 @@
 
 .alert:focus{
   outline: 0;
+}
+
+.alert{
+  position:fixed;
+  top: 40px;
+  z-index: 99999;
+  width: 100%
+}
+
+.imgCalendar{
+  height: 500px;
 }
 
 

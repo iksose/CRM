@@ -3,7 +3,8 @@ angular.module('uiRouterSample')
   console.log("Controller loaded")
   $rootScope.loggedIn = $rootScope.loggedIn || false;
   $scope.creds = {};
-  $rootScope.credentials = {}
+  // $rootScope.credentials = {}
+  // decided to define this in app.run
 
   $scope.loginSubmit = function(){
     $cookies.myFavorite = "WOW"

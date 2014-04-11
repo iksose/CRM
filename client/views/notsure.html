@@ -14,8 +14,8 @@
         <li ui-sref-active="active"><a ui-sref="home">Home</a></li>
         <li ui-sref-active="active"><a ui-sref=".about">About</a></li>
 <!--         <li ui-sref-active="active"><a ui-sref=".contacts">Damn Son</a></li> -->
-        <li ui-sref-active="active" bs-dropdown="dropdown"><a href="">Campaign</a></li>
-
+        <li ng-class="{active: $state.includes('home.campaign')}" bs-dropdown="dropdown"><a href="">Campaign</a></li>
+        <li ui-sref-active="active"><a ui-sref=".tasks">Tasks</a></li>
         <li ng-show="{{credentials.admin}}" ui-sref-active="active"><a ui-sref=".admin">Admin</a></li>
         <!-- <span ng-show="loggedIn"> -->
           <li ng-show="loggedIn" ui-sref-active="active">

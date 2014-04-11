@@ -1,6 +1,56 @@
-<h2>Campaign # {{params.params}}</h2>
+<h2>Campaign # {{params.params}} <small>{{theCampaign.status}}</small></h2>
+<hr>
+
+<div ng-show="!campaignPending">
+  {{theCampaign.cName}}<br>
+  {{theCampaign.cDate}}<br>
+
+  <table class="table">
+    <thead></thead>
+    <tbody>
+      <tr><td>Data</td><td>Data</td></tr>
+      <tr><td>{{theCampaign.cName}}</td><td>Data</td></tr>
+      <tr><td>Data</td><td>{{theCampaign.cName}}</td></tr>
+    </tbody>
+  </table>
+  <label>Campaign Status:&nbsp;</label>
+    <button type="button" class="btn btn-default btn-xs dropdown-toggle">{{theCampaign.status}}</button>
+    <button type="button" class="btn btn-primary btn-xs dropdown-toggle"
+      ng-click="nextStatus(theCampaign.cID)">Next Status</button>
+
+</div>
 
 
-{{theCampaign.cName}}<br>
-{{theCampaign.cDate}}<br>
-{{theCampaign.status}}
+<div ng-show="campaignPending">
+
+<!-- <h2></h2> -->
+
+<table class="table">
+  <thead></thead>
+  <tbody>
+    <tr><td>Data</td><td>Data</td></tr>
+    <tr><td>{{theCampaign.cName}}</td><td>Data</td></tr>
+    <tr><td>Data</td><td>{{theCampaign.cName}}</td></tr>
+  </tbody>
+</table>
+
+<center><img src="/img/calendar.jpg" class="imgCalendar"></center>
+
+<h4>Add New Activities</h4>
+<ul class="example-animate-container">
+    <li class="animate-repeat" ng-repeat="friend in activities">
+      [{{$index + 1}}] {{friend}}
+    </li>
+  </ul>
+      <form ng-submit="addActivity()">
+        <input type="text" ng-model="todoText"  size="30"
+               placeholder="add new todo here">
+        <input class="btn-primary" type="submit" value="add">
+      </form>
+<h4>Assign Employees</h4>
+<label>Campaign Status:&nbsp;</label>
+  <button type="button" class="btn btn-success btn-xs dropdown-toggle"
+  ng-click="savetoPending(theCampaign.cID)">Save</button>
+  <small>This will mark this campaign as Pending</small>
+
+</div>
