@@ -7,7 +7,7 @@ angular.module('uiRouterSample')
   window.results = $scope.results;
   $scope.tableConfig = {
     itemsPerPage: 5,
-    fillLastPage: true
+    fillLastPage: false
   }
 
 
@@ -22,6 +22,9 @@ angular.module('uiRouterSample')
 
 
   $scope.querySearch = function(){
+    // clearing old results
+    $scope.results = {};
+    $scope.resultsReturned = false;
     console.log("New search...please wait...")
     var submit = queryFactory.queryResults($scope.queryParams);
     var process = submit.then(function(data){
@@ -57,6 +60,7 @@ angular.module('uiRouterSample')
     // send whole list of Prospects returned from search
     // except those flagged not to be a part of the campaign
     var saveQuery = queryFactory.saveQuery($scope.results.prospects);
+    console.log("Saving query...")
     //$state.go('home.campaign')
     var gotoCampaign = saveQuery.then(function(res){
       $state.go('home.campaign')
@@ -65,10 +69,3 @@ angular.module('uiRouterSample')
 
 
 })
-
-.filter('startFrom', function() {
-    return function(input, start) {
-        start = +start; //parse to int
-        return input.slice(start);
-    }
-});

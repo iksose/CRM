@@ -1,5 +1,4 @@
 Submit a new query?
-
 <hr>
 
 
@@ -58,7 +57,6 @@ Submit a new query?
 
   <h2>Query Results</h2>
 
-  <p>Order by...</p>
 
 <!--   <ul class="example-animate-container">
       <li class="animate-repeat"
@@ -75,7 +73,7 @@ Submit a new query?
   <tbody>
     <tr  ng-class="{isActive: !this.item.isActive}" ng-click="DeleteProspect(this.item.name)">
       <td at-implicit at-attribute="name"></td>
-      <td at-implicit at-attribute="age"></td>
+      <td at-implicit at-attribute="age" at-sortable at-initial-sorting="desc"></td>
       <td at-implicit at-attribute="gender"></td>
       <td at-implicit at-attribute="isActive"></td>
     </tr>

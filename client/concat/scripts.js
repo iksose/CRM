@@ -592,7 +592,7 @@ var $__scripts__ = (function() {
     window.results = $scope.results;
     $scope.tableConfig = {
       itemsPerPage: 5,
-      fillLastPage: true
+      fillLastPage: false
     };
     $scope.queryParams = {
       State: "KS, MO, AK",
@@ -602,6 +602,8 @@ var $__scripts__ = (function() {
       Volume: "high"
     };
     $scope.querySearch = function() {
+      $scope.results = {};
+      $scope.resultsReturned = false;
       console.log("New search...please wait...");
       var submit = queryFactory.queryResults($scope.queryParams);
       var process = submit.then(function(data) {
@@ -626,14 +628,10 @@ var $__scripts__ = (function() {
     };
     $scope.saveTemplate = function() {
       var saveQuery = queryFactory.saveQuery($scope.results.prospects);
+      console.log("Saving query...");
       var gotoCampaign = saveQuery.then(function(res) {
         $state.go('home.campaign');
       });
-    };
-  }).filter('startFrom', function() {
-    return function(input, start) {
-      start = +start;
-      return input.slice(start);
     };
   });
   angular.module('uiRouterSample').factory('queryFactory', function($http) {
