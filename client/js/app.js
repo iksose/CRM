@@ -134,13 +134,13 @@ var app = angular.module('uiRouterSample', [
             }
           }
         })
-        
+
         .state('home.campaign.new', {
-          url: 'Campaigns',
+          url: '/new',
           views: {
             'content@home': {
               templateUrl: 'views/newcampaign.html',
-              controller: "campaignController"
+              controller: "newCampaignController"
             }
           }
         })

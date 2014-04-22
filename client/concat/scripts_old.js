@@ -1,4 +1,4 @@
-var $__scripts__ = (function() {
+System.register("scripts", [], function() {
   "use strict";
   var __moduleName = "scripts";
   var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar']).run(['$rootScope', '$state', '$stateParams', function($rootScope, $state, $stateParams) {
@@ -62,86 +62,6 @@ var $__scripts__ = (function() {
     });
   }]);
   console.log("hmm");
-  var list = [1, 2, 3, 4];
-  var res = (function() {
-    var $__1,
-        $__2,
-        x;
-    return $traceurRuntime.generatorWrap(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            $__1 = list[$traceurRuntime.toProperty(Symbol.iterator)]();
-            $ctx.state = 4;
-            break;
-          case 4:
-            $ctx.state = (!($__2 = $__1.next()).done) ? 5 : -2;
-            break;
-          case 5:
-            x = $__2.value;
-            $ctx.state = 6;
-            break;
-          case 6:
-            $ctx.state = 2;
-            return x;
-          case 2:
-            $ctx.maybeThrow();
-            $ctx.state = 4;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, this);
-  }());
-  console.log("Res", res);
-  var acc = '';
-  for (var $__1 = res[$traceurRuntime.toProperty(Symbol.iterator)](),
-      $__2; !($__2 = $__1.next()).done; ) {
-    var x = $__2.value;
-    {
-      acc += x;
-      console.log("Acc", acc);
-    }
-  }
-  var res = (function() {
-    var $__3,
-        $__4,
-        x;
-    return $traceurRuntime.generatorWrap(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            $__3 = list[$traceurRuntime.toProperty(Symbol.iterator)]();
-            $ctx.state = 4;
-            break;
-          case 4:
-            $ctx.state = (!($__4 = $__3.next()).done) ? 5 : -2;
-            break;
-          case 5:
-            x = $__4.value;
-            $ctx.state = 6;
-            break;
-          case 6:
-            $ctx.state = 2;
-            return x;
-          case 2:
-            $ctx.maybeThrow();
-            $ctx.state = 4;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, this);
-  }());
-  console.log("Res next", res.next(), res.next());
-  function timeout(ms) {
-    return new Promise((function(resolve) {
-      setTimeout(resolve, ms);
-    }));
-  }
-  timeout(1000).then((function() {
-    console.log('done');
-  }));
   var evens = [2, 4, 6, 8];
   var odds = evens.map((function(v) {
     return v + 1;
@@ -200,170 +120,6 @@ var $__scripts__ = (function() {
   }
   console.log('Is i defined here?: ' + (typeof i !== 'undefined'));
   'use strict';
-  function entries(obj) {
-    var $__3,
-        $__4,
-        key;
-    return $traceurRuntime.generatorWrap(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            $__3 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
-            $ctx.state = 14;
-            break;
-          case 14:
-            $ctx.state = (!($__4 = $__3.next()).done) ? 9 : -2;
-            break;
-          case 9:
-            $ctx.pushTry(7, null);
-            $ctx.state = 10;
-            break;
-          case 10:
-            throw undefined;
-            $ctx.state = 12;
-            break;
-          case 12:
-            $ctx.popTry();
-            $ctx.state = 14;
-            break;
-          case 7:
-            $ctx.popTry();
-            key = $ctx.storedException;
-            $ctx.state = 5;
-            break;
-          case 5:
-            key = $__4.value;
-            $ctx.state = 6;
-            break;
-          case 6:
-            $ctx.state = 2;
-            return [key, obj[$traceurRuntime.toProperty(key)]];
-          case 2:
-            $ctx.maybeThrow();
-            $ctx.state = 14;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, this);
-  }
-  function keys(obj) {
-    var $__3,
-        $__4,
-        key;
-    return $traceurRuntime.generatorWrap(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            $__3 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
-            $ctx.state = 14;
-            break;
-          case 14:
-            $ctx.state = (!($__4 = $__3.next()).done) ? 9 : -2;
-            break;
-          case 9:
-            $ctx.pushTry(7, null);
-            $ctx.state = 10;
-            break;
-          case 10:
-            throw undefined;
-            $ctx.state = 12;
-            break;
-          case 12:
-            $ctx.popTry();
-            $ctx.state = 14;
-            break;
-          case 7:
-            $ctx.popTry();
-            key = $ctx.storedException;
-            $ctx.state = 5;
-            break;
-          case 5:
-            key = $__4.value;
-            $ctx.state = 6;
-            break;
-          case 6:
-            $ctx.state = 2;
-            return key;
-          case 2:
-            $ctx.maybeThrow();
-            $ctx.state = 14;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, this);
-  }
-  function take(iterator, n) {
-    return $traceurRuntime.generatorWrap(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            $ctx.state = (n > 0) ? 1 : -2;
-            break;
-          case 1:
-            $ctx.state = 2;
-            return iterator.next();
-          case 2:
-            $ctx.maybeThrow();
-            $ctx.state = 4;
-            break;
-          case 4:
-            n--;
-            $ctx.state = 0;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, this);
-  }
-  function values(obj) {
-    var $__3,
-        $__4,
-        key;
-    return $traceurRuntime.generatorWrap(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            $__3 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
-            $ctx.state = 14;
-            break;
-          case 14:
-            $ctx.state = (!($__4 = $__3.next()).done) ? 9 : -2;
-            break;
-          case 9:
-            $ctx.pushTry(7, null);
-            $ctx.state = 10;
-            break;
-          case 10:
-            throw undefined;
-            $ctx.state = 12;
-            break;
-          case 12:
-            $ctx.popTry();
-            $ctx.state = 14;
-            break;
-          case 7:
-            $ctx.popTry();
-            key = $ctx.storedException;
-            $ctx.state = 5;
-            break;
-          case 5:
-            key = $__4.value;
-            $ctx.state = 6;
-            break;
-          case 6:
-            $ctx.state = 2;
-            return obj[$traceurRuntime.toProperty(key)];
-          case 2:
-            $ctx.maybeThrow();
-            $ctx.state = 14;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, this);
-  }
   angular.module('uiRouterSample').controller('adminController', function($scope, $rootScope, $state, $alert) {
     console.log("Welcome to the Admin Controller");
     if (!$rootScope.credentials.admin) {
@@ -588,59 +344,24 @@ var $__scripts__ = (function() {
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, queryFactory) {
     console.log("query Controller");
     $scope.resultsReturned = false;
-    $scope.results = {};
-    window.results = $scope.results;
-    $scope.queryParams = {
-      State: "KS, MO, AK",
-      Age: "30",
-      Product: "TriNet",
-      Distance: "50",
-      Volume: "high"
-    };
+    $scope.results = [];
     $scope.querySearch = function() {
       console.log("New search...please wait...");
-      var submit = queryFactory.queryResults($scope.queryParams);
+      var submit = queryFactory.queryResults();
       var process = submit.then(function(data) {
         console.log("Got it...", data);
         $scope.results = data.data;
-        window.results = $scope.results;
         $scope.resultsReturned = true;
       });
-    };
-    $scope.moreProspects = function() {
-      console.log("okay we're getting you the next group");
-      var submit = queryFactory.moreProspects();
-    };
-    $scope.DeleteProspect = function(id) {
-      console.log("Delete this....", id);
-      var deleteProspect = queryFactory.deleteProspect(id);
     };
     $scope.saveTemplate = function() {
       $state.go('home.campaign');
     };
   });
   angular.module('uiRouterSample').factory('queryFactory', function($http) {
-    return {
-      queryResults: function(url, callback) {
-        console.log("Getting query with params ", url);
-        return $http.get('/api/prospects', {params: url});
-      },
-      removeQuery: function(rowID) {
-        return $http.put('');
-      },
-      moreProspects: function() {
-        return $http.get('/api/prospects', {params: {
-            'start': '5',
-            'end': '20'
-          }});
-      },
-      deleteProspect: function(id) {
-        return $http.delete('/api/prospects', {params: {
-            'start': '5',
-            'end': '20'
-          }});
-      }
-    };
+    return {queryResults: function(url, callback) {
+        return $http.get('/api/prospects');
+      }};
   });
   angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
     console.log("Task Controller", $state);
@@ -677,15 +398,5 @@ var $__scripts__ = (function() {
       });
     }
   });
-  return {
-    get entries() {
-      return entries;
-    },
-    get keys() {
-      return keys;
-    },
-    get values() {
-      return values;
-    }
-  };
-})();
+  return {};
+});

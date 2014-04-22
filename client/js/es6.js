@@ -1,4 +1,39 @@
+// import {values} from './generators';
+
+
+// for (let todo of values(this.todos)) {
+//   console.log()
+// }
+
+
 console.log("hmm")
+
+// import {values} from './generators';
+
+
+var list = [1, 2, 3, 4];
+var res = (for (x of list) x);
+
+console.log("Res", res)
+var acc = '';
+for (var x of res) {
+  acc += x;
+  console.log("Acc", acc)
+}
+
+var res = (for (x of list) x);
+console.log("Res next", res.next(), res.next())
+
+
+function timeout(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+timeout(1000).then(() => {
+  console.log('done');
+});
+
 
 var evens = [2,4,6,8];
 var odds = evens.map(v => v + 1);
@@ -10,8 +45,21 @@ console.log("Nums", nums)
 
 //console.log(i)
 
+// var huge = [1,2,3, 4]
 
-var melter = function(obj){
+
+// var huge = []
+// var myobj = {name: "jon", age: "25"}
+// huge.push(myobj)
+//
+// for (var n of huge) {
+//   console.log("Huge", n)
+// }
+//
+// for (name of Object.keys(myobj))
+//     alert(name + ": " + myobj[name]);
+
+var melter = (obj) =>{
   var temp = obj
   temp.melted = "melted"
   // return obj.melted = "melted"

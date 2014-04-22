@@ -7,6 +7,10 @@ angular.module('uiRouterSample')
         },
         singleCampaign:function (data) {
             return $http.post('/api/singlecampaign', data)
+        },
+        thisSavedQuery: function(data){
+          //will have to pass which saved query in the future
+          return $http.get('api/thisQuery')
         }
     };
   }

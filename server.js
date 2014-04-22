@@ -5,6 +5,7 @@ var express = require('express')
     , campaigns = require('./api/campaigns')
     , prospects = require('./api/prospects')
     , tasks = require('./api/tasks')
+    , queries = require('./api/savedQueries')
 
 
 var app = module.exports = express();
@@ -38,6 +39,8 @@ app.post('/api/singlecampaign', campaigns.singleCampaign)
 
 app.get('/api/prospects', prospects.returnProspects)
 
+app.delete('/api/prospects', prospects.returnProspects)
+
 app.get('/api/randomProspect', prospects.randomProspect)
 
 app.post('/api/usertasks', tasks.userTasks)
@@ -45,6 +48,8 @@ app.post('/api/usertasks', tasks.userTasks)
 app.post('/api/taskdetails', tasks.singleTask)
 
 app.get('/api/alltasks', tasks.alltasks)
+
+app.get('/api/thisQuery', queries.returnQueryResults)
 
 
 server.listen(app.get('port'), function () {

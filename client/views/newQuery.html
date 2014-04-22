@@ -11,44 +11,45 @@ Submit a new query?
       <p class="form-control"> Option</p>
     </div><!-- /input-group -->
   </div><!-- /.col-lg-6 -->
+
   <div class="col-lg-4 col-md-4 col-sm-4">
     <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox">
-      </span>
-        <!--       <input type="text" class="form-control"> -->
-      <p class="form-control"> Option</p>
+  <input type="text" class="form-control" placeholder="Placeholder">
     </div><!-- /input-group -->
   </div><!-- /.col-lg-6 -->
+
   <div class="col-lg-4 col-md-4 col-sm-4">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox">
-      </span>
-        <!--       <input type="text" class="form-control"> -->
-      <p class="form-control"> Option</p>
-    </div><!-- /input-group -->
-  </div><!-- /.col-lg-6 -->
-  <div class="col-lg-4 col-md-4 col-sm-4">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox">
-      </span>
-        <!--       <input type="text" class="form-control"> -->
-      <p class="form-control"> Option</p>
-    </div><!-- /input-group -->
-  </div><!-- /.col-lg-6 -->
-  <div class="col-lg-4 col-md-4 col-sm-4">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox">
-      </span>
-        <!--       <input type="text" class="form-control"> -->
-      <p class="form-control"> Option</p>
-    </div><!-- /input-group -->
-  </div><!-- /.col-lg-6 -->
+    <div class="form-group ">
+      <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+      <select class="form-control">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      </select>
+    </div>
+  </div>
+
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Product</label>
+    <div class="col-sm-10">
+  <select class="form-control">
+  <option>Profit Guard</option>
+  <option>Tri-Net</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+  </select>
+  </div>
+  </div>
+
+
 </div><!-- /.row -->
 
+
+<br><br>
 <button type="button" class="btn btn-default" ng-click="querySearch()">Search</button>
 
 
@@ -60,10 +61,13 @@ Submit a new query?
 
 
   <ul class="example-animate-container">
-      <li class="animate-repeat" ng-repeat="friend in results">
+      <li class="animate-repeat" ng-repeat="friend in results.prospects"
+      ng-click="DeleteProspect(friend.name)">
         [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
       </li>
-    </ul>
+      <li><strong>Count:</strong> {{results.prosLength}}</li>
+      <a href="" ng-click="moreProspects()">Next Page</a>
+  </ul>
 
 
   <form class="form-horizontal" role="form">
@@ -73,18 +77,32 @@ Submit a new query?
       <input type="email" class="form-control" id="inputEmail3" placeholder="Placeholder">
     </div>
   </div>
-  <div class="form-group">
-    <label for="inputPassword3" class="col-sm-2 control-label">Expensive</label>
+<!--   <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Product</label>
     <div class="col-sm-10">
       <input type="password" class="form-control" id="inputPassword3" placeholder="Placeholder">
     </div>
-  </div>
-  <div class="form-group">
+  </div> -->
+<!--   <div class="form-group">
     <label for="inputPassword3" class="col-sm-2 control-label">Other Details</label>
     <div class="col-sm-10">
       <input type="password" class="form-control" id="inputPassword3" placeholder="Placeholder">
     </div>
+  </div> -->
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Product</label>
+    <div class="col-sm-10">
+  <select class="form-control">
+  <option>Profit Guard</option>
+  <option>Tri-Net</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+  </select>
   </div>
+  </div>
+
 
 </form>
 

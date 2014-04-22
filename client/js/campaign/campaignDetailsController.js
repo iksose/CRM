@@ -38,6 +38,10 @@ angular.module('uiRouterSample')
 
   $scope.todoText = ""
   $scope.activities = []
+
+  $scope.activities.push("Example Activity 1 -- Assigned to Marketing")
+  $scope.activities.push("Example Activity 2 -- Assigned to Rick")
+
   $scope.addActivity = function(){
     console.log("Adding activity ", $scope.todoText)
     $scope.activities.push($scope.todoText)

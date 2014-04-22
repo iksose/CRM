@@ -13,10 +13,18 @@
       <tr><td>Data</td><td>{{theCampaign.cName}}</td></tr>
     </tbody>
   </table>
+
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle">Save Changes</button>
+  <a href="">Print Document</a>
+  <br>
+
+
   <label>Campaign Status:&nbsp;</label>
     <button type="button" class="btn btn-default btn-xs dropdown-toggle">{{theCampaign.status}}</button>
     <button type="button" class="btn btn-primary btn-xs dropdown-toggle"
       ng-click="nextStatus(theCampaign.cID)">Next Status</button>
+
+
 
 </div>
 

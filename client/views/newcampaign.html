@@ -2,3 +2,100 @@
 <hr>
 
 <small>Select from a list of saved Queries</small>
+
+<!-- <form >
+  <select class="form-control" ng-model="newCampaign_from_query" ng-change="setBillGroup()">
+    <option selected="selected">
+      Select a Saved Query
+    </option>
+    <option>Alabama 25 Year Old Eskimos</option>
+    <option>Charles Xavier School of Gifted Intellectuals</option>
+    <option>Fortune 500 Top Ten Bikinis</option>
+    <option>How The Alamo Became a Tourist</option>
+    <option>16 Children and their Favorite Nurses</option>
+  </select>
+</form> -->
+
+ <span  class="nullable">
+    <select class="form-control"
+    ng-model="color" ng-options="c.name for c in colors" ng-change="setBillGroup()">
+      <option value="">-- choose query --</option>
+    </select>
+  </span><br/>
+
+
+  <div ng-show="fetched">
+  <h3>Campaign</h3>
+  {{savedQueryData}}<br>
+
+<form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Campaign Name</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputEmail3" placeholder="Placeholder">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Campaign Date</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputPassword3" placeholder="Placeholder">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword4" class="col-sm-2 control-label">Campaign Demographics</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputPassword4" placeholder="Placeholder">
+    </div>
+  </div>
+
+<br>
+<hr>
+
+  <h4>Add New Activities</h4>
+  <ul class="example-animate-container">
+      <li class="animate-repeat" ng-repeat="friend in activities">
+        [{{$index + 1}}] {{friend}}
+      </li>
+    </ul>
+        <form ng-submit="addActivity()">
+          <input type="text" ng-model="todoText"  size="30"
+                 placeholder="add new todo here">
+          <input class="btn-primary" type="submit" value="add">
+        </form>
+  <h4>Assign Employees</h4>
+  <label>Campaign Status:&nbsp;</label>
+
+  <br>
+  <hr>
+
+</form>
+
+
+<label>Prospects:</label> <a href="">Export Prospects to Excel</a>
+<ul>
+[1] Latoya Meyer who is 26 years old.<br>
+[2] Vonda Perez who is 21 years old.<br>
+[3] Ortega Boyle who is 22 years old.<br>
+[4] Wilson Roman who is 30 years old.<br>
+[5] Perry Donaldson who is 22 years old.<br>
+[6] Farmer Stevenson who is 31 years old.<br>
+[7] Lisa Case who is 31 years old.<br>
+[8] Jimenez Shannon who is 35 years old.<br>
+[9] Johnston Copeland who is 32 years old.<br>
+[10] Rose Gilliam who is 37 years old.<br>
+[11] Salinas Collier who is 28 years old.<br>
+[12] Padilla Mcbride who is 25 years old.<br>
+[13] Cherry Mays who is 24 years old.<br>
+[14] Tara Rosario who is 25 years old.<br>
+[15] Leann Velazquez who is 29 years old.<br>
+[16] Eaton Hyde who is 38 years old.<br>
+[17] Donovan Decker who is 40 years old.<br>
+
+
+</ul>
+
+</p>
+
+
+  <button class='button' ng-click="changeState()">Create Campaign Template</button>
+  </div>

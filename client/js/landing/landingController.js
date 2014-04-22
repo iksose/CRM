@@ -5,7 +5,7 @@ angular.module('uiRouterSample')
 
   if(!$rootScope.loggedIn){
     console.log("Not logged in, redirect")
-    $state.go("login");
+    // $state.go("login");
   }
 
   $scope.dropdown = [

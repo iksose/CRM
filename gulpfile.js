@@ -11,6 +11,7 @@ var changed = require('gulp-changed');
 var watch = require('gulp-watch');
 var traceur = require('gulp-traceur');
 var livereload = require('gulp-livereload');
+// var es6ModuleTranspiler = require("gulp-es6-module-transpiler");
 
 
 /**
@@ -154,7 +155,8 @@ gulp.task('scripts', function() {
   gulp.src('client/js/**/*')
     .pipe(concat('scripts.js'))
     .on('error', HandleError)
-    .pipe(traceur({sourceMap: false, experimental: true}))
+    // .pipe(traceur({sourceMap: false, experimental: true}))
+    .pipe(traceur({experimental: true, sourceMap: true, modules: 'inline'}))
     .on('error', HandleError)
     .pipe(gulp.dest('client/concat'))
     .pipe(filesize())
@@ -188,6 +190,10 @@ gulp.task('watch', function() {
     gulp.watch('client/js/**/*.js', ['scripts']);
     gulp.watch('client/lib/*.js', ['vendor'])
     gulp.watch('client/less/*.less', ['css']);
+    gulp.watch('client/views/*.html').on('change', function(file){
+      console.log("HTML changed")
+      server.changed(file.path);
+    })
     gulp.watch('client/concat/**').on('change', function(file) {
       console.log("Server changed")
       // var renderedError = pe.render('Server changed');
