@@ -1,29 +1,16 @@
 Submit a new query?
 
+<hr>
 
-<div class="row">
-  <div class="col-lg-4 col-md-4 col-sm-4">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox">
-      </span>
-        <!--       <input type="text" class="form-control"> -->
-      <p class="form-control"> Option</p>
-    </div><!-- /input-group -->
-  </div><!-- /.col-lg-6 -->
 
-  <div class="col-lg-4 col-md-4 col-sm-4">
-    <div class="input-group">
-  <input type="text" class="form-control" placeholder="Placeholder">
-    </div><!-- /input-group -->
-  </div><!-- /.col-lg-6 -->
+<form class="form-inline" role="form">
 
-  <div class="col-lg-4 col-md-4 col-sm-4">
-    <div class="form-group ">
-      <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+  <div class="form-group">
+    <label class="col-sm-4 control-label">State</label>
+    <div class="col-sm-4">
       <select class="form-control">
-      <option>1</option>
-      <option>2</option>
+      <option>Kansas</option>
+      <option>Missouri</option>
       <option>3</option>
       <option>4</option>
       <option>5</option>
@@ -33,20 +20,32 @@ Submit a new query?
 
 
   <div class="form-group">
-    <label class="col-sm-2 control-label">Product</label>
-    <div class="col-sm-10">
-  <select class="form-control">
-  <option>Profit Guard</option>
-  <option>Tri-Net</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5</option>
-  </select>
-  </div>
+    <label class="col-sm-4 control-label">Product</label>
+    <div class="col-sm-4">
+      <select class="form-control">
+      <option>Profit Guard</option>
+      <option>Tri-Net</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      </select>
+    </div>
   </div>
 
+  <div class="form-group">
+    <label class="col-sm-4 control-label">Distance</label>
+    <div class="col-sm-4">
+      <select class="form-control">
+      <option>10 miles</option>
+      <option>20</option>
+      <option>30</option>
+      <option>40</option>
+      <option>50</option>
+      </select>
+    </div>
+  </div>
 
-</div><!-- /.row -->
+</form>
 
 
 <br><br>
@@ -59,16 +58,35 @@ Submit a new query?
 
   <h2>Query Results</h2>
 
+  <p>Order by...</p>
 
-  <ul class="example-animate-container">
-      <li class="animate-repeat" ng-repeat="friend in results.prospects"
-      ng-click="DeleteProspect(friend.name)">
-        [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+<!--   <ul class="example-animate-container">
+      <li class="animate-repeat"
+      ng-repeat="friend in results"
+      ng-click="DeleteProspect(friend.name)" ng-class="{isActive: !friend.isActive}">
+        [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old. IsActive? {{friend.isActive}}
       </li>
-      <li><strong>Count:</strong> {{results.prosLength}}</li>
-      <a href="" ng-click="moreProspects()">Next Page</a>
-  </ul>
+  </ul> -->
 
+
+
+  <table at-table at-list="results" at-paginated at-config="tableConfig" class="table table-striped">
+  <thead></thead>
+  <tbody>
+    <tr  ng-class="{isActive: !this.item.isActive}" ng-click="DeleteProspect(this.item.name)">
+      <td at-implicit at-attribute="name"></td>
+      <td at-implicit at-attribute="age"></td>
+      <td at-implicit at-attribute="gender"></td>
+      <td at-implicit at-attribute="isActive"></td>
+    </tr>
+  </tbody>
+</table>
+
+<at-pagination at-list="results" at-config="tableConfig"></at-pagination>
+
+
+
+<!-- </ul> -->
 
   <form class="form-horizontal" role="form">
   <div class="form-group">

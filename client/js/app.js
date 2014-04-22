@@ -6,7 +6,8 @@ var app = angular.module('uiRouterSample', [
   'ngCookies',
   'mgcrea.ngStrap',
   'ngSanitize',
-  'chieffancypants.loadingBar'
+  'chieffancypants.loadingBar',
+  'angular-table'
 ])
 
 

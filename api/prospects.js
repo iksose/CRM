@@ -734,10 +734,10 @@ var prospects = [
 
 
 exports.returnProspects = function(req, res) {
-  var results = {}
-  // results.prospects = prospects;
-  results.prosLength = prospects.length;
-  results.prospects = prospects.slice(0,2)
+  var results = prospects
+  // var results = {}
+  // results.prosLength = prospects.length;
+  // results.prospects = prospects.slice(0,2)
   console.log("Returning prospects....", req.query)
   setTimeout((function(){
     return res.send(results)

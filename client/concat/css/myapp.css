@@ -5893,6 +5893,9 @@ button.close {
     transform: rotate(360deg);
   }
 }
+.isActive {
+  text-decoration: line-through;
+}
 .demo {
   opacity: .1;
   z-index: 0;

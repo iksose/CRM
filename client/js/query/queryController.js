@@ -5,6 +5,11 @@ angular.module('uiRouterSample')
 
   $scope.results = {};
   window.results = $scope.results;
+  $scope.tableConfig = {
+    itemsPerPage: 5,
+    fillLastPage: true
+  }
+
 
 
   $scope.queryParams = {
@@ -24,6 +29,7 @@ angular.module('uiRouterSample')
       $scope.results = data.data;
       window.results = $scope.results;
       $scope.resultsReturned = true;
+      // var numberOfPages =
     })
   }
 
@@ -34,15 +40,35 @@ angular.module('uiRouterSample')
 
   $scope.DeleteProspect = function(id){
     console.log("Delete this....", id)
-    var deleteProspect = queryFactory.deleteProspect(id);
+    $scope.results.forEach(function(a,b){
+      if(a.name == id){
+        a.isActive ? a.isActive = false : a.isActive = true;
+        return true;
+      }
+    })
+    // var deleteProspect = queryFactory.deleteProspect(id);
+    // no api call...We'll just set the flag and send the object.
   }
 
 
 
 
   $scope.saveTemplate = function(){
-    $state.go('home.campaign')
+    // send whole list of Prospects returned from search
+    // except those flagged not to be a part of the campaign
+    var saveQuery = queryFactory.saveQuery($scope.results.prospects);
+    //$state.go('home.campaign')
+    var gotoCampaign = saveQuery.then(function(res){
+      $state.go('home.campaign')
+    })
   }
 
 
 })
+
+.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
+});

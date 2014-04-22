@@ -1,7 +1,7 @@
 var $__scripts__ = (function() {
   "use strict";
   var __moduleName = "scripts";
-  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar']).run(['$rootScope', '$state', '$stateParams', function($rootScope, $state, $stateParams) {
+  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table']).run(['$rootScope', '$state', '$stateParams', function($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.credentials = {group: "Undefined"};
@@ -590,6 +590,10 @@ var $__scripts__ = (function() {
     $scope.resultsReturned = false;
     $scope.results = {};
     window.results = $scope.results;
+    $scope.tableConfig = {
+      itemsPerPage: 5,
+      fillLastPage: true
+    };
     $scope.queryParams = {
       State: "KS, MO, AK",
       Age: "30",
@@ -613,10 +617,23 @@ var $__scripts__ = (function() {
     };
     $scope.DeleteProspect = function(id) {
       console.log("Delete this....", id);
-      var deleteProspect = queryFactory.deleteProspect(id);
+      $scope.results.forEach(function(a, b) {
+        if (a.name == id) {
+          a.isActive ? a.isActive = false : a.isActive = true;
+          return true;
+        }
+      });
     };
     $scope.saveTemplate = function() {
-      $state.go('home.campaign');
+      var saveQuery = queryFactory.saveQuery($scope.results.prospects);
+      var gotoCampaign = saveQuery.then(function(res) {
+        $state.go('home.campaign');
+      });
+    };
+  }).filter('startFrom', function() {
+    return function(input, start) {
+      start = +start;
+      return input.slice(start);
     };
   });
   angular.module('uiRouterSample').factory('queryFactory', function($http) {
@@ -639,6 +656,9 @@ var $__scripts__ = (function() {
             'start': '5',
             'end': '20'
           }});
+      },
+      saveQuery: function(prospects) {
+        return $http.get('/api/prospects', {params: prospects});
       }
     };
   });

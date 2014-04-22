@@ -15,6 +15,9 @@ angular.module('uiRouterSample')
         },
         deleteProspect: function(id){
           return $http.delete('/api/prospects', {params: {'start': '5', 'end': '20'} } )
+        },
+        saveQuery: function(prospects){
+          return $http.get('/api/prospects', {params: prospects } )
         }
     };
   }
