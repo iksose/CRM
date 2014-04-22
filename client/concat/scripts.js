@@ -24,7 +24,7 @@ var $__scripts__ = (function() {
       url: 'about',
       views: {'content': {template: '<br><br>This is about'}}
     }).state('home.query', {
-      url: 'query/new',
+      url: 'query/new/:params',
       views: {'content': {
           templateUrl: 'views/newQuery.html',
           controller: "queryController"

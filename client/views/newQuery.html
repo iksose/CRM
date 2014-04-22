@@ -67,12 +67,12 @@ Submit a new query?
   </ul> -->
 
 
-
-  <table at-table at-list="results" at-paginated at-config="tableConfig" class="table table-striped">
+  <strong>Results:</strong> {{results.length}}
+  <table at-table at-list="results" at-paginated at-config="tableConfig" class="table table-striped" id="queryTable">
   <thead></thead>
   <tbody>
     <tr  ng-class="{isActive: !this.item.isActive}" ng-click="DeleteProspect(this.item.name)">
-      <td at-implicit at-attribute="name"></td>
+      <td at-implicit at-attribute="name" class="fixedWidthTD"></td>
       <td at-implicit at-attribute="age" at-sortable at-initial-sorting="desc"></td>
       <td at-implicit at-attribute="gender"></td>
       <td at-implicit at-attribute="isActive"></td>
@@ -82,7 +82,9 @@ Submit a new query?
 
 <at-pagination at-list="results" at-config="tableConfig"></at-pagination>
 
+<hr>
 
+<h3>Additional Information</h2>
 
 <!-- </ul> -->
 

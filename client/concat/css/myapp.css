@@ -5437,7 +5437,7 @@ button.close {
   left: 100%;
 }
 .carousel-inner > .prev {
-  left: -99.99999999%;
+  left: -100%;
 }
 .carousel-inner > .next.left,
 .carousel-inner > .prev.right {
@@ -5895,6 +5895,9 @@ button.close {
 }
 .isActive {
   text-decoration: line-through;
+}
+.fixedWidthTD {
+  width: 30%;
 }
 .demo {
   opacity: .1;

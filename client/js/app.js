@@ -117,7 +117,7 @@ var app = angular.module('uiRouterSample', [
         })
 
         .state('home.query', {
-          url: 'query/new',
+          url: 'query/new/:params',
           views: {
             'content': {
               templateUrl: 'views/newQuery.html',
