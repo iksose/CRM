@@ -51,6 +51,8 @@ app.get('/api/alltasks', tasks.alltasks)
 
 app.get('/api/thisQuery', queries.returnQueryResults)
 
+app.post('/api/queries', queries.saveQuery)
+
 
 server.listen(app.get('port'), function () {
   console.log('Express server listening on port ' + app.get('port'));

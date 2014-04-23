@@ -587,7 +587,7 @@ var $__scripts__ = (function() {
     };
   });
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory) {
-    console.log("query Controller");
+    console.log("query Controller", $stateParams);
     $scope.resultsReturned = false;
     $scope.results = {};
     window.results = $scope.results;
@@ -607,13 +607,13 @@ var $__scripts__ = (function() {
       $scope.resultsReturned = false;
       console.log("New search...please wait...");
       var submit = queryFactory.queryResults($scope.queryParams);
-      var process = submit.then(function(data) {
+      var process = submit.then((function(data) {
         console.log("Got it...", data);
         $scope.results = data.data;
         window.results = $scope.results;
         $scope.resultsReturned = true;
         $location.search($scope.queryParams);
-      });
+      }));
     };
     $scope.moreProspects = function() {
       console.log("okay we're getting you the next group");
@@ -621,20 +621,24 @@ var $__scripts__ = (function() {
     };
     $scope.DeleteProspect = function(id) {
       console.log("Delete this....", id);
-      $scope.results.forEach(function(a, b) {
+      $scope.results.forEach((function(a, b) {
         if (a.name == id) {
           a.isActive ? a.isActive = false : a.isActive = true;
           return true;
         }
-      });
+      }));
     };
     $scope.saveTemplate = function() {
-      var saveQuery = queryFactory.saveQuery($scope.results.prospects);
+      var saveQuery = queryFactory.saveQuery($scope.results);
       console.log("Saving query...");
       var gotoCampaign = saveQuery.then(function(res) {
         $state.go('home.campaign');
       });
     };
+    if ($stateParams.State != null) {
+      console.log("Not empty");
+      $scope.querySearch();
+    }
   });
   angular.module('uiRouterSample').factory('queryFactory', function($http) {
     return {
@@ -658,7 +662,8 @@ var $__scripts__ = (function() {
           }});
       },
       saveQuery: function(prospects) {
-        return $http.get('/api/prospects', {params: prospects});
+        console.log("Prospects ", prospects);
+        return $http.post('/api/queries', prospects);
       }
     };
   });

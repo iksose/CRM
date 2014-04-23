@@ -13,3 +13,10 @@ exports.returnQueryResults = function(req, res) {
     return res.send(queries)
   }), 1000)
 }
+
+exports.saveQuery = function(req, res){
+  console.log("Saving this query...", req.body)
+  setTimeout((function(){
+    return res.send(200)
+  }), 1000)
+}

@@ -1,8 +1,7 @@
 angular.module('uiRouterSample')
 .controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory) {
-  console.log("query Controller")
- $scope.resultsReturned = false;
-
+  console.log("query Controller", $stateParams)
+  $scope.resultsReturned = false;
   $scope.results = {};
   window.results = $scope.results;
   $scope.tableConfig = {
@@ -27,7 +26,7 @@ angular.module('uiRouterSample')
     $scope.resultsReturned = false;
     console.log("New search...please wait...")
     var submit = queryFactory.queryResults($scope.queryParams);
-    var process = submit.then(function(data){
+    var process = submit.then(data => {
       console.log("Got it...", data)
       $scope.results = data.data;
       window.results = $scope.results;
@@ -43,7 +42,7 @@ angular.module('uiRouterSample')
 
   $scope.DeleteProspect = function(id){
     console.log("Delete this....", id)
-    $scope.results.forEach(function(a,b){
+    $scope.results.forEach((a,b) => {
       if(a.name == id){
         a.isActive ? a.isActive = false : a.isActive = true;
         return true;
@@ -59,13 +58,19 @@ angular.module('uiRouterSample')
   $scope.saveTemplate = function(){
     // send whole list of Prospects returned from search
     // except those flagged not to be a part of the campaign
-    var saveQuery = queryFactory.saveQuery($scope.results.prospects);
+    var saveQuery = queryFactory.saveQuery($scope.results);
     console.log("Saving query...")
     //$state.go('home.campaign')
     var gotoCampaign = saveQuery.then(function(res){
       $state.go('home.campaign')
     })
   }
+
+  if($stateParams.State != null){
+    console.log("Not empty")
+    $scope.querySearch();
+  }
+
 
 
 })
