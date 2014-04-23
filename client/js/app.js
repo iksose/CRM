@@ -117,14 +117,12 @@ var app = angular.module('uiRouterSample', [
         })
 
         .state('home.query', {
-          url: 'query/new/?myParam1&myParam2',
+          url: 'query/new/?State&Age&Product&Distance',
+          reloadOnSearch: false,
           views: {
             'content': {
               templateUrl: 'views/newQuery.html',
-              controller: "queryController"
-            },
-            resolve: {
-              reloadOnSearch: false
+              controller: "queryController",
             }
           }
         })
