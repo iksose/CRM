@@ -24,11 +24,14 @@ var $__scripts__ = (function() {
       url: 'about',
       views: {'content': {template: '<br><br>This is about'}}
     }).state('home.query', {
-      url: 'query/new/:params',
-      views: {'content': {
+      url: 'query/new/?myParam1&myParam2',
+      views: {
+        'content': {
           templateUrl: 'views/newQuery.html',
           controller: "queryController"
-        }}
+        },
+        resolve: {reloadOnSearch: false}
+      }
     }).state('home.campaign', {
       url: 'Campaigns',
       views: {'content': {
@@ -478,55 +481,6 @@ var $__scripts__ = (function() {
       $state.go('home.campaign.details', {params: '1337'});
     });
   });
-  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
-    console.log("Landing Controller");
-    if (!$rootScope.loggedIn) {
-      console.log("Not logged in, redirect");
-    }
-    $scope.dropdown = [{
-      "text": "New Campaign",
-      "click": '$state.go("home.campaign.new")'
-    }, {
-      "text": "Other Campaigns",
-      "click": '$state.go("home.campaign")'
-    }, {"divider": true}, {
-      "text": "New Query",
-      "click": '$state.go("home.query")'
-    }];
-    $scope.inMarketing = false;
-    if ($rootScope.credentials.group == "Marketing") {
-      $scope.inMarketing = true;
-      var thisUsersGroup = $rootScope.credentials;
-      $scope.allTasks = [];
-      var fetch = Tasks.myTasks(thisUsersGroup);
-      var showTasks = fetch.then(function(data) {
-        console.log("Show tasks....", data);
-        $scope.allTasks = data.data;
-      });
-    }
-  });
-  angular.module('uiRouterSample').factory('Tasks', function($http) {
-    return {
-      queryResults: function(url, callback) {
-        return $http.get('/api/campaigns');
-      },
-      myTasks: function(data) {
-        console.log("Factory TASKS getting myTasks..", data);
-        return $http.post('/api/usertasks', data);
-      },
-      taskDetails: function(data) {
-        console.log("Factory TASKS getting details..", data);
-        return $http.post('/api/taskdetails', data);
-      },
-      allTasks: function() {
-        console.log("Factory tasks returning every task...");
-        return $http.get('/api/alltasks');
-      },
-      taskProspect: function() {
-        return $http.get('/api/randomProspect');
-      }
-    };
-  });
   angular.module('uiRouterSample').controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert) {
     console.log("Controller loaded");
     $rootScope.loggedIn = $rootScope.loggedIn || false;
@@ -585,13 +539,97 @@ var $__scripts__ = (function() {
       }
     };
   });
-  angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, queryFactory) {
+  angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
+    console.log("Task Controller", $state);
+    $scope.singleTask = {};
+    $scope.everyTask = [];
+    $scope.workingProspect = {};
+    $scope.singleTaskBool = false;
+    $scope.everyTaskBool = false;
+    $scope.taskTypeBulk = false;
+    $scope.taskTypeSingle = false;
+    if ($state.params.taskID !== "") {
+      console.log("Show specific task", $state.params.taskID);
+      var getSingleTask = Tasks.taskDetails($state.params);
+      var displaySingleTask = getSingleTask.then(function(data) {
+        console.log("Got single task", data);
+        $scope.singleTask = data.data;
+        $scope.singleTaskBool = true;
+        if (data.data.taskName.toLowerCase() == "bulk activity") {
+          $scope.taskTypeBulk = true;
+        } else {
+          $scope.taskTypeSingle = true;
+          Tasks.taskProspect().then(function(data) {
+            console.log("My working prospect is...", data.data);
+            $scope.workingProspect = data.data;
+          });
+        }
+      });
+    } else {
+      console.log("Not enough params, just show all tasks?");
+      var everyTask = Tasks.allTasks().then(function(data) {
+        console.log("Got everything! ", data.data);
+        $scope.everyTask = data.data;
+        $scope.everyTaskBool = true;
+      });
+    }
+  });
+  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
+    console.log("Landing Controller");
+    if (!$rootScope.loggedIn) {
+      console.log("Not logged in, redirect");
+    }
+    $scope.dropdown = [{
+      "text": "New Campaign",
+      "click": '$state.go("home.campaign.new")'
+    }, {
+      "text": "Other Campaigns",
+      "click": '$state.go("home.campaign")'
+    }, {"divider": true}, {
+      "text": "New Query",
+      "click": '$state.go("home.query")'
+    }];
+    $scope.inMarketing = false;
+    if ($rootScope.credentials.group == "Marketing") {
+      $scope.inMarketing = true;
+      var thisUsersGroup = $rootScope.credentials;
+      $scope.allTasks = [];
+      var fetch = Tasks.myTasks(thisUsersGroup);
+      var showTasks = fetch.then(function(data) {
+        console.log("Show tasks....", data);
+        $scope.allTasks = data.data;
+      });
+    }
+  });
+  angular.module('uiRouterSample').factory('Tasks', function($http) {
+    return {
+      queryResults: function(url, callback) {
+        return $http.get('/api/campaigns');
+      },
+      myTasks: function(data) {
+        console.log("Factory TASKS getting myTasks..", data);
+        return $http.post('/api/usertasks', data);
+      },
+      taskDetails: function(data) {
+        console.log("Factory TASKS getting details..", data);
+        return $http.post('/api/taskdetails', data);
+      },
+      allTasks: function() {
+        console.log("Factory tasks returning every task...");
+        return $http.get('/api/alltasks');
+      },
+      taskProspect: function() {
+        return $http.get('/api/randomProspect');
+      }
+    };
+  });
+  angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory) {
     console.log("query Controller");
     $scope.resultsReturned = false;
     $scope.results = {};
     window.results = $scope.results;
     $scope.tableConfig = {
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       fillLastPage: false
     };
     $scope.queryParams = {
@@ -611,6 +649,7 @@ var $__scripts__ = (function() {
         $scope.results = data.data;
         window.results = $scope.results;
         $scope.resultsReturned = true;
+        $location.search($scope.queryParams);
       });
     };
     $scope.moreProspects = function() {
@@ -659,41 +698,6 @@ var $__scripts__ = (function() {
         return $http.get('/api/prospects', {params: prospects});
       }
     };
-  });
-  angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
-    console.log("Task Controller", $state);
-    $scope.singleTask = {};
-    $scope.everyTask = [];
-    $scope.workingProspect = {};
-    $scope.singleTaskBool = false;
-    $scope.everyTaskBool = false;
-    $scope.taskTypeBulk = false;
-    $scope.taskTypeSingle = false;
-    if ($state.params.taskID !== "") {
-      console.log("Show specific task", $state.params.taskID);
-      var getSingleTask = Tasks.taskDetails($state.params);
-      var displaySingleTask = getSingleTask.then(function(data) {
-        console.log("Got single task", data);
-        $scope.singleTask = data.data;
-        $scope.singleTaskBool = true;
-        if (data.data.taskName.toLowerCase() == "bulk activity") {
-          $scope.taskTypeBulk = true;
-        } else {
-          $scope.taskTypeSingle = true;
-          Tasks.taskProspect().then(function(data) {
-            console.log("My working prospect is...", data.data);
-            $scope.workingProspect = data.data;
-          });
-        }
-      });
-    } else {
-      console.log("Not enough params, just show all tasks?");
-      var everyTask = Tasks.allTasks().then(function(data) {
-        console.log("Got everything! ", data.data);
-        $scope.everyTask = data.data;
-        $scope.everyTaskBool = true;
-      });
-    }
   });
   return {
     get entries() {

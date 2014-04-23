@@ -1,12 +1,12 @@
 angular.module('uiRouterSample')
-.controller('queryController', function($scope, $rootScope, $state, queryFactory) {
+.controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory) {
   console.log("query Controller")
  $scope.resultsReturned = false;
 
   $scope.results = {};
   window.results = $scope.results;
   $scope.tableConfig = {
-    itemsPerPage: 5,
+    itemsPerPage: 10,
     fillLastPage: false
   }
 
@@ -32,7 +32,7 @@ angular.module('uiRouterSample')
       $scope.results = data.data;
       window.results = $scope.results;
       $scope.resultsReturned = true;
-      // var numberOfPages =
+      $location.search($scope.queryParams)
     })
   }
 

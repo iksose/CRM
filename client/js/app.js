@@ -117,14 +117,21 @@ var app = angular.module('uiRouterSample', [
         })
 
         .state('home.query', {
-          url: 'query/new/:params',
+          url: 'query/new/?myParam1&myParam2',
           views: {
             'content': {
               templateUrl: 'views/newQuery.html',
               controller: "queryController"
+            },
+            resolve: {
+              reloadOnSearch: false
             }
           }
         })
+
+        // .state('home.query.results', {
+        //   url: '/results/?myParam1&myParam2'
+        // })
 
         .state('home.campaign', {
           url: 'Campaigns',
