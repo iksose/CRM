@@ -7,7 +7,8 @@ var app = angular.module('uiRouterSample', [
   'mgcrea.ngStrap',
   'ngSanitize',
   'chieffancypants.loadingBar',
-  'angular-table'
+  'angular-table',
+  'ngTagsInput'
 ])
 
 

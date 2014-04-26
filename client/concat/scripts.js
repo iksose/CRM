@@ -1,7 +1,7 @@
 var $__scripts__ = (function() {
   "use strict";
   var __moduleName = "scripts";
-  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table']).run(['$rootScope', '$state', '$stateParams', function($rootScope, $state, $stateParams) {
+  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table', 'ngTagsInput']).run(['$rootScope', '$state', '$stateParams', function($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.credentials = {group: "Undefined"};
@@ -586,7 +586,7 @@ var $__scripts__ = (function() {
       }
     };
   });
-  angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory) {
+  angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q) {
     console.log("query Controller", $stateParams);
     $scope.resultsReturned = false;
     $scope.results = {};
@@ -595,6 +595,24 @@ var $__scripts__ = (function() {
       itemsPerPage: 10,
       fillLastPage: false
     };
+    $scope.selectedIcon = '';
+    $scope.selectedIcons = [];
+    $scope.icons = [{
+      value: 'KS',
+      label: 'Kansas'
+    }, {
+      value: 'AK',
+      label: 'Arkansas'
+    }, {
+      value: 'MO',
+      label: 'Missouri'
+    }, {
+      value: 'NY',
+      label: 'New York`'
+    }, {
+      value: 'CA',
+      label: 'California'
+    }];
     $scope.queryParams = {
       State: "KS, MO, AK",
       Age: "30",
@@ -606,6 +624,7 @@ var $__scripts__ = (function() {
       $scope.results = {};
       $scope.resultsReturned = false;
       console.log("New search...please wait...");
+      $scope.queryParams.State = $scope.selectedIcons;
       var submit = queryFactory.queryResults($scope.queryParams);
       var process = submit.then((function(data) {
         console.log("Got it...", data);

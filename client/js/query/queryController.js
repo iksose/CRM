@@ -1,5 +1,5 @@
 angular.module('uiRouterSample')
-.controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory) {
+.controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q) {
   console.log("query Controller", $stateParams)
   $scope.resultsReturned = false;
   $scope.results = {};
@@ -11,6 +11,18 @@ angular.module('uiRouterSample')
 
 
 
+
+  $scope.selectedIcon = '';
+  $scope.selectedIcons = [];
+  $scope.icons = [
+    {value: 'KS', label: 'Kansas'},
+    {value: 'AK', label: 'Arkansas'},
+    {value: 'MO', label: 'Missouri'},
+    {value: 'NY', label: 'New York`'},
+    {value: 'CA', label: 'California'},
+  ];
+
+
   $scope.queryParams = {
     State: "KS, MO, AK",
     Age: "30",
@@ -20,11 +32,20 @@ angular.module('uiRouterSample')
   }
 
 
+  // var changethis = ["KS", "MO"]
+  // var changed
+  //
+  // for(var i = 0; i < changethis.length; i++){
+  //   changed += changethis[i] + ", "
+  // }
+
+
   $scope.querySearch = function(){
     // clearing old results
     $scope.results = {};
     $scope.resultsReturned = false;
     console.log("New search...please wait...")
+    $scope.queryParams.State = $scope.selectedIcons;
     var submit = queryFactory.queryResults($scope.queryParams);
     var process = submit.then(data => {
       console.log("Got it...", data)

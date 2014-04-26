@@ -846,7 +846,8 @@ UrlMatcher.prototype.format = function (values) {
   if (!values) return segments.join('');
 
   var nPath = segments.length-1, nTotal = params.length,
-    result = segments[0], i, search, value;
+    // result = segments[0], i, search, value;
+    result = segments[0], i, search, value, param, cfg, array;
 
   for (i=0; i<nPath; i++) {
     value = values[params[i]];
@@ -856,11 +857,18 @@ UrlMatcher.prototype.format = function (values) {
   }
   for (/**/; i<nTotal; i++) {
     value = values[params[i]];
-    if (value != null) {
-      result += (search ? '&' : '?') + params[i] + '=' + encodeURIComponent(value);
+    // if (value != null) {
+      // result += (search ? '&' : '?') + params[i] + '=' + encodeURIComponent(value);
+      value = values[param];
+     if (value == null) continue;
+     array = isArray(value);
+
+     if (array) {
+       value = value.map(encodeURIComponent).join('&' + param + '=');
+     }
+     result += (search ? '&' : '?') + param + '=' + (array ? value : encodeURIComponent(value));
       search = true;
     }
-  }
 
   return result;
 };

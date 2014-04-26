@@ -44,14 +44,23 @@ Submit a new query?
     </div>
   </div>
 
+
+
+
+<button type="button" class="btn btn-default"
+  ng-model="selectedIcons" data-html="1" data-multiple="1"
+  data-animation="am-flip-x"
+  ng-options="icon.value as icon.label for icon in icons"
+  placeholder="State <i class='fa fa-globe'></i>" bs-select>
+  Action <span class="caret"></span>
+</button>
+
+
 </form>
 
 
 <br><br>
 <button type="button" class="btn btn-default" ng-click="querySearch()">Search</button>
-
-
-<br><br>
 
 <div ng-show="resultsReturned">
 
@@ -76,6 +85,7 @@ Submit a new query?
       <td at-implicit at-attribute="age" at-sortable at-initial-sorting="desc"></td>
       <td at-implicit at-attribute="gender"></td>
       <td at-implicit at-attribute="isActive"></td>
+      <td at-implicit at-attribute="balance"></td>
     </tr>
   </tbody>
 </table>
