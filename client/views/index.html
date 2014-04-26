@@ -39,6 +39,14 @@
        Logged in: {{loggedIn}}
        Todo: Ad-hoc lead, can anyone navigate to any task?
     </pre>
+
+<!--     {{metrics}} -->
+    <ul class="example-animate-container">
+      <li class="animate-repeat" ng-repeat="friend in metrics">
+        {{friend.name}} - {{friend.duration}}ms
+      </li>
+    </ul>
+
   </body>
   <script src="concat/scripts.js"></script>
 </html>

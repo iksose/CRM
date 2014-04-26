@@ -48,4 +48,38 @@ if($rootScope.credentials.group == "Marketing"){
 
 }
 
+
+// $rootScope.$on('$locationChangeStart', function(){
+//   var entries = window.performance.getEntries();
+//
+//       entries = entries.sort( function( a, b ) {
+//           return b.duration - a.duration;
+//       } );
+//
+//       $rootScope.metrics = entries;
+//       // console.log("ENTRIES", entries[0])
+//       // console.table(
+//       //     entries, [ 'name', 'duration' ]
+//       // );
+//
+//     })
+
+window.setInterval(function() {
+    var entries = window.performance.getEntries();
+
+        entries = entries.sort( function( a, b ) {
+            return b.duration - a.duration;
+        } );
+
+        $rootScope.metrics = entries;
+}, 500);
+
+
+
+
 })
+
+
+// $rootScope.$on('$stateChangeStart', function(){
+//
+// })

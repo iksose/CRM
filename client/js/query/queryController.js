@@ -15,11 +15,11 @@ angular.module('uiRouterSample')
   $scope.selectedIcon = '';
   $scope.selectedIcons = [];
   $scope.icons = [
-    {value: 'KS', label: 'Kansas'},
+    {value: 'Kansas', label: 'Kansas'},
     {value: 'AK', label: 'Arkansas'},
-    {value: 'MO', label: 'Missouri'},
-    {value: 'NY', label: 'New York`'},
-    {value: 'CA', label: 'California'},
+    {value: 'Missouri', label: 'Missouri'},
+    {value: 'NY', label: 'New York'},
+    {value: 'California', label: 'California'},
   ];
 
 

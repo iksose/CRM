@@ -505,6 +505,13 @@ var $__scripts__ = (function() {
         $scope.allTasks = data.data;
       });
     }
+    window.setInterval(function() {
+      var entries = window.performance.getEntries();
+      entries = entries.sort(function(a, b) {
+        return b.duration - a.duration;
+      });
+      $rootScope.metrics = entries;
+    }, 500);
   });
   angular.module('uiRouterSample').factory('Tasks', function($http) {
     return {
@@ -598,19 +605,19 @@ var $__scripts__ = (function() {
     $scope.selectedIcon = '';
     $scope.selectedIcons = [];
     $scope.icons = [{
-      value: 'KS',
+      value: 'Kansas',
       label: 'Kansas'
     }, {
       value: 'AK',
       label: 'Arkansas'
     }, {
-      value: 'MO',
+      value: 'Missouri',
       label: 'Missouri'
     }, {
       value: 'NY',
-      label: 'New York`'
+      label: 'New York'
     }, {
-      value: 'CA',
+      value: 'California',
       label: 'California'
     }];
     $scope.queryParams = {
