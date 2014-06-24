@@ -33,6 +33,8 @@ app.get('/', basic_routes.index);
 
 app.post('/api/login', userList.findOne)
 
+app.get('/api/users', userList.findAll)
+
 app.get('/api/campaigns', campaigns.allCampaigns)
 
 app.post('/api/singlecampaign', campaigns.singleCampaign)
@@ -52,6 +54,10 @@ app.get('/api/alltasks', tasks.alltasks)
 app.get('/api/thisQuery', queries.returnQueryResults)
 
 app.post('/api/queries', queries.saveQuery)
+
+app.get('/api/queries', queries.getQueries)
+
+app.get('/api/query/:queryid', queries.singleQuery)
 
 
 server.listen(app.get('port'), function () {

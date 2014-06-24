@@ -3,27 +3,35 @@ angular.module('uiRouterSample')
   console.log("Controller loaded")
   $rootScope.loggedIn = $rootScope.loggedIn || false;
   $scope.creds = {};
+  $scope.creds.userid = $cookies.userid;
   // $rootScope.credentials = {}
   // decided to define this in app.run
 
   $scope.loginSubmit = function(){
-    $cookies.myFavorite = "WOW"
-    console.log("Cookies", $cookies)
-    //document.cookie
-    console.log("CREDS, ", $scope.creds)
-
-    // var test = Privilege.Login.query({id:1}).$promise;
-    var test = Privilege.Login.query($scope.creds).$promise;
+    var test = Privilege.Cocks($scope.creds)
     var test2 = test.then(function(data){
-      console.log("Then....", data)
+      // handle success
+      console.log("Then....", data.data)
       $rootScope.loggedIn = true;
       $rootScope.$state.go("home");
-      $rootScope.credentials.username = data.username
+      $rootScope.credentials.username = data.data.userid;
+      $rootScope.credentials.key = data.data.key;
       $rootScope.credentials.admin = data.admin;
       $rootScope.credentials.group = data.group;
-    })
+      $cookies.xkey = data.data.key;
+      $cookies.userid = data.data.userid;
+    },
+    function(data){
+      // handle error
+      var myAlert = $alert({title: "Title",
+          content: "err",
+          placement: 'top',
+          type: 'danger',
+          show: true
+        });
+  })
     var catchError = test.catch(function(err){
-      var myAlert = $alert({title: err.statusText,
+      var myAlert = $alert({title: err.message,
           content: err.data,
           placement: 'top',
           type: 'danger',

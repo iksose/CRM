@@ -1,24 +1,26 @@
 var _ = require('underscore-node');
 
+var users = [{
+  username: "jon",
+  password: "123456",
+  admin: true,
+  group: "IT"
+},{
+  username: "kellie",
+  password: "123456",
+  admin: false,
+  group: "Marketing"
+},{
+  username: "isaac",
+  password: "123456",
+  admin: false,
+  group: "ISR"
+}
+]
+
 exports.findOne = function(req, res) {
   console.log(req.body)
-  var users = [{
-    username: "jon",
-    password: "123456",
-    admin: true,
-    group: "IT"
-  },{
-    username: "kellie",
-    password: "123456",
-    admin: false,
-    group: "Marketing"
-  },{
-    username: "isaac",
-    password: "123456",
-    admin: false,
-    group: "ISR"
-  }
-  ]
+
 
   var match = _.findWhere(users, {username: req.body.username});
 
@@ -28,7 +30,11 @@ exports.findOne = function(req, res) {
     return res.send(401)
   }
 
-
-
 // res.send(users)
+}
+
+
+exports.findAll = function(req, res){
+  console.log("Send all users")
+  res.send(users)
 }

@@ -7,7 +7,7 @@
     <!-- styles for ng-animate are located here -->
     <link rel="stylesheet" type="text/css" href="concat/css/myapp.css">
 <!--     // <script src="lib/traceur.js"></script> -->
-    <script src="concat/vendor.js"></script>
+    <script src="concat/vendor.min.js"></script>
 
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 <!--   <link rel="stylesheet" href="concat/css/font-awesome.min.css"> -->
@@ -34,6 +34,7 @@
       $stateParams = {{$stateParams}}
       $state full url = {{ $state.$current.url.source }}
        Username: {{credentials.username}}
+       Key: {{credentials.key}}
        Group: {{credentials.group}}
        Admin: {{credentials.admin}}
        Logged in: {{loggedIn}}

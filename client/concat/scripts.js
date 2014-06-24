@@ -1,11 +1,39 @@
 var $__scripts__ = (function() {
   "use strict";
   var __moduleName = "scripts";
-  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table', 'ngTagsInput']).run(['$rootScope', '$state', '$stateParams', function($rootScope, $state, $stateParams) {
+  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table', 'ngTagsInput']).run(['$rootScope', '$state', '$stateParams', '$cookies', "$http", function($rootScope, $state, $stateParams, $cookies, $http) {
+    $traceurRuntime.setProperty($http.defaults.headers.common, 'XKey', $cookies.xkey);
+    $http.defaults.headers.put = {'Content-Type': 'application/x-www-form-urlencoded'};
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
+    $rootScope.loggedIn = true;
     $rootScope.credentials = {group: "Undefined"};
-  }]).config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+    var testKey = $http({
+      method: 'GET',
+      url: 'http://10.1.1.118:8000/api/Research?State=MO&Product=123&Order=ProspectID',
+      headers: {
+        'Accept': 'application/json',
+        'XKey': $cookies.xkey
+      }
+    });
+  }]).config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $httpProvider) {
+    var interceptor = ['$location', '$q', '$injector', function($location, $q, $injector) {
+      function success(response) {
+        return response;
+      }
+      function error(response) {
+        if (response.status === 401) {
+          $injector.get('$state').transitionTo('login');
+          return $q.reject(response);
+        } else {
+          return $q.reject(response);
+        }
+      }
+      return function(promise) {
+        return promise.then(success, error);
+      };
+    }];
+    $httpProvider.responseInterceptors.push(interceptor);
     $urlRouterProvider.when('/c?id', '/contacts/:id').when('/user/:id', '/contacts/:id').otherwise('/');
     $stateProvider.state('login', {
       url: '/login',
@@ -60,50 +88,15 @@ var $__scripts__ = (function() {
           templateUrl: 'views/admin.html',
           controller: "adminController"
         }}
+    }).state('home.timeline', {
+      url: 'timeline/',
+      views: {'content': {
+          templateUrl: 'views/timeline.html',
+          controller: "timelineController"
+        }}
     });
   }]);
-  console.log("hmm");
   var list = [1, 2, 3, 4];
-  var res = (function() {
-    var $__1,
-        $__2,
-        x;
-    return $traceurRuntime.generatorWrap(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            $__1 = list[$traceurRuntime.toProperty(Symbol.iterator)]();
-            $ctx.state = 4;
-            break;
-          case 4:
-            $ctx.state = (!($__2 = $__1.next()).done) ? 5 : -2;
-            break;
-          case 5:
-            x = $__2.value;
-            $ctx.state = 6;
-            break;
-          case 6:
-            $ctx.state = 2;
-            return x;
-          case 2:
-            $ctx.maybeThrow();
-            $ctx.state = 4;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, this);
-  }());
-  console.log("Res", res);
-  var acc = '';
-  for (var $__1 = res[$traceurRuntime.toProperty(Symbol.iterator)](),
-      $__2; !($__2 = $__1.next()).done; ) {
-    var x = $__2.value;
-    {
-      acc += x;
-      console.log("Acc", acc);
-    }
-  }
   var res = (function() {
     var $__3,
         $__4,
@@ -120,6 +113,46 @@ var $__scripts__ = (function() {
             break;
           case 5:
             x = $__4.value;
+            $ctx.state = 6;
+            break;
+          case 6:
+            $ctx.state = 2;
+            return x;
+          case 2:
+            $ctx.maybeThrow();
+            $ctx.state = 4;
+            break;
+          default:
+            return $ctx.end();
+        }
+    }, this);
+  }());
+  console.log("Res", res);
+  var acc = '';
+  for (var $__3 = res[$traceurRuntime.toProperty(Symbol.iterator)](),
+      $__4; !($__4 = $__3.next()).done; ) {
+    var x = $__4.value;
+    {
+      acc += x;
+      console.log("Acc", acc);
+    }
+  }
+  var res = (function() {
+    var $__5,
+        $__6,
+        x;
+    return $traceurRuntime.generatorWrap(function($ctx) {
+      while (true)
+        switch ($ctx.state) {
+          case 0:
+            $__5 = list[$traceurRuntime.toProperty(Symbol.iterator)]();
+            $ctx.state = 4;
+            break;
+          case 4:
+            $ctx.state = (!($__6 = $__5.next()).done) ? 5 : -2;
+            break;
+          case 5:
+            x = $__6.value;
             $ctx.state = 6;
             break;
           case 6:
@@ -200,20 +233,44 @@ var $__scripts__ = (function() {
     }
   }
   console.log('Is i defined here?: ' + (typeof i !== 'undefined'));
+  var customers = [{
+    city: "Seattle",
+    note: "i'm gay",
+    name: "Jesus"
+  }];
+  var results = (function() {
+    var $__1 = 0,
+        $__2 = [];
+    for (var $__5 = customers[$traceurRuntime.toProperty(Symbol.iterator)](),
+        $__6; !($__6 = $__5.next()).done; ) {
+      try {
+        throw undefined;
+      } catch (c) {
+        c = $__6.value;
+        if (c.city == "Seattle")
+          $traceurRuntime.setProperty($__2, $__1++, {
+            name: c.name,
+            age: c.age
+          });
+      }
+    }
+    return $__2;
+  }());
+  console.log("RESULTS", customers, results);
   'use strict';
   function entries(obj) {
-    var $__3,
-        $__4,
+    var $__5,
+        $__6,
         key;
     return $traceurRuntime.generatorWrap(function($ctx) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__3 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
+            $__5 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
             $ctx.state = 14;
             break;
           case 14:
-            $ctx.state = (!($__4 = $__3.next()).done) ? 9 : -2;
+            $ctx.state = (!($__6 = $__5.next()).done) ? 9 : -2;
             break;
           case 9:
             $ctx.pushTry(7, null);
@@ -233,7 +290,7 @@ var $__scripts__ = (function() {
             $ctx.state = 5;
             break;
           case 5:
-            key = $__4.value;
+            key = $__6.value;
             $ctx.state = 6;
             break;
           case 6:
@@ -249,18 +306,18 @@ var $__scripts__ = (function() {
     }, this);
   }
   function keys(obj) {
-    var $__3,
-        $__4,
+    var $__5,
+        $__6,
         key;
     return $traceurRuntime.generatorWrap(function($ctx) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__3 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
+            $__5 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
             $ctx.state = 14;
             break;
           case 14:
-            $ctx.state = (!($__4 = $__3.next()).done) ? 9 : -2;
+            $ctx.state = (!($__6 = $__5.next()).done) ? 9 : -2;
             break;
           case 9:
             $ctx.pushTry(7, null);
@@ -280,7 +337,7 @@ var $__scripts__ = (function() {
             $ctx.state = 5;
             break;
           case 5:
-            key = $__4.value;
+            key = $__6.value;
             $ctx.state = 6;
             break;
           case 6:
@@ -319,18 +376,18 @@ var $__scripts__ = (function() {
     }, this);
   }
   function values(obj) {
-    var $__3,
-        $__4,
+    var $__5,
+        $__6,
         key;
     return $traceurRuntime.generatorWrap(function($ctx) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__3 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
+            $__5 = Object.keys(obj)[$traceurRuntime.toProperty(Symbol.iterator)]();
             $ctx.state = 14;
             break;
           case 14:
-            $ctx.state = (!($__4 = $__3.next()).done) ? 9 : -2;
+            $ctx.state = (!($__6 = $__5.next()).done) ? 9 : -2;
             break;
           case 9:
             $ctx.pushTry(7, null);
@@ -350,7 +407,7 @@ var $__scripts__ = (function() {
             $ctx.state = 5;
             break;
           case 5:
-            key = $__4.value;
+            key = $__6.value;
             $ctx.state = 6;
             break;
           case 6:
@@ -483,6 +540,7 @@ var $__scripts__ = (function() {
     console.log("Landing Controller");
     if (!$rootScope.loggedIn) {
       console.log("Not logged in, redirect");
+      $state.go("login");
     }
     $scope.dropdown = [{
       "text": "New Campaign",
@@ -539,22 +597,31 @@ var $__scripts__ = (function() {
     console.log("Controller loaded");
     $rootScope.loggedIn = $rootScope.loggedIn || false;
     $scope.creds = {};
+    $scope.creds.userid = $cookies.userid;
     $scope.loginSubmit = function() {
-      $cookies.myFavorite = "WOW";
-      console.log("Cookies", $cookies);
-      console.log("CREDS, ", $scope.creds);
-      var test = Privilege.Login.query($scope.creds).$promise;
+      var test = Privilege.Cocks($scope.creds);
       var test2 = test.then(function(data) {
-        console.log("Then....", data);
+        console.log("Then....", data.data);
         $rootScope.loggedIn = true;
         $rootScope.$state.go("home");
-        $rootScope.credentials.username = data.username;
+        $rootScope.credentials.username = data.data.userid;
+        $rootScope.credentials.key = data.data.key;
         $rootScope.credentials.admin = data.admin;
         $rootScope.credentials.group = data.group;
+        $cookies.xkey = data.data.key;
+        $cookies.userid = data.data.userid;
+      }, function(data) {
+        var myAlert = $alert({
+          title: "Title",
+          content: "err",
+          placement: 'top',
+          type: 'danger',
+          show: true
+        });
       });
       var catchError = test.catch(function(err) {
         var myAlert = $alert({
-          title: err.statusText,
+          title: err.message,
           content: err.data,
           placement: 'top',
           type: 'danger',
@@ -573,8 +640,9 @@ var $__scripts__ = (function() {
       Recipe: $resource('/recipes/:id', {id: '@id'}),
       Users: $resource('/users/:id', {id: '@id'}),
       Group: $resource('/groups/:id', {id: '@id'}),
-      Login: $resource('api/login/:userID', {userId: '@id'}, {'query': {
+      Login: $resource('http://10.1.1.118:8000/api/Auth', {userId: '@id'}, {'query': {
           method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           isArray: false
         }}),
       Example: $resource('api/users/:userId/privileges', {userId: '@id'}, {'query': {
@@ -583,36 +651,46 @@ var $__scripts__ = (function() {
         }}),
       Cocks: function(alpha, beta) {
         var local = "blargh gargh";
-        console.log("POST DUDE", local);
-        $http({
+        console.log("POST DUDE", alpha, beta);
+        return $http({
           method: 'POST',
-          url: '/dmz/login',
-          params: local,
+          url: 'http://10.1.1.118:8000/api/Auth',
+          data: $.param(alpha),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         });
       }
     };
   });
-  angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q) {
+  angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q, $alert) {
     console.log("query Controller", $stateParams);
     $scope.resultsReturned = false;
     $scope.results = {};
-    window.results = $scope.results;
     $scope.tableConfig = {
       itemsPerPage: 10,
-      fillLastPage: false
+      fillLastPage: false,
+      maxPages: 5
     };
-    $scope.selectedIcon = '';
-    $scope.selectedIcons = [];
-    $scope.icons = [{
+    $scope.queryName = "";
+    $scope.productList = ["TriNet", "ProfitGuard"];
+    $scope.selectedProduct;
+    $scope.queryList;
+    $scope.selectedQuery;
+    $scope.Clicking_the_table_now_performs_http = false;
+    $scope.QueryID;
+    $scope.params;
+    $scope.selectedStates = [];
+    $scope.states = [{
       value: 'Kansas',
       label: 'Kansas'
     }, {
       value: 'AK',
       label: 'Arkansas'
     }, {
-      value: 'Missouri',
+      value: 'MO',
       label: 'Missouri'
+    }, {
+      value: 'TX',
+      label: 'Texas'
     }, {
       value: 'NY',
       label: 'New York'
@@ -621,48 +699,79 @@ var $__scripts__ = (function() {
       label: 'California'
     }];
     $scope.queryParams = {
-      State: "KS, MO, AK",
-      Age: "30",
-      Product: "TriNet",
-      Distance: "50",
-      Volume: "high"
+      State: [],
+      Bill: "Yes"
+    };
+    $scope.saveObject = {};
+    queryFactory.getQueries().then((function(data) {
+      $scope.queryList = data.data;
+    }));
+    $scope.findQuery = function() {
+      $scope.resultsReturned = false;
+      queryFactory.singleQuery($scope.selectedQuery.QueryID).then((function(data) {
+        $scope.params = $.deparam(data.data.ParamStr);
+        $scope.results = data.data.rows;
+        $scope.QueryID = data.data.QueryID;
+        $scope.resultsReturned = true;
+        $scope.selectedStates = $scope.params.State;
+        $scope.Clicking_the_table_now_performs_http = true;
+        $scope.saveObject.Name = "LOADED FROM DROPDOWN -- query name is " + data.data.Name;
+      }));
     };
     $scope.querySearch = function() {
       $scope.results = {};
       $scope.resultsReturned = false;
       console.log("New search...please wait...");
-      $scope.queryParams.State = $scope.selectedIcons;
+      $scope.queryParams.State = $scope.selectedStates;
       var submit = queryFactory.queryResults($scope.queryParams);
       var process = submit.then((function(data) {
-        console.log("Got it...", data);
         $scope.results = data.data;
-        window.results = $scope.results;
         $scope.resultsReturned = true;
         $location.search($scope.queryParams);
+      })).catch(function(err) {
+        if (err.status == 401)
+          console.log("401 is handled by Interceptors");
+      });
+    };
+    $scope.whoa = function() {
+      queryFactory.updateQueryName("1").then((function(data) {
+        console.log("COMPLETE");
       }));
     };
-    $scope.moreProspects = function() {
-      console.log("okay we're getting you the next group");
-      var submit = queryFactory.moreProspects();
-    };
     $scope.DeleteProspect = function(id) {
-      console.log("Delete this....", id);
       $scope.results.forEach((function(a, b) {
-        if (a.name == id) {
-          a.isActive ? a.isActive = false : a.isActive = true;
+        if (a.ProspectID == id) {
+          a.Status ? a.Status = 0 : a.Status = 1;
+          if ($scope.Clicking_the_table_now_performs_http) {
+            queryFactory.updateQueryStatus($scope.QueryID, id, a.Status);
+          }
           return true;
         }
       }));
     };
     $scope.saveTemplate = function() {
-      var saveQuery = queryFactory.saveQuery($scope.results);
-      console.log("Saving query...");
-      var gotoCampaign = saveQuery.then(function(res) {
+      if ($scope.Clicking_the_table_now_performs_http) {
+        return;
+      }
+      $scope.saveObject.rows = $scope.results;
+      var params = $location.search();
+      var mod = $.param(params);
+      $scope.saveObject.ParamStr = mod;
+      $scope.saveObject.Product = 1;
+      queryFactory.saveQuery($scope.saveObject).then((function(res) {
         $state.go('home.campaign');
-      });
+      })).catch((function(err) {
+        var myAlert = $alert({
+          title: err.status.toString(),
+          content: err.statusText,
+          placement: 'top',
+          type: 'danger',
+          show: true
+        });
+      }));
     };
     if ($stateParams.State != null) {
-      console.log("Not empty");
+      $scope.selectedStates = [$stateParams.State];
       $scope.querySearch();
     }
   });
@@ -670,16 +779,10 @@ var $__scripts__ = (function() {
     return {
       queryResults: function(url, callback) {
         console.log("Getting query with params ", url);
-        return $http.get('/api/prospects', {params: url});
+        return $http.get('http://10.1.1.118:8000/api/Research', {params: url});
       },
       removeQuery: function(rowID) {
         return $http.put('');
-      },
-      moreProspects: function() {
-        return $http.get('/api/prospects', {params: {
-            'start': '5',
-            'end': '20'
-          }});
       },
       deleteProspect: function(id) {
         return $http.delete('/api/prospects', {params: {
@@ -688,8 +791,20 @@ var $__scripts__ = (function() {
           }});
       },
       saveQuery: function(prospects) {
-        console.log("Prospects ", prospects);
-        return $http.post('/api/queries', prospects);
+        console.log("Save query Prospects ", prospects);
+        return $http.post('http://10.1.1.118:8000/api/Research', prospects);
+      },
+      getQueries: function() {
+        return $http.get('http://10.1.1.118:8000/api/Research/list');
+      },
+      singleQuery: function(queryID) {
+        return $http.get('http://10.1.1.118:8000/api/Research/' + queryID);
+      },
+      updateQueryName: function(queryID) {
+        return $http.put('http://10.1.1.118:8000/api/Research/' + queryID, $.param({'Name': 'Angular'}));
+      },
+      updateQueryStatus: function(QueryID, ProspectID, status) {
+        return $http.put('http://10.1.1.118:8000/api/Research/' + QueryID + '/' + ProspectID, $.param({'Status': status}));
       }
     };
   });
@@ -727,6 +842,9 @@ var $__scripts__ = (function() {
         $scope.everyTaskBool = true;
       });
     }
+  });
+  angular.module('uiRouterSample').controller('timelineController', function($scope, $rootScope, $state, Tasks) {
+    console.log("TIMELINE");
   });
   return {
     get entries() {

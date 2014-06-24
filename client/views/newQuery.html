@@ -1,18 +1,27 @@
-Submit a new query?
+/get /queries
+
+<select class="form-control" ng-model="selectedQuery"
+  ng-change="findQuery()" ng-options="query.Name for query in queryList">
+<option value="">-- choose saved query --</option>
+</select>
+
+
 <hr>
 
+Submit a new query?
+<!-- <hr> -->
+
+<small>Populates if a saved query is selected...</small>
+<hr>
 
 <form class="form-inline" role="form">
 
   <div class="form-group">
     <label class="col-sm-4 control-label">Product</label>
     <div class="col-sm-4">
-      <select class="form-control">
-      <option>Profit Guard</option>
-      <option>Tri-Net</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
+      <select class="form-control" ng-model="saveObject.Product"
+      ng-options="product for product in productList">
+      <option value="">--</option>
       </select>
     </div>
   </div>
@@ -34,9 +43,9 @@ Submit a new query?
 
 
 <button type="button" class="btn btn-default"
-  ng-model="selectedIcons" data-html="1" data-multiple="1"
+  ng-model="selectedStates" data-html="1" data-multiple="1"
   data-animation="am-flip-x"
-  ng-options="icon.value as icon.label for icon in icons"
+  ng-options="state.value as state.label for state in states"
   placeholder="State <i class='fa fa-globe'></i>" bs-select>
   Action <span class="caret"></span>
 </button>
@@ -63,15 +72,16 @@ Submit a new query?
 
 
   <strong>Results:</strong> {{results.length}}
-  <table at-table at-list="results" at-paginated at-config="tableConfig" class="table table-striped" id="queryTable">
+  <table at-table at-list="results" at-paginated at-config="tableConfig" class="table table-striped table-condensed" id="queryTable">
   <thead></thead>
   <tbody>
-    <tr  ng-class="{isActive: !this.item.isActive}" ng-click="DeleteProspect(this.item.name)">
-      <td at-implicit at-attribute="name" class="fixedWidthTD"></td>
-      <td at-implicit at-attribute="age" at-sortable at-initial-sorting="desc"></td>
-      <td at-implicit at-attribute="gender"></td>
-      <td at-implicit at-attribute="isActive"></td>
-      <td at-implicit at-attribute="state"></td>
+    <tr  ng-class="{isActive: !this.item.Status}" ng-click="DeleteProspect(this.item.ProspectID)">
+      <!-- TODO fn DeleteProspect only works for new queries, not selecting saved ones -->
+      <td at-implicit at-attribute="Name" class="fixedWidthTD"></td>
+      <td at-implicit at-attribute="Addr1" at-sortable at-initial-sorting="desc"></td>
+      <td at-implicit at-attribute="State"></td>
+      <td at-implicit at-attribute="Zip"></td>
+      <td at-implicit at-attribute="Status"></td>
       <td at-implicit at-attribute="balance"></td>
     </tr>
   </tbody>
@@ -89,7 +99,7 @@ Submit a new query?
   <div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Query Name</label>
     <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputEmail3" placeholder="Placeholder">
+      <input type="text" ng-model="saveObject.Name" class="form-control" id="inputEmail3" placeholder="Placeholder" >
     </div>
   </div>
 <!--   <div class="form-group">
@@ -117,6 +127,7 @@ Submit a new query?
   </select>
   </div>
   </div>
+
 
 
 </form>

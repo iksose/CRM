@@ -13,25 +13,70 @@ var app = angular.module('uiRouterSample', [
 
 
 .run(
-  [          '$rootScope', '$state', '$stateParams',
-    function ($rootScope,   $state,   $stateParams) {
+  [          '$rootScope', '$state', '$stateParams', '$cookies', "$http",
+    function ($rootScope,   $state,   $stateParams, $cookies, $http) {
 
-    // It's very handy to add references to $state and $stateParams to the $rootScope
-    // so that you can access them from any scope within your applications.For example,
-    // <li ui-sref-active="active }"> will set the <li> // to active whenever
-    // 'contacts.list' or one of its decendents is active.
+    // set key for all requests
+    $http.defaults.headers.common['XKey'] = $cookies.xkey;
+    $http.defaults.headers.put = {'Content-Type': 'application/x-www-form-urlencoded'};
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
+    $rootScope.loggedIn = true;
     $rootScope.credentials = {
       group: "Undefined"
     };
+
+    // perform an API call to see if xkey is still valid or needs to be re-authed;
+    var testKey = $http({
+        method: 'GET',
+        url: 'http://10.1.1.118:8000/api/Research?State=MO&Product=123&Order=ProspectID',
+        headers : { 'Accept': 'application/json', 'XKey': $cookies.xkey}
+      })
+    // testKey.success(function(data){
+    //   // key is valid, continue
+    //   $rootScope.loggedIn = true;
+    //   $rootScope.credentials.username = $cookies.userid;
+    //   /*$state.go('home')*/
+    // })
+    // testKey.catch(function(data){
+    //   // key is invalid, route to Login
+    //   $rootScope.loggedIn = false;
+    //   $state.go('login')
+    // })
     }
   ]
 )
 
+
 .config(
-  [          '$stateProvider', '$urlRouterProvider',
-    function ($stateProvider,   $urlRouterProvider) {
+  [          '$stateProvider', '$urlRouterProvider', '$httpProvider',
+    function ($stateProvider,   $urlRouterProvider, $httpProvider) {
+
+      /////////////////////////////
+      //    Auth Interceptor     //
+      /////////////////////////////
+
+    var interceptor = ['$location', '$q', '$injector', function($location, $q, $injector) {
+      function success(response) {
+          return response;
+      }
+      function error(response) {
+          if(response.status === 401) {
+            $injector.get('$state').transitionTo('login');
+            return $q.reject(response);
+          }
+          else {
+            // individual error handling
+            return $q.reject(response);
+          }
+      }
+      return function(promise) {
+          return promise.then(success, error);
+      }
+    }];
+
+    $httpProvider.responseInterceptors.push(interceptor);
+
 
       /////////////////////////////
       // Redirects and Otherwise //
@@ -178,6 +223,16 @@ var app = angular.module('uiRouterSample', [
             'content': {
               templateUrl: 'views/admin.html',
               controller: "adminController"
+            }
+          }
+        })
+
+        .state('home.timeline', {
+          url: 'timeline/',
+          views: {
+            'content': {
+              templateUrl: 'views/timeline.html',
+              controller: "timelineController"
             }
           }
         })

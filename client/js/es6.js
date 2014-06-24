@@ -6,8 +6,6 @@
 // }
 
 
-console.log("hmm")
-
 // import {values} from './generators';
 
 
@@ -108,3 +106,17 @@ for (let i = 0; i < 10; i++) { //i is block scoped
 }
 
 console.log('Is i defined here?: ' + (typeof i !== 'undefined')); //Is i defined here?: false
+
+
+// ARRAY COMPREHENSION
+var customers = [
+{city: "Seattle", note: "i'm gay", name: "Jesus"}
+]
+
+var results = [
+for(c of customers)
+  if (c.city == "Seattle")
+    { name: c.name, age: c.age }
+]
+
+console.log("RESULTS", customers, results)

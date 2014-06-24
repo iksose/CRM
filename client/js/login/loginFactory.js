@@ -5,9 +5,11 @@ angular.module('uiRouterSample')
           Recipe:  $resource('/recipes/:id', {id: '@id'}),
           Users:   $resource('/users/:id', {id: '@id'}),
           Group:   $resource('/groups/:id', {id: '@id'}),
-          Login:   $resource('api/login/:userID', {userId: '@id'},{
+          Login:   $resource('http://10.1.1.118:8000/api/Auth', {userId: '@id'},{
               'query':{
-                method:'POST', isArray:false
+                method:'POST',
+                headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
+                isArray:false
               }
             }),
           Example: $resource('api/users/:userId/privileges', {userId: '@id'},{
@@ -17,12 +19,15 @@ angular.module('uiRouterSample')
             }),
           Cocks: function(alpha, beta){
           let local = "blargh gargh";
-          console.log("POST DUDE", local)
-            $http({
+          console.log("POST DUDE", alpha, beta)
+            return $http({
                 method: 'POST',
-                url: '/dmz/login',
-                // data: params,
-                params: local,
+                url: 'http://10.1.1.118:8000/api/Auth',
+                // data: 'applicationId=3',
+                data: $.param(alpha),
+                // data: 'test2=durp',
+                // data: JSON.stringify(alpha),
+                // params: local,
                 headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
             })
           }
