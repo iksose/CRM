@@ -4,6 +4,7 @@ var $__scripts__ = (function() {
   var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table', 'ngTagsInput']).run(['$rootScope', '$state', '$stateParams', '$cookies', "$http", function($rootScope, $state, $stateParams, $cookies, $http) {
     $traceurRuntime.setProperty($http.defaults.headers.common, 'XKey', $cookies.xkey);
     $http.defaults.headers.put = {'Content-Type': 'application/x-www-form-urlencoded'};
+    $http.defaults.headers.post = {'Content-Type': 'application/x-www-form-urlencoded'};
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.loggedIn = true;
@@ -16,6 +17,8 @@ var $__scripts__ = (function() {
         'XKey': $cookies.xkey
       }
     });
+    testKey.success(function(data) {});
+    testKey.catch(function(data) {});
   }]).config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $httpProvider) {
     var interceptor = ['$location', '$q', '$injector', function($location, $q, $injector) {
       function success(response) {
@@ -26,6 +29,7 @@ var $__scripts__ = (function() {
           $injector.get('$state').transitionTo('login');
           return $q.reject(response);
         } else {
+          console.log("Interceptor error...we should write these to a DB", response.statusText);
           return $q.reject(response);
         }
       }
@@ -493,112 +497,82 @@ var $__scripts__ = (function() {
       },
       thisSavedQuery: function(data) {
         return $http.get('api/thisQuery');
+      },
+      getQueries: function() {
+        return $http.get('http://10.1.1.118:8000/api/Research/list');
+      },
+      singleQuery: function(queryID) {
+        return $http.get('http://10.1.1.118:8000/api/Research/' + queryID);
+      },
+      convert: function(queryID) {
+        return $http.post('http://10.1.1.118:8000/api/Campaign', {QueryID: queryID});
+      },
+      saveActivity: function(campaignID, activity) {
+        return $http.post('http://10.1.1.118:8000/api/Campaign/' + campaignID + '/Activity', $.param(activity));
       }
     };
   });
-  angular.module('uiRouterSample').controller('newCampaignController', function($scope, $rootScope, $state, campaignFactory) {
+  angular.module('uiRouterSample').controller('newCampaignController', function($scope, $rootScope, $state, $alert, campaignFactory) {
     console.log("Welcome to NEW campaign controller");
-    $scope.savedQueries = [{id: "id1"}, {id: "id2"}];
-    $scope.colors = [{
-      name: 'Northeast Barrens',
-      shade: 'dark'
-    }, {
-      name: 'Alaska',
-      shade: 'light'
-    }, {
-      name: 'Jamiacan Wonderland',
-      shade: 'dark'
-    }, {
-      name: 'Coral Reef',
-      shade: 'dark'
-    }, {
-      name: 'Stranglethorn Vale',
-      shade: 'light'
-    }, {
-      name: 'Elwynn Forest',
-      shade: 'light'
-    }];
-    $scope.fetched = false;
-    $scope.savedQueryData = "";
-    $scope.color = $scope.colors[2];
+    $scope.campaignID;
+    $scope.convert = function() {
+      console.log("Converting...");
+      campaignFactory.convert(1).then(function(data) {
+        console.log("DONE, campaign ID ", data.data.CampaignID);
+        $scope.campaignID = data.data.CampaignID;
+      });
+    };
+    $scope.savedQueries = [];
+    $scope.selectedQuery;
+    campaignFactory.getQueries().then(function(data) {
+      console.log("Got...", data);
+      $scope.savedQueries = data.data;
+    });
+    $scope.campaignDetails;
     $scope.setBillGroup = (function(data) {
-      $scope.savedQueryData = "";
-      console.log("CHANGED");
-      console.log($scope.color);
-      var getData = campaignFactory.thisSavedQuery();
-      var processData = getData.then(function(data) {
-        console.log("Got....", data);
+      console.log("CHANGED", $scope.selectedQuery);
+      campaignFactory.singleQuery($scope.selectedQuery.QueryID).then(function(data) {
+        console.log("Okay got this", data);
+        $scope.campaignDetails = data.data;
         $scope.fetched = true;
-        $scope.savedQueryData = data.data[0];
       });
     });
     $scope.changeState = (function(bleh) {
       $state.go('home.campaign.details', {params: '1337'});
     });
-  });
-  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
-    console.log("Landing Controller");
-    if (!$rootScope.loggedIn) {
-      console.log("Not logged in, redirect");
-      $state.go("login");
-    }
-    $scope.dropdown = [{
-      "text": "New Campaign",
-      "click": '$state.go("home.campaign.new")'
-    }, {
-      "text": "Other Campaigns",
-      "click": '$state.go("home.campaign")'
-    }, {"divider": true}, {
-      "text": "New Query",
-      "click": '$state.go("home.query")'
-    }];
-    $scope.inMarketing = false;
-    if ($rootScope.credentials.group == "Marketing") {
-      $scope.inMarketing = true;
-      var thisUsersGroup = $rootScope.credentials;
-      $scope.allTasks = [];
-      var fetch = Tasks.myTasks(thisUsersGroup);
-      var showTasks = fetch.then(function(data) {
-        console.log("Show tasks....", data);
-        $scope.allTasks = data.data;
+    $scope.newActivity = {};
+    $scope.savedActivites = [];
+    $scope.activityNo = 0;
+    $scope.saveActivity = function() {
+      console.log("SAVING....", $scope.newActivity);
+      var campaignID = 5;
+      $scope.newActivity.StartDateTime = "1900-01-01";
+      $scope.newActivity.CompletionDateTime = '2014-06-20';
+      var save = campaignFactory.saveActivity(campaignID, $scope.newActivity);
+      save.catch(function(err) {
+        var myAlert = $alert({
+          title: err.statusText.toString(),
+          content: err.data.Message,
+          placement: 'top',
+          type: 'danger',
+          show: true,
+          duration: 3
+        });
       });
-    }
-    window.setInterval(function() {
-      var entries = window.performance.getEntries();
-      entries = entries.sort(function(a, b) {
-        return b.duration - a.duration;
-      });
-      $rootScope.metrics = entries;
-    }, 500);
-  });
-  angular.module('uiRouterSample').factory('Tasks', function($http) {
-    return {
-      queryResults: function(url, callback) {
-        return $http.get('/api/campaigns');
-      },
-      myTasks: function(data) {
-        console.log("Factory TASKS getting myTasks..", data);
-        return $http.post('/api/usertasks', data);
-      },
-      taskDetails: function(data) {
-        console.log("Factory TASKS getting details..", data);
-        return $http.post('/api/taskdetails', data);
-      },
-      allTasks: function() {
-        console.log("Factory tasks returning every task...");
-        return $http.get('/api/alltasks');
-      },
-      taskProspect: function() {
-        return $http.get('/api/randomProspect');
-      }
+      save.then(function(result) {});
+      $scope.savedActivites.push($scope.newActivity);
+      $scope.activityNo++;
+      $scope.newActivity = {};
     };
   });
-  angular.module('uiRouterSample').controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert) {
+  angular.module('uiRouterSample').controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert, $http) {
     console.log("Controller loaded");
     $rootScope.loggedIn = $rootScope.loggedIn || false;
     $scope.creds = {};
     $scope.creds.userid = $cookies.userid;
     $scope.loginSubmit = function() {
+      console.log("EXISTING XKEY IS", $http.defaults.headers.common[$traceurRuntime.toProperty('XKey')]);
+      delete $http.defaults.headers.common[$traceurRuntime.toProperty('XKey')];
       var test = Privilege.Cocks($scope.creds);
       var test2 = test.then(function(data) {
         console.log("Then....", data.data);
@@ -660,6 +634,101 @@ var $__scripts__ = (function() {
         });
       }
     };
+  });
+  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
+    console.log("Landing Controller");
+    if (!$rootScope.loggedIn) {
+      console.log("Not logged in, redirect");
+      $state.go("login");
+    }
+    $scope.dropdown = [{
+      "text": "New Campaign",
+      "click": '$state.go("home.campaign.new")'
+    }, {
+      "text": "Other Campaigns",
+      "click": '$state.go("home.campaign")'
+    }, {"divider": true}, {
+      "text": "New Query",
+      "click": '$state.go("home.query")'
+    }];
+    $scope.inMarketing = false;
+    if ($rootScope.credentials.group == "Marketing") {
+      $scope.inMarketing = true;
+      var thisUsersGroup = $rootScope.credentials;
+      $scope.allTasks = [];
+      var fetch = Tasks.myTasks(thisUsersGroup);
+      var showTasks = fetch.then(function(data) {
+        console.log("Show tasks....", data);
+        $scope.allTasks = data.data;
+      });
+    }
+    window.setInterval(function() {
+      var entries = window.performance.getEntries();
+      entries = entries.sort(function(a, b) {
+        return b.duration - a.duration;
+      });
+      $rootScope.metrics = entries;
+    }, 500);
+  });
+  angular.module('uiRouterSample').factory('Tasks', function($http) {
+    return {
+      queryResults: function(url, callback) {
+        return $http.get('/api/campaigns');
+      },
+      myTasks: function(data) {
+        console.log("Factory TASKS getting myTasks..", data);
+        return $http.post('/api/usertasks', data);
+      },
+      taskDetails: function(data) {
+        console.log("Factory TASKS getting details..", data);
+        return $http.post('/api/taskdetails', data);
+      },
+      allTasks: function() {
+        console.log("Factory tasks returning every task...");
+        return $http.get('/api/alltasks');
+      },
+      taskProspect: function() {
+        return $http.get('/api/randomProspect');
+      }
+    };
+  });
+  angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
+    console.log("Task Controller", $state);
+    $scope.singleTask = {};
+    $scope.everyTask = [];
+    $scope.workingProspect = {};
+    $scope.singleTaskBool = false;
+    $scope.everyTaskBool = false;
+    $scope.taskTypeBulk = false;
+    $scope.taskTypeSingle = false;
+    if ($state.params.taskID !== "") {
+      console.log("Show specific task", $state.params.taskID);
+      var getSingleTask = Tasks.taskDetails($state.params);
+      var displaySingleTask = getSingleTask.then(function(data) {
+        console.log("Got single task", data);
+        $scope.singleTask = data.data;
+        $scope.singleTaskBool = true;
+        if (data.data.taskName.toLowerCase() == "bulk activity") {
+          $scope.taskTypeBulk = true;
+        } else {
+          $scope.taskTypeSingle = true;
+          Tasks.taskProspect().then(function(data) {
+            console.log("My working prospect is...", data.data);
+            $scope.workingProspect = data.data;
+          });
+        }
+      });
+    } else {
+      console.log("Not enough params, just show all tasks?");
+      var everyTask = Tasks.allTasks().then(function(data) {
+        console.log("Got everything! ", data.data);
+        $scope.everyTask = data.data;
+        $scope.everyTaskBool = true;
+      });
+    }
+  });
+  angular.module('uiRouterSample').controller('timelineController', function($scope, $rootScope, $state, Tasks) {
+    console.log("TIMELINE");
   });
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q, $alert) {
     console.log("query Controller", $stateParams);
@@ -807,44 +876,6 @@ var $__scripts__ = (function() {
         return $http.put('http://10.1.1.118:8000/api/Research/' + QueryID + '/' + ProspectID, $.param({'Status': status}));
       }
     };
-  });
-  angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
-    console.log("Task Controller", $state);
-    $scope.singleTask = {};
-    $scope.everyTask = [];
-    $scope.workingProspect = {};
-    $scope.singleTaskBool = false;
-    $scope.everyTaskBool = false;
-    $scope.taskTypeBulk = false;
-    $scope.taskTypeSingle = false;
-    if ($state.params.taskID !== "") {
-      console.log("Show specific task", $state.params.taskID);
-      var getSingleTask = Tasks.taskDetails($state.params);
-      var displaySingleTask = getSingleTask.then(function(data) {
-        console.log("Got single task", data);
-        $scope.singleTask = data.data;
-        $scope.singleTaskBool = true;
-        if (data.data.taskName.toLowerCase() == "bulk activity") {
-          $scope.taskTypeBulk = true;
-        } else {
-          $scope.taskTypeSingle = true;
-          Tasks.taskProspect().then(function(data) {
-            console.log("My working prospect is...", data.data);
-            $scope.workingProspect = data.data;
-          });
-        }
-      });
-    } else {
-      console.log("Not enough params, just show all tasks?");
-      var everyTask = Tasks.allTasks().then(function(data) {
-        console.log("Got everything! ", data.data);
-        $scope.everyTask = data.data;
-        $scope.everyTaskBool = true;
-      });
-    }
-  });
-  angular.module('uiRouterSample').controller('timelineController', function($scope, $rootScope, $state, Tasks) {
-    console.log("TIMELINE");
   });
   return {
     get entries() {

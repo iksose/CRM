@@ -16,9 +16,9 @@ var app = angular.module('uiRouterSample', [
   [          '$rootScope', '$state', '$stateParams', '$cookies', "$http",
     function ($rootScope,   $state,   $stateParams, $cookies, $http) {
 
-    // set key for all requests
     $http.defaults.headers.common['XKey'] = $cookies.xkey;
     $http.defaults.headers.put = {'Content-Type': 'application/x-www-form-urlencoded'};
+    $http.defaults.headers.post = {'Content-Type': 'application/x-www-form-urlencoded'};
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.loggedIn = true;
@@ -30,19 +30,25 @@ var app = angular.module('uiRouterSample', [
     var testKey = $http({
         method: 'GET',
         url: 'http://10.1.1.118:8000/api/Research?State=MO&Product=123&Order=ProspectID',
+        // url: 'http://10.1.1.118:8000/api/Campaign',
         headers : { 'Accept': 'application/json', 'XKey': $cookies.xkey}
       })
-    // testKey.success(function(data){
-    //   // key is valid, continue
-    //   $rootScope.loggedIn = true;
-    //   $rootScope.credentials.username = $cookies.userid;
-    //   /*$state.go('home')*/
-    // })
-    // testKey.catch(function(data){
-    //   // key is invalid, route to Login
-    //   $rootScope.loggedIn = false;
-    //   $state.go('login')
-    // })
+    testKey.success(function(data){
+      // key is valid, continue
+      // set key for all requests
+      // $http.defaults.headers.common['XKey'] = $cookies.xkey;
+      // console.log("SET KEY FOR EVERY REQUEST")
+      // doesn't work...other requests are async
+      /*$state.go('home')*/
+    })
+    testKey.catch(function(data){
+      // key is invalid, route to Login
+      // $rootScope.loggedIn = false;
+      // $state.go('login')
+      // console.log("Fuck")
+    })
+
+
     }
   ]
 )
@@ -67,6 +73,7 @@ var app = angular.module('uiRouterSample', [
           }
           else {
             // individual error handling
+            console.log("Interceptor error...we should write these to a DB", response.statusText)
             return $q.reject(response);
           }
       }

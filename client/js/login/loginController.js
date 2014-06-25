@@ -1,5 +1,5 @@
 angular.module('uiRouterSample')
-.controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert) {
+.controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert, $http) {
   console.log("Controller loaded")
   $rootScope.loggedIn = $rootScope.loggedIn || false;
   $scope.creds = {};
@@ -8,6 +8,8 @@ angular.module('uiRouterSample')
   // decided to define this in app.run
 
   $scope.loginSubmit = function(){
+    console.log("EXISTING XKEY IS", $http.defaults.headers.common['XKey'])
+    delete $http.defaults.headers.common['XKey'];
     var test = Privilege.Cocks($scope.creds)
     var test2 = test.then(function(data){
       // handle success

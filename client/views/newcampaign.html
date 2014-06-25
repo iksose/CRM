@@ -18,7 +18,7 @@
 
  <span  class="nullable">
     <select class="form-control"
-    ng-model="color" ng-options="c.name for c in colors" ng-change="setBillGroup()">
+    ng-model="selectedQuery" ng-options="c.Name for c in savedQueries" ng-change="setBillGroup()">
       <option value="">-- choose query --</option>
     </select>
   </span><br/>
@@ -32,43 +32,79 @@
   <div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Campaign Name</label>
     <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputEmail3" placeholder="Placeholder">
+      <input type="text" class="form-control" id="inputEmail3" placeholder="Placeholder" ng-model='campaignDetails.Name'>
     </div>
   </div>
   <div class="form-group">
     <label for="inputPassword3" class="col-sm-2 control-label">Campaign Date</label>
     <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputPassword3" placeholder="Placeholder">
+      <input type="email" class="form-control" id="inputPassword3" placeholder="Date Picker?">
     </div>
   </div>
   <div class="form-group">
     <label for="inputPassword4" class="col-sm-2 control-label">Campaign Demographics</label>
     <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputPassword4" placeholder="Placeholder">
+      <input type="email" class="form-control" id="inputPassword4" placeholder="Text String">
     </div>
   </div>
+</form>
 
 <br>
+
+  <button ng-click="convert()">Convert to Campaign</button>
+
 <hr>
 
+  <h4>Campaign ID {{campaignID}}</h4>
+
   <h4>Add New Activities</h4>
-  <ul class="example-animate-container">
-      <li class="animate-repeat" ng-repeat="friend in activities">
-        [{{$index + 1}}] {{friend}}
-      </li>
-    </ul>
-        <form ng-submit="addActivity()">
-          <input type="text" ng-model="todoText"  size="30"
-                 placeholder="add new todo here">
-          <input class="btn-primary" type="submit" value="add">
-        </form>
-  <h4>Assign Employees</h4>
-  <label>Campaign Status:&nbsp;</label>
-
-  <br>
-  <hr>
-
+<form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">ActivityType</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" placeholder="Email" ng-model="newActivity.ActivityType">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  placeholder="Password" ng-model="newActivity.Name">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Descr</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  placeholder="Password" ng-model="newActivity.Descr">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">User</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  placeholder="Password" ng-model="newActivity.AssignedID">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Start</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  placeholder="Password" ng-model="newActivity.StartDateTime">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Complete</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  placeholder="Password" ng-model="newActivity.CompletionDateTime">
+    </div>
+  </div>
 </form>
+<button ng-click="saveActivity()">Save Activity</button>
+<br>
+
+<h4>Activites: {{activityNo}}</h4>
+<ul class="example-animate-container">
+    <li class="animate-repeat" ng-repeat="friend in friends">
+      [{{$index + 1}}]
+    </li>
+</ul>
 
 
 <label>Prospects:</label> <a href="">Export Prospects to Excel</a>
