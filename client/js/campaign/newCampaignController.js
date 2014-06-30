@@ -11,12 +11,22 @@ angular.module('uiRouterSample')
     })
   };
 
+  $scope.userList = [];
+  campaignFactory.getUsers().then(function(data){
+    console.log("Got all users....", data)
+    $scope.userList = data.data.UserList;
+  }).catch(function(err){
+    // do something
+  })
+
   $scope.savedQueries = [];
   $scope.selectedQuery;
   campaignFactory.getQueries().then(function(data){
     console.log("Got...", data)
     $scope.savedQueries = data.data
-  });
+  }).catch(function(err){
+    // do something
+  })
 
   $scope.campaignDetails;
   $scope.setBillGroup = (data) => {
@@ -36,11 +46,13 @@ angular.module('uiRouterSample')
   $scope.newActivity = {};
   $scope.savedActivites = [];
   $scope.activityNo = 0;
+  $scope.selectedUser;
   $scope.saveActivity = function(){
-    console.log("SAVING....", $scope.newActivity);
     var campaignID = 5;
     $scope.newActivity.StartDateTime = "1900-01-01";
     $scope.newActivity.CompletionDateTime = '2014-06-20';
+    $scope.newActivity.AssignedID = $scope.selectedUser.UserID;
+    console.log("SAVING....", $scope.newActivity);
     var save = campaignFactory.saveActivity(campaignID, $scope.newActivity);
     save.catch(function(err){
       var myAlert = $alert({title: err.statusText.toString(),
@@ -58,5 +70,5 @@ angular.module('uiRouterSample')
     $scope.activityNo++;
     $scope.newActivity = {};
   };
-  
+
 })

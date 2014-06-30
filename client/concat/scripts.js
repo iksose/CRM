@@ -8,7 +8,10 @@ var $__scripts__ = (function() {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.loggedIn = true;
-    $rootScope.credentials = {group: "Undefined"};
+    $rootScope.credentials = {
+      group: "Undefined",
+      username: $cookies.userid
+    };
     var testKey = $http({
       method: 'GET',
       url: 'http://10.1.1.118:8000/api/Research?State=MO&Product=123&Order=ProspectID',
@@ -26,6 +29,7 @@ var $__scripts__ = (function() {
       }
       function error(response) {
         if (response.status === 401) {
+          console.log("Interceptor 401");
           $injector.get('$state').transitionTo('login');
           return $q.reject(response);
         } else {
@@ -75,7 +79,7 @@ var $__scripts__ = (function() {
           controller: "newCampaignController"
         }}
     }).state('home.campaign.details', {
-      url: '/details/:params',
+      url: '/details/:campaignID',
       views: {'content@home': {
           templateUrl: 'views/campaign-details.html',
           controller: "campaignControllerDetails"
@@ -97,6 +101,12 @@ var $__scripts__ = (function() {
       views: {'content': {
           templateUrl: 'views/timeline.html',
           controller: "timelineController"
+        }}
+    }).state('home.roles', {
+      url: 'roles/',
+      views: {'content': {
+          templateUrl: 'views/roles.html',
+          controller: "rolesController"
         }}
     });
   }]);
@@ -261,6 +271,36 @@ var $__scripts__ = (function() {
     return $__2;
   }());
   console.log("RESULTS", customers, results);
+  var Character = function Character(x, y) {
+    this.x = x;
+    this.y = y;
+  };
+  ($traceurRuntime.createClass)(Character, {}, {});
+  var Monster = function Monster(x, y, name) {
+    $traceurRuntime.superCall(this, $Monster.prototype, "constructor", [x, y]);
+    this.name = name;
+    this.health_ = 100;
+  };
+  var $Monster = Monster;
+  ($traceurRuntime.createClass)(Monster, {
+    attack: function(character) {
+      $traceurRuntime.superCall(this, $Monster.prototype, "attack", [character]);
+    },
+    get isAlive() {
+      return this.health_ > 0;
+    },
+    get health() {
+      return this.health_;
+    },
+    set health(value) {
+      if (value < 0)
+        throw new Error('Health must be non-negative.');
+      this.health_ = value;
+    }
+  }, {}, Character);
+  var myMonster = new Monster(5, 1, 'arrrg');
+  console.log("Monster", myMonster.health);
+  myMonster.health = 0;
   'use strict';
   function entries(obj) {
     var $__5,
@@ -444,7 +484,7 @@ var $__scripts__ = (function() {
   angular.module('uiRouterSample').controller('campaignController', function($scope, $rootScope, $state, campaignFactory) {
     console.log("Welcome from campaign controller");
     $scope.availableCampaigns = [];
-    var fetchAll = campaignFactory.queryResults();
+    var fetchAll = campaignFactory.getCampaigns();
     var displayResults = fetchAll.then(function(data) {
       console.log("Got...", data.data);
       $scope.availableCampaigns = data.data;
@@ -452,48 +492,23 @@ var $__scripts__ = (function() {
   });
   angular.module('uiRouterSample').controller('campaignControllerDetails', function($scope, $rootScope, $state, campaignFactory, $alert) {
     console.log("Welcome to details from campaign controller");
-    $scope.params = $rootScope.$stateParams;
-    $scope.theCampaign = {};
+    var campaignID = $rootScope.$stateParams.campaignID;
+    $scope.campaignDetails = {};
     $scope.campaignPending = false;
-    var getCampaign = campaignFactory.singleCampaign($scope.params);
+    var getCampaign = campaignFactory.singleCampaign(campaignID);
     var displayCampaign = getCampaign.then(function(data) {
-      console.log("Success...!", data);
-      $scope.theCampaign = data.data;
+      console.log("got campaign...!", data.data);
+      $scope.campaignDetails = data.data;
     });
-    var invalidCampaign = getCampaign.catch(function(err) {
-      var myAlert = $alert({
-        title: err.statusText,
-        content: err.data,
-        placement: 'top',
-        type: 'danger',
-        show: true
-      });
-    });
-    $scope.nextStatus = function(cID) {
-      console.log("Taking this campaign to the next status...!", cID);
-      $scope.campaignPending = true;
-    };
-    $scope.savetoPending = function(cID) {
-      console.log("Saving this template to PENDING ", cID);
-      $state.go('home');
-    };
-    $scope.todoText = "";
-    $scope.activities = [];
-    $scope.activities.push("Example Activity 1 -- Assigned to Marketing");
-    $scope.activities.push("Example Activity 2 -- Assigned to Rick");
-    $scope.addActivity = function() {
-      console.log("Adding activity ", $scope.todoText);
-      $scope.activities.push($scope.todoText);
-      $scope.todoText = "";
-    };
   });
   angular.module('uiRouterSample').factory('campaignFactory', function($http) {
     return {
       queryResults: function(url, callback) {
         return $http.get('/api/campaigns');
       },
-      singleCampaign: function(data) {
-        return $http.post('/api/singlecampaign', data);
+      singleCampaign: function(paramID) {
+        console.log("Get campaign....#", paramID);
+        return $http.get('http://10.1.1.118:8000/api/campaign/' + paramID);
       },
       thisSavedQuery: function(data) {
         return $http.get('api/thisQuery');
@@ -505,10 +520,16 @@ var $__scripts__ = (function() {
         return $http.get('http://10.1.1.118:8000/api/Research/' + queryID);
       },
       convert: function(queryID) {
-        return $http.post('http://10.1.1.118:8000/api/Campaign', {QueryID: queryID});
+        return $http.post('http://10.1.1.118:8000/api/Campaign', $.param({QueryID: queryID}));
       },
       saveActivity: function(campaignID, activity) {
         return $http.post('http://10.1.1.118:8000/api/Campaign/' + campaignID + '/Activity', $.param(activity));
+      },
+      getUsers: function() {
+        return $http.get('http://10.1.1.118:8000/api/users');
+      },
+      getCampaigns: function() {
+        return $http.get('http://10.1.1.118:8000/api/campaign');
       }
     };
   });
@@ -522,12 +543,17 @@ var $__scripts__ = (function() {
         $scope.campaignID = data.data.CampaignID;
       });
     };
+    $scope.userList = [];
+    campaignFactory.getUsers().then(function(data) {
+      console.log("Got all users....", data);
+      $scope.userList = data.data.UserList;
+    }).catch(function(err) {});
     $scope.savedQueries = [];
     $scope.selectedQuery;
     campaignFactory.getQueries().then(function(data) {
       console.log("Got...", data);
       $scope.savedQueries = data.data;
-    });
+    }).catch(function(err) {});
     $scope.campaignDetails;
     $scope.setBillGroup = (function(data) {
       console.log("CHANGED", $scope.selectedQuery);
@@ -543,11 +569,13 @@ var $__scripts__ = (function() {
     $scope.newActivity = {};
     $scope.savedActivites = [];
     $scope.activityNo = 0;
+    $scope.selectedUser;
     $scope.saveActivity = function() {
-      console.log("SAVING....", $scope.newActivity);
       var campaignID = 5;
       $scope.newActivity.StartDateTime = "1900-01-01";
       $scope.newActivity.CompletionDateTime = '2014-06-20';
+      $scope.newActivity.AssignedID = $scope.selectedUser.UserID;
+      console.log("SAVING....", $scope.newActivity);
       var save = campaignFactory.saveActivity(campaignID, $scope.newActivity);
       save.catch(function(err) {
         var myAlert = $alert({
@@ -563,76 +591,6 @@ var $__scripts__ = (function() {
       $scope.savedActivites.push($scope.newActivity);
       $scope.activityNo++;
       $scope.newActivity = {};
-    };
-  });
-  angular.module('uiRouterSample').controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert, $http) {
-    console.log("Controller loaded");
-    $rootScope.loggedIn = $rootScope.loggedIn || false;
-    $scope.creds = {};
-    $scope.creds.userid = $cookies.userid;
-    $scope.loginSubmit = function() {
-      console.log("EXISTING XKEY IS", $http.defaults.headers.common[$traceurRuntime.toProperty('XKey')]);
-      delete $http.defaults.headers.common[$traceurRuntime.toProperty('XKey')];
-      var test = Privilege.Cocks($scope.creds);
-      var test2 = test.then(function(data) {
-        console.log("Then....", data.data);
-        $rootScope.loggedIn = true;
-        $rootScope.$state.go("home");
-        $rootScope.credentials.username = data.data.userid;
-        $rootScope.credentials.key = data.data.key;
-        $rootScope.credentials.admin = data.admin;
-        $rootScope.credentials.group = data.group;
-        $cookies.xkey = data.data.key;
-        $cookies.userid = data.data.userid;
-      }, function(data) {
-        var myAlert = $alert({
-          title: "Title",
-          content: "err",
-          placement: 'top',
-          type: 'danger',
-          show: true
-        });
-      });
-      var catchError = test.catch(function(err) {
-        var myAlert = $alert({
-          title: err.message,
-          content: err.data,
-          placement: 'top',
-          type: 'danger',
-          show: true
-        });
-        console.log("Never fire this error", err);
-      });
-    };
-    $scope.logOut = function() {
-      $rootScope.loggedIn = false;
-    };
-  });
-  angular.module('uiRouterSample').factory('Privilege', function($resource, $http, $q) {
-    console.log("Factory loaded");
-    return {
-      Recipe: $resource('/recipes/:id', {id: '@id'}),
-      Users: $resource('/users/:id', {id: '@id'}),
-      Group: $resource('/groups/:id', {id: '@id'}),
-      Login: $resource('http://10.1.1.118:8000/api/Auth', {userId: '@id'}, {'query': {
-          method: 'POST',
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          isArray: false
-        }}),
-      Example: $resource('api/users/:userId/privileges', {userId: '@id'}, {'query': {
-          method: 'GET',
-          isArray: false
-        }}),
-      Cocks: function(alpha, beta) {
-        var local = "blargh gargh";
-        console.log("POST DUDE", alpha, beta);
-        return $http({
-          method: 'POST',
-          url: 'http://10.1.1.118:8000/api/Auth',
-          data: $.param(alpha),
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        });
-      }
     };
   });
   angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
@@ -692,43 +650,76 @@ var $__scripts__ = (function() {
       }
     };
   });
-  angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
-    console.log("Task Controller", $state);
-    $scope.singleTask = {};
-    $scope.everyTask = [];
-    $scope.workingProspect = {};
-    $scope.singleTaskBool = false;
-    $scope.everyTaskBool = false;
-    $scope.taskTypeBulk = false;
-    $scope.taskTypeSingle = false;
-    if ($state.params.taskID !== "") {
-      console.log("Show specific task", $state.params.taskID);
-      var getSingleTask = Tasks.taskDetails($state.params);
-      var displaySingleTask = getSingleTask.then(function(data) {
-        console.log("Got single task", data);
-        $scope.singleTask = data.data;
-        $scope.singleTaskBool = true;
-        if (data.data.taskName.toLowerCase() == "bulk activity") {
-          $scope.taskTypeBulk = true;
-        } else {
-          $scope.taskTypeSingle = true;
-          Tasks.taskProspect().then(function(data) {
-            console.log("My working prospect is...", data.data);
-            $scope.workingProspect = data.data;
-          });
-        }
+  angular.module('uiRouterSample').controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert, $http) {
+    console.log("Controller loaded");
+    $rootScope.loggedIn = $rootScope.loggedIn || false;
+    $scope.creds = {};
+    $scope.creds.userid = $cookies.userid;
+    $scope.loginSubmit = function() {
+      console.log("EXISTING XKEY IS", $http.defaults.headers.common[$traceurRuntime.toProperty('XKey')]);
+      delete $http.defaults.headers.common[$traceurRuntime.toProperty('XKey')];
+      var test = Privilege.Cocks($scope.creds);
+      var test2 = test.then(function(data) {
+        console.log("Then....", data.data);
+        $rootScope.loggedIn = true;
+        $rootScope.$state.go("home");
+        $rootScope.credentials.username = data.data.userid;
+        $rootScope.credentials.key = data.data.key;
+        $rootScope.credentials.admin = data.admin;
+        $rootScope.credentials.group = data.group;
+        $cookies.xkey = data.data.key;
+        $cookies.userid = data.data.userid;
+        $traceurRuntime.setProperty($http.defaults.headers.common, 'XKey', data.data.key);
+      }, function(data) {
+        var myAlert = $alert({
+          title: "Title",
+          content: "err",
+          placement: 'top',
+          type: 'danger',
+          show: true
+        });
       });
-    } else {
-      console.log("Not enough params, just show all tasks?");
-      var everyTask = Tasks.allTasks().then(function(data) {
-        console.log("Got everything! ", data.data);
-        $scope.everyTask = data.data;
-        $scope.everyTaskBool = true;
+      var catchError = test.catch(function(err) {
+        var myAlert = $alert({
+          title: err.message,
+          content: err.data,
+          placement: 'top',
+          type: 'danger',
+          show: true
+        });
+        console.log("Never fire this error", err);
       });
-    }
+    };
+    $scope.logOut = function() {
+      $rootScope.loggedIn = false;
+    };
   });
-  angular.module('uiRouterSample').controller('timelineController', function($scope, $rootScope, $state, Tasks) {
-    console.log("TIMELINE");
+  angular.module('uiRouterSample').factory('Privilege', function($resource, $http, $q) {
+    console.log("Factory loaded");
+    return {
+      Recipe: $resource('/recipes/:id', {id: '@id'}),
+      Users: $resource('/users/:id', {id: '@id'}),
+      Group: $resource('/groups/:id', {id: '@id'}),
+      Login: $resource('http://10.1.1.118:8000/api/Auth', {userId: '@id'}, {'query': {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          isArray: false
+        }}),
+      Example: $resource('api/users/:userId/privileges', {userId: '@id'}, {'query': {
+          method: 'GET',
+          isArray: false
+        }}),
+      Cocks: function(alpha, beta) {
+        var local = "blargh gargh";
+        console.log("POST DUDE", alpha, beta);
+        return $http({
+          method: 'POST',
+          url: 'http://10.1.1.118:8000/api/Auth',
+          data: $.param(alpha),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        });
+      }
+    };
   });
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q, $alert) {
     console.log("query Controller", $stateParams);
@@ -877,6 +868,110 @@ var $__scripts__ = (function() {
       }
     };
   });
+  angular.module('uiRouterSample').factory('rolesFactory', function($http) {
+    return {
+      listRoles: function() {
+        return $http.get('http://10.1.1.118:8000/api/Roles');
+      },
+      getUsers: function() {
+        return $http.get('http://10.1.1.118:8000/api/users');
+      },
+      addRole: function(user, roleID) {
+        return $http.post('http://10.1.1.118:8000/api/users/' + user + '/Roles/' + roleID);
+      }
+    };
+  });
+  angular.module('uiRouterSample').controller('rolesController', function($scope, $rootScope, $state, rolesFactory) {
+    console.log("Roles controller");
+    $scope.availableRoles;
+    rolesFactory.listRoles().then(function(data) {
+      console.log("Got roles...", data.data);
+      $scope.availableRoles = data.data;
+    });
+    $scope.availableUsers;
+    rolesFactory.getUsers().then(function(data) {
+      console.log("Got users", data.data);
+      $scope.availableUsers = data.data.UserList;
+    });
+    $scope.addRole = function(name, roleID) {
+      console.log(name, roleID);
+      rolesFactory.addRole(name, roleID).then(function(data) {
+        console.log("Done");
+      });
+    };
+  });
+  angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
+    console.log("Task Controller", $state);
+    $scope.singleTask = {};
+    $scope.everyTask = [];
+    $scope.workingProspect = {};
+    $scope.singleTaskBool = false;
+    $scope.everyTaskBool = false;
+    $scope.taskTypeBulk = false;
+    $scope.taskTypeSingle = false;
+    if ($state.params.taskID !== "") {
+      console.log("Show specific task", $state.params.taskID);
+      var getSingleTask = Tasks.taskDetails($state.params);
+      var displaySingleTask = getSingleTask.then(function(data) {
+        console.log("Got single task", data);
+        $scope.singleTask = data.data;
+        $scope.singleTaskBool = true;
+        if (data.data.taskName.toLowerCase() == "bulk activity") {
+          $scope.taskTypeBulk = true;
+        } else {
+          $scope.taskTypeSingle = true;
+          Tasks.taskProspect().then(function(data) {
+            console.log("My working prospect is...", data.data);
+            $scope.workingProspect = data.data;
+          });
+        }
+      });
+    } else {
+      console.log("Not enough params, just show all tasks?");
+      var everyTask = Tasks.allTasks().then(function(data) {
+        console.log("Got everything! ", data.data);
+        $scope.everyTask = data.data;
+        $scope.everyTaskBool = true;
+      });
+    }
+  });
+  angular.module('uiRouterSample').controller('timelineController', function($scope, $rootScope, $state, Tasks) {
+    console.log("TIMELINE");
+    $scope.myData = [{
+      name: 'AngularJS',
+      count: 300
+    }, {
+      name: 'D3.JS',
+      count: 150
+    }, {
+      name: 'jQuery',
+      count: 400
+    }, {
+      name: 'Backbone.js',
+      count: 300
+    }, {
+      name: 'Ember.js',
+      count: 100
+    }];
+  });
+  angular.module('uiRouterSample').directive('crD3Bars', [function() {
+    return {
+      restrict: 'E',
+      scope: {data: '='},
+      link: function(scope, element) {
+        scope.render = function(data) {
+          var dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 11, 12, 15, 20, 18, 17, 16, 18, 23, 25];
+          d3.select("barchart").selectAll("div").data(dataset).enter().append("div").attr("class", "bar").style("height", function(d) {
+            var barHeight = d * 5;
+            return barHeight + "px";
+          });
+        };
+        scope.$watch('data', function() {
+          scope.render(scope.data);
+        }, true);
+      }
+    };
+  }]);
   return {
     get entries() {
       return entries;

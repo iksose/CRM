@@ -5,8 +5,9 @@ angular.module('uiRouterSample')
         queryResults:function (url, callback) {
             return $http.get('/api/campaigns')
         },
-        singleCampaign:function (data) {
-            return $http.post('/api/singlecampaign', data)
+        singleCampaign:function (paramID) {
+          console.log("Get campaign....#", paramID)
+          return $http.get('http://10.1.1.118:8000/api/campaign/' + paramID)
         },
         thisSavedQuery: function(data){
           //will have to pass which saved query in the future
@@ -19,10 +20,16 @@ angular.module('uiRouterSample')
           return $http.get('http://10.1.1.118:8000/api/Research/' + queryID);
         },
         convert: function(queryID){
-          return $http.post('http://10.1.1.118:8000/api/Campaign', { QueryID : queryID });
+          return $http.post('http://10.1.1.118:8000/api/Campaign', $.param( { QueryID : queryID } ) );
         },
         saveActivity: function(campaignID, activity){
           return $http.post('http://10.1.1.118:8000/api/Campaign/'+campaignID+'/Activity', $.param(activity) );
+        },
+        getUsers:function(){
+          return $http.get('http://10.1.1.118:8000/api/users')
+        },
+        getCampaigns: function(){
+          return $http.get('http://10.1.1.118:8000/api/campaign')
         }
     };
   }

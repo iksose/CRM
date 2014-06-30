@@ -3,8 +3,8 @@
 
 <ul class="example-animate-container">
     <li class="animate-repeat" ng-repeat="friend in availableCampaigns">
-      <a ui-sref="home.campaign.details({params:friend.cID})">
-      [{{$index + 1}}] {{friend.cName}} who is {{friend.cDate}} {{friend.status}}
+      <a ui-sref="home.campaign.details({campaignID:friend.CampaignID})">
+      [{{$index + 1}}] -- {{friend.Name}} ProdID {{friend.ProductID}} CampID:{{friend.CampaignID}}
       </a>
     </li>
   </ul>

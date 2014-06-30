@@ -23,7 +23,8 @@ var app = angular.module('uiRouterSample', [
     $rootScope.$stateParams = $stateParams;
     $rootScope.loggedIn = true;
     $rootScope.credentials = {
-      group: "Undefined"
+      group: "Undefined",
+      username: $cookies.userid
     };
 
     // perform an API call to see if xkey is still valid or needs to be re-authed;
@@ -68,12 +69,14 @@ var app = angular.module('uiRouterSample', [
       }
       function error(response) {
           if(response.status === 401) {
+            console.log("Interceptor 401")
             $injector.get('$state').transitionTo('login');
             return $q.reject(response);
           }
           else {
             // individual error handling
             console.log("Interceptor error...we should write these to a DB", response.statusText)
+            // TODO server should respond with detail error texts;
             return $q.reject(response);
           }
       }
@@ -205,7 +208,7 @@ var app = angular.module('uiRouterSample', [
         })
 
         .state('home.campaign.details', {
-          url: '/details/:params',
+          url: '/details/:campaignID',
           views: {
             'content@home': {
               templateUrl: 'views/campaign-details.html',
@@ -240,6 +243,16 @@ var app = angular.module('uiRouterSample', [
             'content': {
               templateUrl: 'views/timeline.html',
               controller: "timelineController"
+            }
+          }
+        })
+
+        .state('home.roles', {
+          url: 'roles/',
+          views: {
+            'content': {
+              templateUrl: 'views/roles.html',
+              controller: "rolesController"
             }
           }
         })

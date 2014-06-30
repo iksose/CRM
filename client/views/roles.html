@@ -1,0 +1,13 @@
+Welcome to roles
+
+
+  <ul class="example-animate-container">
+    <li class="animate-repeat" ng-repeat="user in availableUsers">
+      [{{$index + 1}}] {{user.Name}} who is [ {{user.Roles}} ] Roles.
+      <br>
+      <a ng-click="addRole(user.Name)">Add Role</a>
+        <p class="animate-repeat" ng-repeat="role in availableRoles">
+          <input type="checkbox" ng-click="addRole(user.UserID, role.RoleID)">{{role.Name}}
+        </p>
+    </li>
+  </ul>

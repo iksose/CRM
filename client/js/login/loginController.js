@@ -22,6 +22,7 @@ angular.module('uiRouterSample')
       $rootScope.credentials.group = data.group;
       $cookies.xkey = data.data.key;
       $cookies.userid = data.data.userid;
+      $http.defaults.headers.common['XKey'] = data.data.key;
     },
     function(data){
       // handle error

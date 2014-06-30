@@ -1,18 +1,29 @@
-<h2>Campaign # {{params.params}} <small>{{theCampaign.status}}</small></h2>
+<h2>Campaign # {{campaignDetails.CampaignID}} <small>campaign status</small></h2>
 <hr>
 
 <div ng-show="!campaignPending">
   {{theCampaign.cName}}<br>
   {{theCampaign.cDate}}<br>
 
-  <table class="table">
-    <thead></thead>
-    <tbody>
-      <tr><td>Data</td><td>Data</td></tr>
-      <tr><td>{{theCampaign.cName}}</td><td>Data</td></tr>
-      <tr><td>Data</td><td>{{theCampaign.cName}}</td></tr>
-    </tbody>
-  </table>
+  <ul>
+  <li>Activities</li>
+  <li>Attachments</li>
+  <li>BusinessOwners</li>
+  <li>CampaignID</li>
+  <li>CreationDateTime</li>
+  <li>CreationUser</li>
+  <li>Descr</li>
+  <li>ExpectedInvestment</li>
+  <li>ExpectedResult</li>
+  <li>LastUpdtDateTime</li>
+  <li>LastUpdtUser</li>
+  <li>Name</li>
+  <li>Offers</li>
+  <li>ProductID</li>
+  <li>Prospects</li>
+  <li>StatusDateTime</li>
+  <li>Tests</li>
+</ul>
 
   <button type="button" class="btn btn-default btn-xs dropdown-toggle">Save Changes</button>
   <a href="">Print Document</a>
