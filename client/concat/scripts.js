@@ -73,7 +73,7 @@ var $__scripts__ = (function() {
           controller: "campaignController"
         }}
     }).state('home.campaign.new', {
-      url: '/new',
+      url: '/new/:campaignID',
       views: {'content@home': {
           templateUrl: 'views/newcampaign.html',
           controller: "newCampaignController"
@@ -107,6 +107,12 @@ var $__scripts__ = (function() {
       views: {'content': {
           templateUrl: 'views/roles.html',
           controller: "rolesController"
+        }}
+    }).state('home.prospect', {
+      url: 'Prospect/:ProspectID',
+      views: {'content': {
+          templateUrl: 'views/Prospect.html',
+          controller: "prospectController"
         }}
     });
   }]);
@@ -533,14 +539,30 @@ var $__scripts__ = (function() {
       }
     };
   });
-  angular.module('uiRouterSample').controller('newCampaignController', function($scope, $rootScope, $state, $alert, campaignFactory) {
+  angular.module('uiRouterSample').controller('newCampaignController', function($scope, $rootScope, $state, $alert, campaignFactory, queryFactory) {
     console.log("Welcome to NEW campaign controller");
+    $scope.tableConfig = {
+      itemsPerPage: 10,
+      fillLastPage: false,
+      maxPages: 5
+    };
+    $scope.DeleteProspect = function(id) {
+      $scope.campaignDetails.rows.forEach((function(a, b) {
+        if (a.ProspectID == id) {
+          a.Status ? a.Status = 0 : a.Status = 1;
+          queryFactory.updateQueryStatus($scope.selectedQuery.QueryID, id, a.Status);
+          return true;
+        }
+      }));
+    };
     $scope.campaignID;
+    $scope.campaignConverted = false;
     $scope.convert = function() {
       console.log("Converting...");
       campaignFactory.convert(1).then(function(data) {
         console.log("DONE, campaign ID ", data.data.CampaignID);
         $scope.campaignID = data.data.CampaignID;
+        $scope.campaignConverted = true;
       });
     };
     $scope.userList = [];
@@ -554,15 +576,24 @@ var $__scripts__ = (function() {
       console.log("Got...", data);
       $scope.savedQueries = data.data;
     }).catch(function(err) {});
-    $scope.campaignDetails;
+    $scope.campaignDetails = {};
+    $scope.campaignDetails.rows = [];
     $scope.setBillGroup = (function(data) {
       console.log("CHANGED", $scope.selectedQuery);
       campaignFactory.singleQuery($scope.selectedQuery.QueryID).then(function(data) {
-        console.log("Okay got this", data);
+        console.log("Okay got these details", data.data);
         $scope.campaignDetails = data.data;
         $scope.fetched = true;
       });
     });
+    if ($state.params.campaignID !== "") {
+      $scope.selectedQuery = {
+        ProductID: 1,
+        QueryID: $state.params.campaignID,
+        Name: "mo test"
+      };
+      $scope.setBillGroup();
+    }
     $scope.changeState = (function(bleh) {
       $state.go('home.campaign.details', {params: '1337'});
     });
@@ -721,6 +752,91 @@ var $__scripts__ = (function() {
       }
     };
   });
+  var Prospect = function Prospect(obj) {
+    this.Name = obj.Name, this.Age = obj.Age, this.Issues = (function() {
+      var issue_array = [];
+      obj.Issues.forEach(function(issues) {
+        issues.start = issues.Opened;
+        issues.startHuman = moment(issues.Opened).format("ll");
+        delete issues.Opened;
+        issues.end = issues.Closed;
+        issues.endHuman = moment(issues.Closed).format("ll");
+        delete issues.Closed;
+        issues.content = issues.Description;
+        delete issues.Description;
+        if (issues.end == "") {
+          delete issues.end;
+          issues.endHuman = "Still opened";
+          issues.className = "openIssue";
+        }
+        issues.replyCount = issues.FollowUp.length;
+        issue_array.push(issues);
+      });
+      return issue_array;
+    })();
+    this.Activities = (function() {
+      var Activities = [];
+      obj.Activities.forEach(function(activities) {
+        activities.start = activities.Start;
+        delete Activities.Start;
+        activities.content = activities.Notes;
+        delete activities.Notes;
+        activities.typeOf = "activity";
+        Activities.push(activities);
+      });
+      return Activities;
+    })();
+  };
+  ($traceurRuntime.createClass)(Prospect, {}, {});
+  angular.module('uiRouterSample').controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
+    console.log("Hello prospect");
+    var the_Prospect;
+    prospectFactory.getProspect_by_ID().then(function(data) {
+      console.log("Got prospect", data);
+      the_Prospect = new Prospect(data.data);
+      console.log(the_Prospect);
+      makeTimeline();
+    });
+    var timeline;
+    var items;
+    function makeTimeline() {
+      console.log("Making timeline");
+      var Activities_and_Issues = the_Prospect.Issues.concat(the_Prospect.Activities);
+      items = new vis.DataSet(Activities_and_Issues);
+      var container = document.getElementById('visualization');
+      var options = {
+        editable: false,
+        min: new Date(2001, 0, 1),
+        zoomMin: 1000 * 60 * 60 * 24
+      };
+      timeline = new vis.Timeline(container, items, options);
+      timeline.on('select', function(properties) {
+        logEvent('select', properties);
+      });
+    }
+    $scope.message = "Select an event";
+    function logEvent(event, properties) {
+      var content = items._data[$traceurRuntime.toProperty(properties.items[0])];
+      $scope.message = content.content;
+      console.log(content);
+      $scope.msgInfo = content;
+      $scope.$digest();
+    }
+    function zoom(percentage) {
+      console.log(items._data);
+      var range = timeline.getWindow();
+      var interval = range.end - range.start;
+      timeline.setWindow({
+        start: range.start.valueOf() - interval * percentage,
+        end: range.end.valueOf() + interval * percentage
+      });
+    }
+  });
+  angular.module('uiRouterSample').factory('prospectFactory', function($http) {
+    return {getProspect_by_ID: function() {
+        return $http.get('/api/prospect');
+      }};
+  });
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q, $alert) {
     console.log("query Controller", $stateParams);
     $scope.resultsReturned = false;
@@ -819,7 +935,7 @@ var $__scripts__ = (function() {
       $scope.saveObject.ParamStr = mod;
       $scope.saveObject.Product = 1;
       queryFactory.saveQuery($scope.saveObject).then((function(res) {
-        $state.go('home.campaign');
+        $state.go('home.campaign.new', {campaignID: res.data.QueryID});
       })).catch((function(err) {
         var myAlert = $alert({
           title: err.status.toString(),
@@ -852,7 +968,7 @@ var $__scripts__ = (function() {
       },
       saveQuery: function(prospects) {
         console.log("Save query Prospects ", prospects);
-        return $http.post('http://10.1.1.118:8000/api/Research', prospects);
+        return $http.post('http://10.1.1.118:8000/api/Research', $.param(prospects));
       },
       getQueries: function() {
         return $http.get('http://10.1.1.118:8000/api/Research/list');

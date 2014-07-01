@@ -1,13 +1,33 @@
 angular.module('uiRouterSample')
-.controller('newCampaignController', function($scope, $rootScope, $state, $alert, campaignFactory) {
+.controller('newCampaignController', function($scope, $rootScope, $state, $alert, campaignFactory, queryFactory) {
   console.log("Welcome to NEW campaign controller")
 
+
+  $scope.tableConfig = {
+    itemsPerPage: 10,
+    fillLastPage: false,
+    maxPages: 5
+  }
+
+  $scope.DeleteProspect = function(id){
+      $scope.campaignDetails.rows.forEach((a,b) => {
+        if(a.ProspectID == id){
+          a.Status ? a.Status = 0 : a.Status = 1;
+            queryFactory.updateQueryStatus($scope.selectedQuery.QueryID, id, a.Status);
+          return true;
+        }
+      })
+  }
+
+
   $scope.campaignID;
+  $scope.campaignConverted = false;
   $scope.convert = function(){
     console.log("Converting...");
     campaignFactory.convert(1).then(function(data){
       console.log("DONE, campaign ID ", data.data.CampaignID)
       $scope.campaignID = data.data.CampaignID;
+      $scope.campaignConverted = true;
     })
   };
 
@@ -28,16 +48,23 @@ angular.module('uiRouterSample')
     // do something
   })
 
-  $scope.campaignDetails;
+  $scope.campaignDetails = {};
+  $scope.campaignDetails.rows = [];
   $scope.setBillGroup = (data) => {
-    // $scope.savedQueryData = "";
+    // FIXME this is being fired on page init because it thinks the value
+    // is changing;
     console.log("CHANGED", $scope.selectedQuery)
     campaignFactory.singleQuery($scope.selectedQuery.QueryID).then(function(data){
-      console.log("Okay got this", data)
+      console.log("Okay got these details", data.data)
       $scope.campaignDetails = data.data;
       $scope.fetched = true;
     })
   };
+  if($state.params.campaignID !==""){
+    // console.log("Yes there's params");
+    $scope.selectedQuery = {ProductID: 1, QueryID: $state.params.campaignID, Name: "mo test"}
+    $scope.setBillGroup();
+  }
 
   $scope.changeState = (bleh) => {
     $state.go('home.campaign.details', {params:'1337'})

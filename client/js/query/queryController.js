@@ -117,7 +117,8 @@ angular.module('uiRouterSample')
     //   $state.go('home.campaign')
     // })
     queryFactory.saveQuery($scope.saveObject).then(res =>{
-      $state.go('home.campaign')
+      // console.log("State go", {campaignID: res.data.QueryID})
+      $state.go('home.campaign.new', {campaignID: res.data.QueryID} )
     }).catch(err =>{
       // console.log(err)
       var myAlert = $alert({title: err.status.toString(),

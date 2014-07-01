@@ -39,11 +39,11 @@ app.get('/api/campaigns', campaigns.allCampaigns)
 
 app.post('/api/singlecampaign', campaigns.singleCampaign)
 
-app.get('/api/prospects', prospects.returnProspects)
+app.get('/api/prospect', prospects.one)
+//
+// app.delete('/api/prospects', prospects.returnProspects)
 
-app.delete('/api/prospects', prospects.returnProspects)
-
-app.get('/api/randomProspect', prospects.randomProspect)
+// app.get('/api/randomProspect', prospects.randomProspect)
 
 app.post('/api/usertasks', tasks.userTasks)
 

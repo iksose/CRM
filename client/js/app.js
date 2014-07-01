@@ -198,7 +198,7 @@ var app = angular.module('uiRouterSample', [
         })
 
         .state('home.campaign.new', {
-          url: '/new',
+          url: '/new/:campaignID',
           views: {
             'content@home': {
               templateUrl: 'views/newcampaign.html',
@@ -253,6 +253,16 @@ var app = angular.module('uiRouterSample', [
             'content': {
               templateUrl: 'views/roles.html',
               controller: "rolesController"
+            }
+          }
+        })
+
+        .state('home.prospect', {
+          url: 'Prospect/:ProspectID',
+          views: {
+            'content': {
+              templateUrl: 'views/Prospect.html',
+              controller: "prospectController"
             }
           }
         })

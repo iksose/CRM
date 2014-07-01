@@ -30,17 +30,33 @@
 
 <form class="form-horizontal" role="form">
   <div class="form-group">
-    <label for="inputEmail3" class="col-sm-2 control-label">Campaign Name</label>
+    <label class="col-sm-2 control-label">Campaign Name</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" id="inputEmail3" placeholder="Placeholder" ng-model='campaignDetails.Name'>
     </div>
   </div>
-  <div class="form-group">
+  <!-- <div class="form-group">
     <label for="inputPassword3" class="col-sm-2 control-label">Campaign Date</label>
     <div class="col-sm-10">
       <input type="email" class="form-control" id="inputPassword3" placeholder="Date Picker?">
     </div>
+  </div> -->
+  <div class="form-group">
+    <label class="control-label col-sm-2"><i class="fa fa-calendar"></i>
+      <i class="fa fa-arrows-h"></i>
+      <i class="fa fa-calendar"></i> Date
+    </label>
+    <div class="form-group col-sm-2">
+      <input type="text" class="form-control" ng-model="fromDate" data-max-date="{{untilDate}}" placeholder="From" bs-datepicker>
+    </div>
+    <div class="form-group col-sm-2">
+      <input type="text" class="form-control" ng-model="untilDate" data-min-date="{{fromDate}}" placeholder="Until" bs-datepicker>
+    </div>
   </div>
+
+  <!-- END DATEPICKER -->
+
+
   <div class="form-group">
     <label for="inputPassword4" class="col-sm-2 control-label">Campaign Demographics</label>
     <div class="col-sm-10">
@@ -53,9 +69,14 @@
 
   <button ng-click="convert()">Convert to Campaign</button>
 
+  <div ng-show='campaignConverted'
+
 <hr>
 
-  <h4>Campaign ID {{campaignID}}</h4>
+  <center>
+    <h4>Campaign ID {{campaignID}}</h4>
+    <hr>
+  </center>
 
   <h4>Add New Activities</h4>
 <form class="form-horizontal" role="form">
@@ -84,54 +105,71 @@
               ng-options="state.Name for state in userList" placeholder="Enter user" bs-typeahead>
     </div>
   </div>
-  <div class="form-group">
+  <!-- <div class="form-group">
     <label for="inputPassword3" class="col-sm-2 control-label">Start</label>
     <div class="col-sm-10">
       <input type="text" class="form-control"  placeholder="Password" ng-model="newActivity.StartDateTime">
     </div>
-  </div>
-  <div class="form-group">
+  </div> -->
+  <!-- <div class="form-group">
     <label for="inputPassword3" class="col-sm-2 control-label">Complete</label>
     <div class="col-sm-10">
       <input type="text" class="form-control"  placeholder="Password" ng-model="newActivity.CompletionDateTime">
     </div>
+  </div> -->
+  <div class="form-group">
+    <label class="control-label col-sm-2"><i class="fa fa-calendar"></i>
+      <i class="fa fa-arrows-h"></i>
+      <i class="fa fa-calendar"></i> Duration
+    </label>
+    <div class="form-group col-sm-4">
+      <input type="text" class="form-control" ng-model="fromDate" data-max-date="{{untilDate}}" placeholder="From" bs-datepicker>
+    </div>
+    <div class="form-group col-sm-4">
+      <input type="text" class="form-control" ng-model="untilDate" data-min-date="{{fromDate}}" placeholder="Until" bs-datepicker>
+    </div>
   </div>
+
+
+
 </form>
 <button ng-click="saveActivity()">Save Activity</button>
 <br>
 
 <h4>Activites: {{activityNo}}</h4>
 <ul class="example-animate-container">
-    <li class="animate-repeat" ng-repeat="friend in friends">
-      [{{$index + 1}}]
+    <li class="animate-repeat" ng-repeat="friend in savedActivites">
+      [{{$index + 1}}] Type: {{friend.Name}} -- Type: {{friend.ActivityType}} -- Assigned: {{friend.AssignedID}}
     </li>
 </ul>
 
+<br>
+<hr>
 
 <label>Prospects:</label> <a href="">Export Prospects to Excel</a>
-<ul>
-[1] Latoya Meyer who is 26 years old.<br>
-[2] Vonda Perez who is 21 years old.<br>
-[3] Ortega Boyle who is 22 years old.<br>
-[4] Wilson Roman who is 30 years old.<br>
-[5] Perry Donaldson who is 22 years old.<br>
-[6] Farmer Stevenson who is 31 years old.<br>
-[7] Lisa Case who is 31 years old.<br>
-[8] Jimenez Shannon who is 35 years old.<br>
-[9] Johnston Copeland who is 32 years old.<br>
-[10] Rose Gilliam who is 37 years old.<br>
-[11] Salinas Collier who is 28 years old.<br>
-[12] Padilla Mcbride who is 25 years old.<br>
-[13] Cherry Mays who is 24 years old.<br>
-[14] Tara Rosario who is 25 years old.<br>
-[15] Leann Velazquez who is 29 years old.<br>
-[16] Eaton Hyde who is 38 years old.<br>
-[17] Donovan Decker who is 40 years old.<br>
 
 
-</ul>
+ <!-- TABLE -->
 
-</p>
+ <table at-table at-list="campaignDetails.rows" at-paginated at-config="tableConfig" class="table table-striped table-condensed" id="queryTable">
+ <thead></thead>
+ <tbody>
+   <tr  ng-class="{isActive: !this.item.Status}" ng-click="DeleteProspect(this.item.ProspectID)">
+     <!-- TODO fn DeleteProspect only works for new queries, not selecting saved ones -->
+     <td at-implicit at-attribute="Name" class="fixedWidthTD"></td>
+     <td at-implicit at-attribute="Addr1" at-sortable at-initial-sorting="desc"></td>
+     <td at-implicit at-attribute="State"></td>
+     <td at-implicit at-attribute="Zip"></td>
+     <td at-implicit at-attribute="Status"></td>
+     <td at-implicit at-attribute="balance"></td>
+   </tr>
+ </tbody>
+</table>
+
+<at-pagination at-list="campaignDetails.rows" at-config="tableConfig"></at-pagination>
+
+<!-- END TABLE -->
+
 
 
   <button class='button' ng-click="changeState()">Create Campaign Template</button>

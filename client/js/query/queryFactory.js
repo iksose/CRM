@@ -15,7 +15,8 @@ angular.module('uiRouterSample')
         },
         saveQuery: function(prospects){
           console.log("Save query Prospects ", prospects)
-          return $http.post('http://10.1.1.118:8000/api/Research', prospects )
+          // console.log("State go http://localhost:3000/#/Campaigns/new")
+          return $http.post('http://10.1.1.118:8000/api/Research', $.param(prospects) )
         },
         getQueries: function(){
           return $http.get('http://10.1.1.118:8000/api/Research/list')
