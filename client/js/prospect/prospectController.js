@@ -22,7 +22,6 @@ angular.module('uiRouterSample')
       addFilter(filterName);
       $scope.selection.push(filterName);
     }
-    // runFilters();
   };
 
   function deleteFilter(filterName){
@@ -37,16 +36,12 @@ angular.module('uiRouterSample')
     items.add(adds)
   }
 
-  var the_Prospect;
+  $scope.the_Prospect;
   prospectFactory.getProspect_by_ID().then(function(data){
-    // results.data.forEach(function(prospect){
     console.log("Got prospect", data)
-      the_Prospect = new Prospect(data.data);
-      console.log(the_Prospect.latest);
-      // prospectList.push(prospect_constructor);
-    // })
-    // console.log("List", prospectList)
-    console.log(the_Prospect)
+      $scope.the_Prospect = new Prospect(data.data);
+    // console.log($scope.the_Prospect.latest);
+    console.log($scope.the_Prospect)
     makeTimeline();
   })
 
@@ -56,7 +51,7 @@ angular.module('uiRouterSample')
   function makeTimeline(){
     console.log("Making timeline")
 
-    Activities_and_Issues = the_Prospect.Issues.concat(the_Prospect.Activities)
+    Activities_and_Issues = $scope.the_Prospect.Issues.concat($scope.the_Prospect.Activities)
 
     // var Activities_and_Issues = _.reject(Activities_and_Issues, function(num){ return num.typeOf == 'activity'; });
 
@@ -64,6 +59,9 @@ angular.module('uiRouterSample')
 
     var container = document.getElementById('visualization');
     var options = {
+      width: '100%',
+      minHeight: '150px',
+      // height: '200px',
       editable: false,
       min: new Date(2001, 0, 1), //further back you can go
       // max: new Date(2016, 0, 1),

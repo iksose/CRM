@@ -1,27 +1,30 @@
 class Prospect {
   constructor(obj) {
     this.Name = obj.Name,
-    this.Age = obj.Age,
+    this.PriWholesalerID = obj.PriWholesalerID,
+    this.City = obj.City,
+    this.ScriptsPerMonth = obj.ScriptsPerMonth;
     this.Issues = (function(){
       var issue_array = [];
       obj.Issues.forEach(function(issues){
-        issues.start = issues.Opened;
-        issues.startHuman = moment(issues.Opened).format("ll")
-        delete issues.Opened;
-        issues.end = issues.Closed
-        issues.endHuman = moment(issues.Closed).format("ll")
-        delete issues.Closed;
+        issues.CreationUser = issues.CreationUser;
+        issues.start = issues.CreationDateTime;
+        issues.startHuman = moment(issues.CreationDateTime).format("ll")
+        delete issues.CreationDateTime;
+        issues.end = issues.CompletionDateTime
+        issues.endHuman = moment(issues.CompletionDateTime).format("ll")
+        delete issues.CompletionDateTime;
         issues.content = issues.Description;
         delete issues.Description;
         issues.typeOf = "Closed Issues"
         // empty string issues throw error
-        if(issues.end == ""){
+        if(issues.end == "1900-01-01T00:00:00"){
           delete issues.end
-          issues.endHuman = "Still opened haha"
+          issues.endHuman = "Still opened"
           issues.className = "openIssue"
           issues.typeOf = "Open Issues"
         }
-        issues.replyCount = issues.FollowUp.length
+        // issues.replyCount = issues.FollowUp.length
         issue_array.push(issues)
       })
       return issue_array;
@@ -29,10 +32,11 @@ class Prospect {
     this.Activities = (function(){
       var Activities = [];
       obj.Activities.forEach(function(activities){
-        activities.start = activities.Start;
-        delete Activities.Start;
-        activities.content = activities.Notes;
-        delete activities.Notes;
+        activities.startHuman = moment(activities.CreationDateTime).format("ll")
+        activities.start = activities.CreationDateTime;
+        delete Activities.CreationDateTime;
+        activities.content = activities.Note;
+        delete activities.Note;
         activities.typeOf = "All Activities";
         Activities.push(activities)
       })

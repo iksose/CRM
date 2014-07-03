@@ -624,63 +624,6 @@ var $__scripts__ = (function() {
       $scope.newActivity = {};
     };
   });
-  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
-    console.log("Landing Controller");
-    if (!$rootScope.loggedIn) {
-      console.log("Not logged in, redirect");
-      $state.go("login");
-    }
-    $scope.dropdown = [{
-      "text": "New Campaign",
-      "click": '$state.go("home.campaign.new")'
-    }, {
-      "text": "Other Campaigns",
-      "click": '$state.go("home.campaign")'
-    }, {"divider": true}, {
-      "text": "New Query",
-      "click": '$state.go("home.query")'
-    }];
-    $scope.inMarketing = false;
-    if ($rootScope.credentials.group == "Marketing") {
-      $scope.inMarketing = true;
-      var thisUsersGroup = $rootScope.credentials;
-      $scope.allTasks = [];
-      var fetch = Tasks.myTasks(thisUsersGroup);
-      var showTasks = fetch.then(function(data) {
-        console.log("Show tasks....", data);
-        $scope.allTasks = data.data;
-      });
-    }
-    window.setInterval(function() {
-      var entries = window.performance.getEntries();
-      entries = entries.sort(function(a, b) {
-        return b.duration - a.duration;
-      });
-      $rootScope.metrics = entries;
-    }, 500);
-  });
-  angular.module('uiRouterSample').factory('Tasks', function($http) {
-    return {
-      queryResults: function(url, callback) {
-        return $http.get('/api/campaigns');
-      },
-      myTasks: function(data) {
-        console.log("Factory TASKS getting myTasks..", data);
-        return $http.post('/api/usertasks', data);
-      },
-      taskDetails: function(data) {
-        console.log("Factory TASKS getting details..", data);
-        return $http.post('/api/taskdetails', data);
-      },
-      allTasks: function() {
-        console.log("Factory tasks returning every task...");
-        return $http.get('/api/alltasks');
-      },
-      taskProspect: function() {
-        return $http.get('/api/randomProspect');
-      }
-    };
-  });
   angular.module('uiRouterSample').controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert, $http) {
     console.log("Controller loaded");
     $rootScope.loggedIn = $rootScope.loggedIn || false;
@@ -866,26 +809,84 @@ var $__scripts__ = (function() {
     $transition.animationEndEventName = findEndEventName(animationEndEventNames);
     return $transition;
   }]);
+  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
+    console.log("Landing Controller");
+    if (!$rootScope.loggedIn) {
+      console.log("Not logged in, redirect");
+      $state.go("login");
+    }
+    $scope.dropdown = [{
+      "text": "New Campaign",
+      "click": '$state.go("home.campaign.new")'
+    }, {
+      "text": "Other Campaigns",
+      "click": '$state.go("home.campaign")'
+    }, {"divider": true}, {
+      "text": "New Query",
+      "click": '$state.go("home.query")'
+    }];
+    $scope.inMarketing = false;
+    if ($rootScope.credentials.group == "Marketing") {
+      $scope.inMarketing = true;
+      var thisUsersGroup = $rootScope.credentials;
+      $scope.allTasks = [];
+      var fetch = Tasks.myTasks(thisUsersGroup);
+      var showTasks = fetch.then(function(data) {
+        console.log("Show tasks....", data);
+        $scope.allTasks = data.data;
+      });
+    }
+    window.setInterval(function() {
+      var entries = window.performance.getEntries();
+      entries = entries.sort(function(a, b) {
+        return b.duration - a.duration;
+      });
+      $rootScope.metrics = entries;
+    }, 500);
+  });
+  angular.module('uiRouterSample').factory('Tasks', function($http) {
+    return {
+      queryResults: function(url, callback) {
+        return $http.get('/api/campaigns');
+      },
+      myTasks: function(data) {
+        console.log("Factory TASKS getting myTasks..", data);
+        return $http.post('/api/usertasks', data);
+      },
+      taskDetails: function(data) {
+        console.log("Factory TASKS getting details..", data);
+        return $http.post('/api/taskdetails', data);
+      },
+      allTasks: function() {
+        console.log("Factory tasks returning every task...");
+        return $http.get('/api/alltasks');
+      },
+      taskProspect: function() {
+        return $http.get('/api/randomProspect');
+      }
+    };
+  });
   var Prospect = function Prospect(obj) {
-    this.Name = obj.Name, this.Age = obj.Age, this.Issues = (function() {
+    this.Name = obj.Name, this.PriWholesalerID = obj.PriWholesalerID, this.City = obj.City, this.ScriptsPerMonth = obj.ScriptsPerMonth;
+    this.Issues = (function() {
       var issue_array = [];
       obj.Issues.forEach(function(issues) {
-        issues.start = issues.Opened;
-        issues.startHuman = moment(issues.Opened).format("ll");
-        delete issues.Opened;
-        issues.end = issues.Closed;
-        issues.endHuman = moment(issues.Closed).format("ll");
-        delete issues.Closed;
+        issues.CreationUser = issues.CreationUser;
+        issues.start = issues.CreationDateTime;
+        issues.startHuman = moment(issues.CreationDateTime).format("ll");
+        delete issues.CreationDateTime;
+        issues.end = issues.CompletionDateTime;
+        issues.endHuman = moment(issues.CompletionDateTime).format("ll");
+        delete issues.CompletionDateTime;
         issues.content = issues.Description;
         delete issues.Description;
         issues.typeOf = "Closed Issues";
-        if (issues.end == "") {
+        if (issues.end == "1900-01-01T00:00:00") {
           delete issues.end;
-          issues.endHuman = "Still opened haha";
+          issues.endHuman = "Still opened";
           issues.className = "openIssue";
           issues.typeOf = "Open Issues";
         }
-        issues.replyCount = issues.FollowUp.length;
         issue_array.push(issues);
       });
       return issue_array;
@@ -893,10 +894,11 @@ var $__scripts__ = (function() {
     this.Activities = (function() {
       var Activities = [];
       obj.Activities.forEach(function(activities) {
-        activities.start = activities.Start;
-        delete Activities.Start;
-        activities.content = activities.Notes;
-        delete activities.Notes;
+        activities.startHuman = moment(activities.CreationDateTime).format("ll");
+        activities.start = activities.CreationDateTime;
+        delete Activities.CreationDateTime;
+        activities.content = activities.Note;
+        delete activities.Note;
         activities.typeOf = "All Activities";
         Activities.push(activities);
       });
@@ -935,12 +937,11 @@ var $__scripts__ = (function() {
       });
       items.add(adds);
     }
-    var the_Prospect;
+    $scope.the_Prospect;
     prospectFactory.getProspect_by_ID().then(function(data) {
       console.log("Got prospect", data);
-      the_Prospect = new Prospect(data.data);
-      console.log(the_Prospect.latest);
-      console.log(the_Prospect);
+      $scope.the_Prospect = new Prospect(data.data);
+      console.log($scope.the_Prospect);
       makeTimeline();
     });
     var timeline;
@@ -948,10 +949,12 @@ var $__scripts__ = (function() {
     var Activities_and_Issues;
     function makeTimeline() {
       console.log("Making timeline");
-      Activities_and_Issues = the_Prospect.Issues.concat(the_Prospect.Activities);
+      Activities_and_Issues = $scope.the_Prospect.Issues.concat($scope.the_Prospect.Activities);
       items = new vis.DataSet(Activities_and_Issues);
       var container = document.getElementById('visualization');
       var options = {
+        width: '100%',
+        minHeight: '150px',
         editable: false,
         min: new Date(2001, 0, 1),
         zoomMin: 1000 * 60 * 60 * 24
@@ -981,7 +984,7 @@ var $__scripts__ = (function() {
   });
   angular.module('uiRouterSample').factory('prospectFactory', function($http) {
     return {getProspect_by_ID: function() {
-        return $http.get('/api/prospect');
+        return $http.get('http://10.1.1.118:8000/api/prospect/1');
       }};
   });
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q, $alert) {

@@ -7,19 +7,19 @@
   <tbody>
     <tr>
       <td>Name</td>
-      <td>Joe Smith</td>
+      <td>{{the_Prospect.Name}}</td>
     </tr>
     <tr>
-      <td>Age</td>
-      <td>60</td>
+      <td>Wholesaler</td>
+      <td>{{the_Prospect.PriWholesalerID}}</td>
     </tr>
     <tr>
       <td>Location</td>
-      <td>Minneapoislis</td>
+      <td>{{the_Prospect.City}}</td>
     </tr>
     <tr>
-      <td>Products</td>
-      <td>Trinet, ProfitGuard</td>
+      <td>Scripts/mo</td>
+      <td>{{the_Prospect.ScriptsPerMonth}}</td>
     </tr>
   </tbody>
 </table>
@@ -60,7 +60,7 @@
 <hr>
 
 <!-- FIELDS FOR LOG BOX -->
-<small>Opened</small> <strong>{{msgInfo.startHuman}}</strong>  <small>by </small><strong>{{msgInfo.OpenedBy}}</strong>
+<small>Opened</small> <strong>{{msgInfo.startHuman}}</strong>  <small>by </small><strong>{{msgInfo.CreationUser}}</strong>
 <span class="pullright"><a href><small>New Note / Issue+</small></a></span>
 <br>
 <small>Closed</small> <strong>{{msgInfo.endHuman}}</strong> <small>by </small><strong>{{msgInfo.ClosedBy}}</strong>
@@ -116,10 +116,10 @@
 
 
 <style type="text/css">
-    body, html, input {
+    /*body, html, input {
         font-family: sans-serif;
         font-size: 12pt;
-    }
+    }*/
 
     .pullright{
       float: right;
