@@ -13,11 +13,13 @@ class Prospect {
         delete issues.Closed;
         issues.content = issues.Description;
         delete issues.Description;
+        issues.typeOf = "Closed Issues"
         // empty string issues throw error
         if(issues.end == ""){
           delete issues.end
-          issues.endHuman = "Still opened"
+          issues.endHuman = "Still opened haha"
           issues.className = "openIssue"
+          issues.typeOf = "Open Issues"
         }
         issues.replyCount = issues.FollowUp.length
         issue_array.push(issues)
@@ -31,10 +33,14 @@ class Prospect {
         delete Activities.Start;
         activities.content = activities.Notes;
         delete activities.Notes;
-        activities.typeOf = "activity";
+        activities.typeOf = "All Activities";
         Activities.push(activities)
       })
       return Activities;
     })()
+  }
+
+    get latest () {
+    return this.Issues;
   }
 }

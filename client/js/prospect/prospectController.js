@@ -2,11 +2,47 @@ angular.module('uiRouterSample')
 .controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
   console.log("Hello prospect")
 
+  $scope.isCollapsed = true;
+
+
+   // filters
+  $scope.filters = ['All Activities', 'Only My Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+  // selected filters
+  $scope.selection = ['All Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+  // toggle selection for a given filter by name
+  $scope.toggleSelection = function toggleSelection(filterName) {
+    var idx = $scope.selection.indexOf(filterName);
+    // is currently selected
+    if (idx > -1) {
+      $scope.selection.splice(idx, 1);
+      deleteFilter(filterName);
+    }
+    // is newly selected
+    else {
+      addFilter(filterName);
+      $scope.selection.push(filterName);
+    }
+    // runFilters();
+  };
+
+  function deleteFilter(filterName){
+    var itemsGet = items.get();
+    var remove = _.filter(itemsGet, function(num){ return num.typeOf == filterName });
+    items.remove(remove)
+  }
+
+  function addFilter(filterName){
+    var itemsGet = Activities_and_Issues;
+    var adds = _.filter(itemsGet, function(num){ return num.typeOf == filterName });
+    items.add(adds)
+  }
+
   var the_Prospect;
   prospectFactory.getProspect_by_ID().then(function(data){
     // results.data.forEach(function(prospect){
     console.log("Got prospect", data)
       the_Prospect = new Prospect(data.data);
+      console.log(the_Prospect.latest);
       // prospectList.push(prospect_constructor);
     // })
     // console.log("List", prospectList)
@@ -15,11 +51,12 @@ angular.module('uiRouterSample')
   })
 
   var timeline;
-  var items
+  var items;
+  var Activities_and_Issues;
   function makeTimeline(){
     console.log("Making timeline")
 
-    var Activities_and_Issues = the_Prospect.Issues.concat(the_Prospect.Activities)
+    Activities_and_Issues = the_Prospect.Issues.concat(the_Prospect.Activities)
 
     // var Activities_and_Issues = _.reject(Activities_and_Issues, function(num){ return num.typeOf == 'activity'; });
 

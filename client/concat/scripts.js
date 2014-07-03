@@ -752,6 +752,120 @@ var $__scripts__ = (function() {
       }
     };
   });
+  angular.module('uiRouterSample').directive('collapse', ['$transition', function($transition) {
+    return {link: function(scope, element, attrs) {
+        var initialAnimSkip = true;
+        var currentTransition;
+        function doTransition(change) {
+          var newTransition = $transition(element, change);
+          if (currentTransition) {
+            currentTransition.cancel();
+          }
+          currentTransition = newTransition;
+          newTransition.then(newTransitionDone, newTransitionDone);
+          return newTransition;
+          function newTransitionDone() {
+            if (currentTransition === newTransition) {
+              currentTransition = undefined;
+            }
+          }
+        }
+        function expand() {
+          if (initialAnimSkip) {
+            initialAnimSkip = false;
+            expandDone();
+          } else {
+            element.removeClass('collapse').addClass('collapsing');
+            doTransition({height: element[0].scrollHeight + 'px'}).then(expandDone);
+          }
+        }
+        function expandDone() {
+          element.removeClass('collapsing');
+          element.addClass('collapse in');
+          element.css({height: 'auto'});
+        }
+        function collapse() {
+          if (initialAnimSkip) {
+            initialAnimSkip = false;
+            collapseDone();
+            element.css({height: 0});
+          } else {
+            element.css({height: element[0].scrollHeight + 'px'});
+            var x = element[0].offsetWidth;
+            element.removeClass('collapse in').addClass('collapsing');
+            doTransition({height: 0}).then(collapseDone);
+          }
+        }
+        function collapseDone() {
+          element.removeClass('collapsing');
+          element.addClass('collapse');
+        }
+        scope.$watch(attrs.collapse, function(shouldCollapse) {
+          if (shouldCollapse) {
+            collapse();
+          } else {
+            expand();
+          }
+        });
+      }};
+  }]).factory('$transition', ['$q', '$timeout', '$rootScope', function($q, $timeout, $rootScope) {
+    var $transition = function(element, trigger, options) {
+      options = options || {};
+      var deferred = $q.defer();
+      var endEventName = $transition[$traceurRuntime.toProperty(options.animation ? 'animationEndEventName' : 'transitionEndEventName')];
+      var transitionEndHandler = function(event) {
+        $rootScope.$apply(function() {
+          element.unbind(endEventName, transitionEndHandler);
+          deferred.resolve(element);
+        });
+      };
+      if (endEventName) {
+        element.bind(endEventName, transitionEndHandler);
+      }
+      $timeout(function() {
+        if (angular.isString(trigger)) {
+          element.addClass(trigger);
+        } else if (angular.isFunction(trigger)) {
+          trigger(element);
+        } else if (angular.isObject(trigger)) {
+          element.css(trigger);
+        }
+        if (!endEventName) {
+          deferred.resolve(element);
+        }
+      });
+      deferred.promise.cancel = function() {
+        if (endEventName) {
+          element.unbind(endEventName, transitionEndHandler);
+        }
+        deferred.reject('Transition cancelled');
+      };
+      return deferred.promise;
+    };
+    var transElement = document.createElement('trans');
+    var transitionEndEventNames = {
+      'WebkitTransition': 'webkitTransitionEnd',
+      'MozTransition': 'transitionend',
+      'OTransition': 'oTransitionEnd',
+      'transition': 'transitionend'
+    };
+    var animationEndEventNames = {
+      'WebkitTransition': 'webkitAnimationEnd',
+      'MozTransition': 'animationend',
+      'OTransition': 'oAnimationEnd',
+      'transition': 'animationend'
+    };
+    function findEndEventName(endEventNames) {
+      for (var name in endEventNames) {
+        if (transElement.style[$traceurRuntime.toProperty(name)] !== undefined) {
+          return endEventNames[$traceurRuntime.toProperty(name)];
+        }
+      }
+    }
+    $transition.transitionEndEventName = findEndEventName(transitionEndEventNames);
+    $transition.animationEndEventName = findEndEventName(animationEndEventNames);
+    return $transition;
+  }]);
   var Prospect = function Prospect(obj) {
     this.Name = obj.Name, this.Age = obj.Age, this.Issues = (function() {
       var issue_array = [];
@@ -764,10 +878,12 @@ var $__scripts__ = (function() {
         delete issues.Closed;
         issues.content = issues.Description;
         delete issues.Description;
+        issues.typeOf = "Closed Issues";
         if (issues.end == "") {
           delete issues.end;
-          issues.endHuman = "Still opened";
+          issues.endHuman = "Still opened haha";
           issues.className = "openIssue";
+          issues.typeOf = "Open Issues";
         }
         issues.replyCount = issues.FollowUp.length;
         issue_array.push(issues);
@@ -781,27 +897,58 @@ var $__scripts__ = (function() {
         delete Activities.Start;
         activities.content = activities.Notes;
         delete activities.Notes;
-        activities.typeOf = "activity";
+        activities.typeOf = "All Activities";
         Activities.push(activities);
       });
       return Activities;
     })();
   };
-  ($traceurRuntime.createClass)(Prospect, {}, {});
+  ($traceurRuntime.createClass)(Prospect, {get latest() {
+      return this.Issues;
+    }}, {});
   angular.module('uiRouterSample').controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
     console.log("Hello prospect");
+    $scope.isCollapsed = true;
+    $scope.filters = ['All Activities', 'Only My Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+    $scope.selection = ['All Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+    $scope.toggleSelection = function toggleSelection(filterName) {
+      var idx = $scope.selection.indexOf(filterName);
+      if (idx > -1) {
+        $scope.selection.splice(idx, 1);
+        deleteFilter(filterName);
+      } else {
+        addFilter(filterName);
+        $scope.selection.push(filterName);
+      }
+    };
+    function deleteFilter(filterName) {
+      var itemsGet = items.get();
+      var remove = _.filter(itemsGet, function(num) {
+        return num.typeOf == filterName;
+      });
+      items.remove(remove);
+    }
+    function addFilter(filterName) {
+      var itemsGet = Activities_and_Issues;
+      var adds = _.filter(itemsGet, function(num) {
+        return num.typeOf == filterName;
+      });
+      items.add(adds);
+    }
     var the_Prospect;
     prospectFactory.getProspect_by_ID().then(function(data) {
       console.log("Got prospect", data);
       the_Prospect = new Prospect(data.data);
+      console.log(the_Prospect.latest);
       console.log(the_Prospect);
       makeTimeline();
     });
     var timeline;
     var items;
+    var Activities_and_Issues;
     function makeTimeline() {
       console.log("Making timeline");
-      var Activities_and_Issues = the_Prospect.Issues.concat(the_Prospect.Activities);
+      Activities_and_Issues = the_Prospect.Issues.concat(the_Prospect.Activities);
       items = new vis.DataSet(Activities_and_Issues);
       var container = document.getElementById('visualization');
       var options = {

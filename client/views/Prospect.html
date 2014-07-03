@@ -24,7 +24,38 @@
   </tbody>
 </table>
 
-<a href><small>More info...</small></a>
+<!-- COLLAPSE -->
+
+<a href ng-click="isCollapsed = !isCollapsed"><small>More info...</small></a>
+  <div collapse="isCollapsed">
+    <table class="table table-condensed table-striped">
+      <thead>
+        <!-- <tr>
+          <th>Head</th>
+        </tr> -->
+      </thead>
+      <tbody>
+        <tr>
+          <td>Name</td>
+          <td>Joe Smith</td>
+        </tr>
+        <tr>
+          <td>Age</td>
+          <td>60</td>
+        </tr>
+        <tr>
+          <td>Location</td>
+          <td>Minneapoislis</td>
+        </tr>
+        <tr>
+          <td>Products</td>
+          <td>Trinet, ProfitGuard</td>
+        </tr>
+      </tbody>
+    </table>
+    <a href ng-click="isCollapsed = !isCollapsed"><small>Less </small></a>
+  </div>
+  <!-- END COLLAPSE -->
 <br>
 <hr>
 
@@ -51,7 +82,7 @@
 </div>
 
 <div id="filters">
-  <label class="checkbox-inline">
+  <!-- <label class="checkbox-inline">
     <input type="checkbox" id="inlineCheckbox1" value="option1" checked> All Activities
   </label>
   <label class="checkbox-inline">
@@ -68,7 +99,19 @@
   </label>
   <label class="checkbox-inline">
     <input type="checkbox" id="inlineCheckbox3" value="option3" checked> ProfitGuard
+  </label> -->
+
+  <label ng-repeat="filterName in filters" class="checkbox-inline">
+  <input
+    type="checkbox"
+    name="selectedFilter[]"
+    value="{{filterName}}"
+    ng-checked="selection.indexOf(filterName) > -1"
+    ng-click="toggleSelection(filterName)"
+    > {{filterName}}
   </label>
+
+
 </div>
 
 
