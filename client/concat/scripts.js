@@ -624,6 +624,63 @@ var $__scripts__ = (function() {
       $scope.newActivity = {};
     };
   });
+  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
+    console.log("Landing Controller");
+    if (!$rootScope.loggedIn) {
+      console.log("Not logged in, redirect");
+      $state.go("login");
+    }
+    $scope.dropdown = [{
+      "text": "New Campaign",
+      "click": '$state.go("home.campaign.new")'
+    }, {
+      "text": "Other Campaigns",
+      "click": '$state.go("home.campaign")'
+    }, {"divider": true}, {
+      "text": "New Query",
+      "click": '$state.go("home.query")'
+    }];
+    $scope.inMarketing = false;
+    if ($rootScope.credentials.group == "Marketing") {
+      $scope.inMarketing = true;
+      var thisUsersGroup = $rootScope.credentials;
+      $scope.allTasks = [];
+      var fetch = Tasks.myTasks(thisUsersGroup);
+      var showTasks = fetch.then(function(data) {
+        console.log("Show tasks....", data);
+        $scope.allTasks = data.data;
+      });
+    }
+    window.setInterval(function() {
+      var entries = window.performance.getEntries();
+      entries = entries.sort(function(a, b) {
+        return b.duration - a.duration;
+      });
+      $rootScope.metrics = entries;
+    }, 500);
+  });
+  angular.module('uiRouterSample').factory('Tasks', function($http) {
+    return {
+      queryResults: function(url, callback) {
+        return $http.get('/api/campaigns');
+      },
+      myTasks: function(data) {
+        console.log("Factory TASKS getting myTasks..", data);
+        return $http.post('/api/usertasks', data);
+      },
+      taskDetails: function(data) {
+        console.log("Factory TASKS getting details..", data);
+        return $http.post('/api/taskdetails', data);
+      },
+      allTasks: function() {
+        console.log("Factory tasks returning every task...");
+        return $http.get('/api/alltasks');
+      },
+      taskProspect: function() {
+        return $http.get('/api/randomProspect');
+      }
+    };
+  });
   angular.module('uiRouterSample').controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert, $http) {
     console.log("Controller loaded");
     $rootScope.loggedIn = $rootScope.loggedIn || false;
@@ -809,240 +866,6 @@ var $__scripts__ = (function() {
     $transition.animationEndEventName = findEndEventName(animationEndEventNames);
     return $transition;
   }]);
-  angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
-    console.log("Landing Controller");
-    if (!$rootScope.loggedIn) {
-      console.log("Not logged in, redirect");
-      $state.go("login");
-    }
-    $scope.dropdown = [{
-      "text": "New Campaign",
-      "click": '$state.go("home.campaign.new")'
-    }, {
-      "text": "Other Campaigns",
-      "click": '$state.go("home.campaign")'
-    }, {"divider": true}, {
-      "text": "New Query",
-      "click": '$state.go("home.query")'
-    }];
-    $scope.inMarketing = false;
-    if ($rootScope.credentials.group == "Marketing") {
-      $scope.inMarketing = true;
-      var thisUsersGroup = $rootScope.credentials;
-      $scope.allTasks = [];
-      var fetch = Tasks.myTasks(thisUsersGroup);
-      var showTasks = fetch.then(function(data) {
-        console.log("Show tasks....", data);
-        $scope.allTasks = data.data;
-      });
-    }
-    window.setInterval(function() {
-      var entries = window.performance.getEntries();
-      entries = entries.sort(function(a, b) {
-        return b.duration - a.duration;
-      });
-      $rootScope.metrics = entries;
-    }, 500);
-  });
-  angular.module('uiRouterSample').factory('Tasks', function($http) {
-    return {
-      queryResults: function(url, callback) {
-        return $http.get('/api/campaigns');
-      },
-      myTasks: function(data) {
-        console.log("Factory TASKS getting myTasks..", data);
-        return $http.post('/api/usertasks', data);
-      },
-      taskDetails: function(data) {
-        console.log("Factory TASKS getting details..", data);
-        return $http.post('/api/taskdetails', data);
-      },
-      allTasks: function() {
-        console.log("Factory tasks returning every task...");
-        return $http.get('/api/alltasks');
-      },
-      taskProspect: function() {
-        return $http.get('/api/randomProspect');
-      }
-    };
-  });
-  var Prospect = function Prospect(obj) {
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((function(key) {
-      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
-    }));
-    this.Issues = (function() {
-      var issue_array = [];
-      obj.Issues.forEach(function(issue) {
-        issue_array.push(new Issue(issue));
-      });
-      return issue_array;
-    })();
-    this.Activities = (function() {
-      var Activities = [];
-      obj.Activities.forEach(function(activities) {
-        activities.startHuman = moment(activities.CreationDateTime).format("ll");
-        activities.start = activities.CreationDateTime;
-        delete Activities.CreationDateTime;
-        activities.content = activities.Note;
-        delete activities.Note;
-        activities.typeOf = "All Activities";
-        Activities.push(activities);
-      });
-      return Activities;
-    })();
-    this.Contacts = (function() {
-      var new_contacts = [];
-      obj.Contacts.forEach(function(contacts) {
-        new_contacts.push(new Contact(contacts));
-      });
-      return new_contacts;
-    })();
-  };
-  ($traceurRuntime.createClass)(Prospect, {}, {});
-  var Contact = function Contact(obj) {
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((function(key) {
-      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
-    }));
-    this.HumanTypes_ = _.pluck(obj.Types, 'Type');
-    this.OldTypes = [];
-  };
-  ($traceurRuntime.createClass)(Contact, {
-    set HumanTypes(value) {
-      this.OldTypes = this.HumanTypes_;
-      this.HumanTypes_ = value;
-    },
-    get HumanTypes() {
-      return this.HumanTypes_;
-    },
-    get old_vs_new() {
-      return {
-        'old': this.OldTypes,
-        'new': this.HumanTypes_
-      };
-    }
-  }, {});
-  var Issue = function Issue(obj) {
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((function(key) {
-      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
-    }));
-    this.start = obj.CreationDateTime;
-    this.end = obj.CompletionDateTime;
-    this.startHuman = moment(obj.CreationDateTime).format("ll");
-    this.endHuman = moment(obj.CompletionDateTime).format("ll");
-    this.content = obj.Description;
-    this.typeOf = "Closed Issues";
-    if (this.end == "1900-01-01T00:00:00") {
-      delete this.end;
-      this.endHuman = "Still opened";
-      this.className = "openIssue";
-      this.typeOf = "Open Issues";
-    }
-  };
-  ($traceurRuntime.createClass)(Issue, {}, {});
-  angular.module('uiRouterSample').controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
-    console.log("Hello prospect");
-    $scope.isCollapsed = true;
-    $scope.filters = ['All Activities', 'Only My Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
-    $scope.selection = ['All Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
-    $scope.toggleSelection = function toggleSelection(filterName) {
-      var idx = $scope.selection.indexOf(filterName);
-      if (idx > -1) {
-        $scope.selection.splice(idx, 1);
-        deleteFilter(filterName);
-      } else {
-        addFilter(filterName);
-        $scope.selection.push(filterName);
-      }
-    };
-    function deleteFilter(filterName) {
-      var itemsGet = items.get();
-      var remove = _.filter(itemsGet, function(num) {
-        return num.typeOf == filterName;
-      });
-      items.remove(remove);
-    }
-    function addFilter(filterName) {
-      var itemsGet = Activities_and_Issues;
-      var adds = _.filter(itemsGet, function(num) {
-        return num.typeOf == filterName;
-      });
-      items.add(adds);
-    }
-    $scope.the_Prospect;
-    prospectFactory.getProspect_by_ID().then(function(data) {
-      console.log("Got prospect", data);
-      $scope.the_Prospect = new Prospect(data.data);
-      console.log($scope.the_Prospect);
-      makeTimeline();
-    });
-    var timeline;
-    var items;
-    var Activities_and_Issues;
-    function makeTimeline() {
-      console.log("Making timeline");
-      Activities_and_Issues = $scope.the_Prospect.Issues.concat($scope.the_Prospect.Activities);
-      items = new vis.DataSet(Activities_and_Issues);
-      var container = document.getElementById('visualization');
-      var options = {
-        width: '100%',
-        minHeight: '150px',
-        editable: false,
-        min: new Date(2001, 0, 1),
-        zoomMin: 1000 * 60 * 60 * 24
-      };
-      timeline = new vis.Timeline(container, items, options);
-      timeline.on('select', function(properties) {
-        logEvent('select', properties);
-      });
-    }
-    $scope.message = "Select an event";
-    function logEvent(event, properties) {
-      var content = items._data[$traceurRuntime.toProperty(properties.items[0])];
-      $scope.message = content.content;
-      console.log(content);
-      $scope.msgInfo = content;
-      $scope.$digest();
-    }
-    function zoom(percentage) {
-      console.log(items._data);
-      var range = timeline.getWindow();
-      var interval = range.end - range.start;
-      timeline.setWindow({
-        start: range.start.valueOf() - interval * percentage,
-        end: range.end.valueOf() + interval * percentage
-      });
-    }
-    $scope.icons = [{
-      value: 1,
-      label: 'Owner'
-    }, {
-      value: 2,
-      label: 'Person in'
-    }, {
-      value: 3,
-      label: 'Best Friend'
-    }];
-    $scope.update = function(contact) {
-      var diff = $scope.the_Prospect.Contacts[0].old_vs_new;
-      var changed = _.difference(diff.old, diff.new);
-      if (diff.old.length > diff.new.length) {
-        console.log("Subtracted", changed);
-      } else {
-        console.log("Added", changed);
-      }
-    };
-  });
-  angular.module('uiRouterSample').factory('prospectFactory', function($http) {
-    return {getProspect_by_ID: function() {
-        return $http.get('http://10.1.1.118:8000/api/prospect/1');
-      }};
-  });
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q, $alert) {
     console.log("query Controller", $stateParams);
     $scope.resultsReturned = false;
@@ -1294,6 +1117,210 @@ var $__scripts__ = (function() {
       }
     };
   }]);
+  var Prospect = function Prospect(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.Issues = (function() {
+      var $__1 = 0,
+          $__2 = [];
+      for (var $__5 = obj.Issues[$traceurRuntime.toProperty(Symbol.iterator)](),
+          $__6; !($__6 = $__5.next()).done; ) {
+        try {
+          throw undefined;
+        } catch (x) {
+          x = $__6.value;
+          $traceurRuntime.setProperty($__2, $__1++, new Issue(x));
+        }
+      }
+      return $__2;
+    }());
+    this.Activities = (function() {
+      var $__1 = 0,
+          $__2 = [];
+      for (var $__5 = obj.Activities[$traceurRuntime.toProperty(Symbol.iterator)](),
+          $__6; !($__6 = $__5.next()).done; ) {
+        try {
+          throw undefined;
+        } catch (x) {
+          x = $__6.value;
+          $traceurRuntime.setProperty($__2, $__1++, new Activity(x));
+        }
+      }
+      return $__2;
+    }());
+    this.Contacts = (function() {
+      var $__1 = 0,
+          $__2 = [];
+      for (var $__5 = obj.Contacts[$traceurRuntime.toProperty(Symbol.iterator)](),
+          $__6; !($__6 = $__5.next()).done; ) {
+        try {
+          throw undefined;
+        } catch (x) {
+          x = $__6.value;
+          $traceurRuntime.setProperty($__2, $__1++, new Contact(x));
+        }
+      }
+      return $__2;
+    }());
+  };
+  ($traceurRuntime.createClass)(Prospect, {}, {});
+  var Contact = function Contact(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.HumanTypes_ = _.pluck(obj.Types, 'Type');
+    this.OldTypes = [];
+  };
+  ($traceurRuntime.createClass)(Contact, {
+    set HumanTypes(value) {
+      this.OldTypes = this.HumanTypes_;
+      this.HumanTypes_ = value;
+    },
+    get HumanTypes() {
+      return this.HumanTypes_;
+    },
+    get old_vs_new() {
+      return {
+        'old': this.OldTypes,
+        'new': this.HumanTypes_
+      };
+    }
+  }, {});
+  var Issue = function Issue(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.start = obj.CreationDateTime;
+    this.end = obj.CompletionDateTime;
+    this.startHuman = moment(obj.CreationDateTime).format("ll");
+    this.endHuman = moment(obj.CompletionDateTime).format("ll");
+    this.content = obj.Description;
+    this.typeOf = "Closed Issues";
+    if (this.end == "1900-01-01T00:00:00") {
+      delete this.end;
+      this.endHuman = "Still opened";
+      this.className = "openIssue";
+      this.typeOf = "Open Issues";
+    }
+  };
+  ($traceurRuntime.createClass)(Issue, {}, {});
+  var Activity = function Activity(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.startHuman = moment(obj.CreationDateTime).format("ll");
+    this.start = obj.CreationDateTime;
+    this.content = obj.Note;
+    this.typeOf = "All Activities";
+  };
+  ($traceurRuntime.createClass)(Activity, {}, {});
+  angular.module('uiRouterSample').controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
+    console.log("Hello prospect");
+    $scope.isCollapsed = true;
+    $scope.filters = ['All Activities', 'Only My Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+    $scope.selection = ['All Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+    $scope.toggleSelection = function toggleSelection(filterName) {
+      var idx = $scope.selection.indexOf(filterName);
+      if (idx > -1) {
+        $scope.selection.splice(idx, 1);
+        deleteFilter(filterName);
+      } else {
+        addFilter(filterName);
+        $scope.selection.push(filterName);
+      }
+    };
+    function deleteFilter(filterName) {
+      var itemsGet = items.get();
+      var remove = _.filter(itemsGet, function(num) {
+        return num.typeOf == filterName;
+      });
+      items.remove(remove);
+    }
+    function addFilter(filterName) {
+      var itemsGet = Activities_and_Issues;
+      var adds = _.filter(itemsGet, function(num) {
+        return num.typeOf == filterName;
+      });
+      items.add(adds);
+    }
+    $scope.the_Prospect;
+    prospectFactory.getProspect_by_ID().then(function(data) {
+      console.log("Got prospect", data);
+      $scope.the_Prospect = new Prospect(data.data);
+      console.log($scope.the_Prospect);
+      makeTimeline();
+    });
+    var timeline;
+    var items;
+    var Activities_and_Issues;
+    function makeTimeline() {
+      console.log("Making timeline");
+      Activities_and_Issues = $scope.the_Prospect.Issues.concat($scope.the_Prospect.Activities);
+      items = new vis.DataSet(Activities_and_Issues);
+      var container = document.getElementById('visualization');
+      var options = {
+        width: '100%',
+        minHeight: '150px',
+        editable: false,
+        min: new Date(2001, 0, 1),
+        zoomMin: 1000 * 60 * 60 * 24
+      };
+      timeline = new vis.Timeline(container, items, options);
+      timeline.on('select', function(properties) {
+        logEvent('select', properties);
+      });
+    }
+    $scope.message = "Select an event";
+    function logEvent(event, properties) {
+      var content = items._data[$traceurRuntime.toProperty(properties.items[0])];
+      $scope.message = content.content;
+      console.log(content);
+      $scope.msgInfo = content;
+      $scope.$digest();
+    }
+    function zoom(percentage) {
+      console.log(items._data);
+      var range = timeline.getWindow();
+      var interval = range.end - range.start;
+      timeline.setWindow({
+        start: range.start.valueOf() - interval * percentage,
+        end: range.end.valueOf() + interval * percentage
+      });
+    }
+    $scope.icons = [{
+      value: 1,
+      label: 'Owner'
+    }, {
+      value: 2,
+      label: 'Person in'
+    }, {
+      value: 3,
+      label: 'Best Friend'
+    }];
+    $scope.update = function(contact) {
+      var diff = $scope.the_Prospect.Contacts[0].old_vs_new;
+      var changed = _.difference(diff.old, diff.new);
+      if (diff.old.length > diff.new.length) {
+        console.log("Subtracted", changed);
+      } else {
+        console.log("Added", changed);
+      }
+    };
+  });
+  angular.module('uiRouterSample').factory('prospectFactory', function($http) {
+    return {getProspect_by_ID: function() {
+        return $http.get('http://10.1.1.118:8000/api/prospect/1');
+      }};
+  });
   return {
     get entries() {
       return entries;

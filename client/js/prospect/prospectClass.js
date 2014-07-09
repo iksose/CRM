@@ -1,40 +1,14 @@
 class Prospect {
-  constructor(obj) {
-    // console.log(Object.keys(obj))
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((key)=>{
-        self[key] = obj[key]
-    })
-    this.Issues = (function(){
-        var issue_array = []
-        obj.Issues.forEach(function(issue){
-            issue_array.push(new Issue(issue))
-            // console.log(new_contacts)
+    constructor(obj) {
+        var keys = Object.keys(obj);
+        var self = this;
+        keys.forEach((key)=>{
+            self[key] = obj[key]
         })
-        return issue_array
-    })()
-    this.Activities = (function(){
-      var Activities = [];
-      obj.Activities.forEach(function(activities){
-        activities.startHuman = moment(activities.CreationDateTime).format("ll")
-        activities.start = activities.CreationDateTime;
-        delete Activities.CreationDateTime;
-        activities.content = activities.Note;
-        delete activities.Note;
-        activities.typeOf = "All Activities";
-        Activities.push(activities)
-      })
-      return Activities;
-    })()
-    this.Contacts = (function(){
-        var new_contacts = []
-        obj.Contacts.forEach(function(contacts){
-            new_contacts.push(new Contact(contacts))
-        })
-        return new_contacts
-    })()
-  }
+        this.Issues = [ for(x of obj.Issues) new Issue(x) ]
+        this.Activities = [ for(x of obj.Activities) new Activity(x) ]
+        this.Contacts = [ for(x of obj.Contacts) new Contact(x) ]
+    }
 }
 
 class Contact {
@@ -78,5 +52,21 @@ class Issue {
             this.className = "openIssue"
             this.typeOf = "Open Issues"
         }
+    }
+}
+
+class Activity {
+    constructor(obj) {
+        var keys = Object.keys(obj);
+        var self = this;
+        keys.forEach((key)=>{
+            self[key] = obj[key]
+        })
+        this.startHuman = moment(obj.CreationDateTime).format("ll")
+        this.start = obj.CreationDateTime;
+        // delete Activities.CreationDateTime;
+        this.content = obj.Note;
+        // delete activities.Note;
+        this.typeOf = "All Activities";
     }
 }
