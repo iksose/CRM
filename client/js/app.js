@@ -8,7 +8,8 @@ var app = angular.module('uiRouterSample', [
   'ngSanitize',
   'chieffancypants.loadingBar',
   'angular-table',
-  'ngTagsInput'
+  'ngTagsInput',
+  'xeditable'
 ])
 
 

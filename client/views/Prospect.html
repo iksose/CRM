@@ -1,33 +1,4 @@
-<table class="table table-condensed table-striped">
-  <thead>
-    <!-- <tr>
-      <th>Head</th>
-    </tr> -->
-  </thead>
-  <tbody>
-    <tr>
-      <td>Name</td>
-      <td>{{the_Prospect.Name}}</td>
-    </tr>
-    <tr>
-      <td>Wholesaler</td>
-      <td>{{the_Prospect.PriWholesalerID}}</td>
-    </tr>
-    <tr>
-      <td>Location</td>
-      <td>{{the_Prospect.City}}</td>
-    </tr>
-    <tr>
-      <td>Scripts/mo</td>
-      <td>{{the_Prospect.ScriptsPerMonth}}</td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- COLLAPSE -->
-
-<a href ng-click="isCollapsed = !isCollapsed"><small>More info...</small></a>
-  <div collapse="isCollapsed">
+<div class="col-md-8">
     <table class="table table-condensed table-striped">
       <thead>
         <!-- <tr>
@@ -36,82 +7,140 @@
       </thead>
       <tbody>
         <tr>
-          <td>Name</td>
-          <td>Joe Smith</td>
+            <td>Name</td>
+            <!-- editable username (text with validation) -->
+            <td>
+            <span editable-text="the_Prospect.Name" e-name="name" e-form="rowform" onbeforesave="checkName($data, the_Prospect.Name)" ng-click="rowform.$show()">
+            {{ the_Prospect.Name || 'empty' }}
+            </span>
+            </td>
         </tr>
         <tr>
-          <td>Age</td>
-          <td>60</td>
+          <td>Wholesaler</td>
+          <td>{{the_Prospect.PriWholesalerID}}</td>
         </tr>
         <tr>
           <td>Location</td>
-          <td>Minneapoislis</td>
+          <td>{{the_Prospect.City}}</td>
         </tr>
         <tr>
-          <td>Products</td>
-          <td>Trinet, ProfitGuard</td>
+          <td>Scripts/mo</td>
+          <td>{{the_Prospect.ScriptsPerMonth}}</td>
         </tr>
       </tbody>
     </table>
-    <a href ng-click="isCollapsed = !isCollapsed"><small>Less </small></a>
-  </div>
-  <!-- END COLLAPSE -->
-<br>
-<hr>
-
-<!-- FIELDS FOR LOG BOX -->
-<small>Opened</small> <strong>{{msgInfo.startHuman}}</strong>  <small>by </small><strong>{{msgInfo.CreationUser}}</strong>
-<span class="pullright"><a href><small>New Note / Issue+</small></a></span>
-<br>
-<small>Closed</small> <strong>{{msgInfo.endHuman}}</strong> <small>by </small><strong>{{msgInfo.ClosedBy}}</strong>
-<small>Product</small><strong></strong>
 
 
-<div id="log" class="well wll-sm">
-  {{message}}
-  <br>
-  <a href>{{msgInfo.replyCount}} Follow-Ups</a>
+<!-- COLLAPSE -->
+
+    <a href ng-click="isCollapsed = !isCollapsed"><small>More info...</small></a>
+      <div collapse="isCollapsed">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <!-- <tr>
+              <th>Head</th>
+            </tr> -->
+          </thead>
+          <tbody>
+            <tr>
+              <td>Name</td>
+              <td>Joe Smith</td>
+            </tr>
+            <tr>
+              <td>Age</td>
+              <td>60</td>
+            </tr>
+            <tr>
+              <td>Location</td>
+              <td>Minneapoislis</td>
+            </tr>
+            <tr>
+              <td>Products</td>
+              <td>Trinet, ProfitGuard</td>
+            </tr>
+          </tbody>
+        </table>
+        <a href ng-click="isCollapsed = !isCollapsed"><small>Less </small></a>
+      </div>
+      <!-- END COLLAPSE -->
 </div>
-
-
-<div id="visualization">
-    <!-- <div class="menu">
-        <input type="button" id="zoomIn" value="Zoom in" class="btn btn-primary sm"/>
-        <input type="button" id="zoomOut" value="Zoom out" class="btn btn-primary sm"/>
-    </div> -->
+    <!-- END COLUMN -->
+<div class="col-md-4">
+    <h3>Contacts</h3>
+    <ul class="example-animate-container">
+        <li class="animate-repeat" ng-repeat="contact in the_Prospect.Contacts | filter:q">
+        [{{$index + 1}}] "PIC" - {{contact.Name}}  - {{contact.City}} -- {{contact.Email}}
+        <br>
+            <ul>
+                <!-- <li class="animate-repeat" ng-repeat="types in contact.Types | filter:q">
+                [{{$index + 1}}] Type {{types.Type}}
+                </li>
+                <a href>Add Type...</a> -->
+    <button type="button" class="btn btn-default" ng-model="contact.HumanTypes" data-html="1" data-multiple="1" data-animation="am-flip-x" ng-options="icon.value as icon.label for icon in icons" bs-select ng-change="update(contact)">
+      Action <span class="caret"></span>
+    </button>
+            </ul>
+        </li>
+    </ul>
 </div>
+<div class="col-md-12">
+    <br>
+    <hr>
 
-<div id="filters">
-  <!-- <label class="checkbox-inline">
-    <input type="checkbox" id="inlineCheckbox1" value="option1" checked> All Activities
-  </label>
-  <label class="checkbox-inline">
-    <input type="checkbox" id="inlineCheckbox2" value="option2"> Only My Activities
-  </label>
-  <label class="checkbox-inline">
-    <input type="checkbox" id="inlineCheckbox3" value="option3" checked> Closed Issues
-  </label>
-  <label class="checkbox-inline">
-    <input type="checkbox" id="inlineCheckbox3" value="option3" checked> Open Issues
-  </label>
-  <label class="checkbox-inline">
-    <input type="checkbox" id="inlineCheckbox3" value="option3" checked> Trinet
-  </label>
-  <label class="checkbox-inline">
-    <input type="checkbox" id="inlineCheckbox3" value="option3" checked> ProfitGuard
-  </label> -->
-
-  <label ng-repeat="filterName in filters" class="checkbox-inline">
-  <input
-    type="checkbox"
-    name="selectedFilter[]"
-    value="{{filterName}}"
-    ng-checked="selection.indexOf(filterName) > -1"
-    ng-click="toggleSelection(filterName)"
-    > {{filterName}}
-  </label>
+    <!-- FIELDS FOR LOG BOX -->
+    <small>Opened</small> <strong>{{msgInfo.startHuman}}</strong>  <small>by </small><strong>{{msgInfo.CreationUser}}</strong>
+    <span class="pullright"><a href><small>New Note / Issue+</small></a></span>
+    <br>
+    <small>Closed</small> <strong>{{msgInfo.endHuman}}</strong> <small>by </small><strong>{{msgInfo.ClosedBy}}</strong>
+    <small>Product</small><strong></strong>
 
 
+    <div id="log" class="well wll-sm">
+      {{message}}
+      <br>
+      <a href>{{msgInfo.replyCount}} Follow-Ups</a>
+    </div>
+
+
+    <div id="visualization">
+        <!-- <div class="menu">
+            <input type="button" id="zoomIn" value="Zoom in" class="btn btn-primary sm"/>
+            <input type="button" id="zoomOut" value="Zoom out" class="btn btn-primary sm"/>
+        </div> -->
+    </div>
+
+    <div id="filters">
+      <!-- <label class="checkbox-inline">
+        <input type="checkbox" id="inlineCheckbox1" value="option1" checked> All Activities
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" id="inlineCheckbox2" value="option2"> Only My Activities
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" id="inlineCheckbox3" value="option3" checked> Closed Issues
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" id="inlineCheckbox3" value="option3" checked> Open Issues
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" id="inlineCheckbox3" value="option3" checked> Trinet
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" id="inlineCheckbox3" value="option3" checked> ProfitGuard
+      </label> -->
+
+      <label ng-repeat="filterName in filters" class="checkbox-inline">
+      <input
+        type="checkbox"
+        name="selectedFilter[]"
+        value="{{filterName}}"
+        ng-checked="selection.indexOf(filterName) > -1"
+        ng-click="toggleSelection(filterName)"
+        > {{filterName}}
+      </label>
+
+
+    </div>
 </div>
 
 

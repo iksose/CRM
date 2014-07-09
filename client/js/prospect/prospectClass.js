@@ -1,33 +1,18 @@
 class Prospect {
   constructor(obj) {
-    this.Name = obj.Name,
-    this.PriWholesalerID = obj.PriWholesalerID,
-    this.City = obj.City,
-    this.ScriptsPerMonth = obj.ScriptsPerMonth;
+    // console.log(Object.keys(obj))
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((key)=>{
+        self[key] = obj[key]
+    })
     this.Issues = (function(){
-      var issue_array = [];
-      obj.Issues.forEach(function(issues){
-        issues.CreationUser = issues.CreationUser;
-        issues.start = issues.CreationDateTime;
-        issues.startHuman = moment(issues.CreationDateTime).format("ll")
-        delete issues.CreationDateTime;
-        issues.end = issues.CompletionDateTime
-        issues.endHuman = moment(issues.CompletionDateTime).format("ll")
-        delete issues.CompletionDateTime;
-        issues.content = issues.Description;
-        delete issues.Description;
-        issues.typeOf = "Closed Issues"
-        // empty string issues throw error
-        if(issues.end == "1900-01-01T00:00:00"){
-          delete issues.end
-          issues.endHuman = "Still opened"
-          issues.className = "openIssue"
-          issues.typeOf = "Open Issues"
-        }
-        // issues.replyCount = issues.FollowUp.length
-        issue_array.push(issues)
-      })
-      return issue_array;
+        var issue_array = []
+        obj.Issues.forEach(function(issue){
+            issue_array.push(new Issue(issue))
+            // console.log(new_contacts)
+        })
+        return issue_array
     })()
     this.Activities = (function(){
       var Activities = [];
@@ -42,9 +27,56 @@ class Prospect {
       })
       return Activities;
     })()
+    this.Contacts = (function(){
+        var new_contacts = []
+        obj.Contacts.forEach(function(contacts){
+            new_contacts.push(new Contact(contacts))
+        })
+        return new_contacts
+    })()
   }
+}
 
-    get latest () {
-    return this.Issues;
-  }
+class Contact {
+    constructor(obj) {
+        var keys = Object.keys(obj);
+        var self = this;
+        keys.forEach((key)=>{
+            self[key] = obj[key]
+        })
+        this.HumanTypes_ = _.pluck(obj.Types, 'Type')
+        this.OldTypes = []
+    }
+    set HumanTypes(value) {
+        this.OldTypes = this.HumanTypes_;
+        this.HumanTypes_ = value;
+    }
+    get HumanTypes() {
+        return this.HumanTypes_
+    }
+    get old_vs_new(){
+        return {'old': this.OldTypes, 'new': this.HumanTypes_}
+    }
+}
+
+class Issue {
+    constructor(obj) {
+        var keys = Object.keys(obj);
+        var self = this;
+        keys.forEach((key)=>{
+            self[key] = obj[key]
+        })
+        this.start = obj.CreationDateTime;
+        this.end = obj.CompletionDateTime
+        this.startHuman = moment(obj.CreationDateTime).format("ll")
+        this.endHuman = moment(obj.CompletionDateTime).format("ll")
+        this.content = obj.Description;
+        this.typeOf = "Closed Issues"
+        if(this.end == "1900-01-01T00:00:00"){
+            delete this.end
+            this.endHuman = "Still opened"
+            this.className = "openIssue"
+            this.typeOf = "Open Issues"
+        }
+    }
 }

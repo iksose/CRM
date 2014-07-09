@@ -107,5 +107,22 @@ angular.module('uiRouterSample')
     // attach events to the navigation buttons
     // document.getElementById('zoomIn').onclick    = function () { zoom(-0.2); };
     // document.getElementById('zoomOut').onclick   = function () { zoom( 0.2); };
+    $scope.icons = [
+        {value: 1, label: 'Owner'},
+        {value: 2, label: 'Person in'},
+        {value: 3, label: 'Best Friend'}
+    ];
+
+
+    $scope.update = function(contact){
+        var diff = $scope.the_Prospect.Contacts[0].old_vs_new
+        var changed = _.difference(diff.old, diff.new);
+        // need to check the length to see if it's an add or a delete
+        if(diff.old.length > diff.new.length){
+            console.log("Subtracted", changed)
+        }else{
+            console.log("Added", changed)
+        }
+    }
 
 })

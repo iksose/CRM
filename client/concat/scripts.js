@@ -1,7 +1,7 @@
 var $__scripts__ = (function() {
   "use strict";
   var __moduleName = "scripts";
-  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table', 'ngTagsInput']).run(['$rootScope', '$state', '$stateParams', '$cookies', "$http", function($rootScope, $state, $stateParams, $cookies, $http) {
+  var app = angular.module('uiRouterSample', ['ui.router', 'ngAnimate', 'ngResource', 'ngCookies', 'mgcrea.ngStrap', 'ngSanitize', 'chieffancypants.loadingBar', 'angular-table', 'ngTagsInput', 'xeditable']).run(['$rootScope', '$state', '$stateParams', '$cookies', "$http", function($rootScope, $state, $stateParams, $cookies, $http) {
     $traceurRuntime.setProperty($http.defaults.headers.common, 'XKey', $cookies.xkey);
     $http.defaults.headers.put = {'Content-Type': 'application/x-www-form-urlencoded'};
     $http.defaults.headers.post = {'Content-Type': 'application/x-www-form-urlencoded'};
@@ -867,27 +867,15 @@ var $__scripts__ = (function() {
     };
   });
   var Prospect = function Prospect(obj) {
-    this.Name = obj.Name, this.PriWholesalerID = obj.PriWholesalerID, this.City = obj.City, this.ScriptsPerMonth = obj.ScriptsPerMonth;
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
     this.Issues = (function() {
       var issue_array = [];
-      obj.Issues.forEach(function(issues) {
-        issues.CreationUser = issues.CreationUser;
-        issues.start = issues.CreationDateTime;
-        issues.startHuman = moment(issues.CreationDateTime).format("ll");
-        delete issues.CreationDateTime;
-        issues.end = issues.CompletionDateTime;
-        issues.endHuman = moment(issues.CompletionDateTime).format("ll");
-        delete issues.CompletionDateTime;
-        issues.content = issues.Description;
-        delete issues.Description;
-        issues.typeOf = "Closed Issues";
-        if (issues.end == "1900-01-01T00:00:00") {
-          delete issues.end;
-          issues.endHuman = "Still opened";
-          issues.className = "openIssue";
-          issues.typeOf = "Open Issues";
-        }
-        issue_array.push(issues);
+      obj.Issues.forEach(function(issue) {
+        issue_array.push(new Issue(issue));
       });
       return issue_array;
     })();
@@ -904,10 +892,59 @@ var $__scripts__ = (function() {
       });
       return Activities;
     })();
+    this.Contacts = (function() {
+      var new_contacts = [];
+      obj.Contacts.forEach(function(contacts) {
+        new_contacts.push(new Contact(contacts));
+      });
+      return new_contacts;
+    })();
   };
-  ($traceurRuntime.createClass)(Prospect, {get latest() {
-      return this.Issues;
-    }}, {});
+  ($traceurRuntime.createClass)(Prospect, {}, {});
+  var Contact = function Contact(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.HumanTypes_ = _.pluck(obj.Types, 'Type');
+    this.OldTypes = [];
+  };
+  ($traceurRuntime.createClass)(Contact, {
+    set HumanTypes(value) {
+      this.OldTypes = this.HumanTypes_;
+      this.HumanTypes_ = value;
+    },
+    get HumanTypes() {
+      return this.HumanTypes_;
+    },
+    get old_vs_new() {
+      return {
+        'old': this.OldTypes,
+        'new': this.HumanTypes_
+      };
+    }
+  }, {});
+  var Issue = function Issue(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.start = obj.CreationDateTime;
+    this.end = obj.CompletionDateTime;
+    this.startHuman = moment(obj.CreationDateTime).format("ll");
+    this.endHuman = moment(obj.CompletionDateTime).format("ll");
+    this.content = obj.Description;
+    this.typeOf = "Closed Issues";
+    if (this.end == "1900-01-01T00:00:00") {
+      delete this.end;
+      this.endHuman = "Still opened";
+      this.className = "openIssue";
+      this.typeOf = "Open Issues";
+    }
+  };
+  ($traceurRuntime.createClass)(Issue, {}, {});
   angular.module('uiRouterSample').controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
     console.log("Hello prospect");
     $scope.isCollapsed = true;
@@ -981,6 +1018,25 @@ var $__scripts__ = (function() {
         end: range.end.valueOf() + interval * percentage
       });
     }
+    $scope.icons = [{
+      value: 1,
+      label: 'Owner'
+    }, {
+      value: 2,
+      label: 'Person in'
+    }, {
+      value: 3,
+      label: 'Best Friend'
+    }];
+    $scope.update = function(contact) {
+      var diff = $scope.the_Prospect.Contacts[0].old_vs_new;
+      var changed = _.difference(diff.old, diff.new);
+      if (diff.old.length > diff.new.length) {
+        console.log("Subtracted", changed);
+      } else {
+        console.log("Added", changed);
+      }
+    };
   });
   angular.module('uiRouterSample').factory('prospectFactory', function($http) {
     return {getProspect_by_ID: function() {
