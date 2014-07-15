@@ -268,6 +268,41 @@ var app = angular.module('uiRouterSample', [
           }
         })
 
+        .state('home.kim', {
+          url: 'Kim/:ProspectID',
+          views: {
+            'content': {
+              templateUrl: 'views/Kim.html',
+              controller: "kimController"
+                }
+            },
+            reloadOnSearch: false
+        })
+
+        .state('home.search', {
+          url: 'search?ProspectID&CustID&NCPDP&NPI',
+          views: {
+            'content': {
+              templateUrl: 'views/search.html',
+              controller: "searchController"
+            }
+          }
+        })
+
+        // .state('home.search.results', {
+        //   url: '/priority',
+        //   views: {
+        //     'content': {
+        //       templateUrl: 'views/search.html',
+        //       controller: "searchController"
+        //   },
+        //   'searchView': {
+        //       templateUrl: 'views/search.html',
+        //       controller: "searchController"
+        //   }
+        //   }
+        // })
+
 
     }
   ]

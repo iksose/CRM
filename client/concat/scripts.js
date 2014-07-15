@@ -114,6 +114,19 @@ var $__scripts__ = (function() {
           templateUrl: 'views/Prospect.html',
           controller: "prospectController"
         }}
+    }).state('home.kim', {
+      url: 'Kim/:ProspectID',
+      views: {'content': {
+          templateUrl: 'views/Kim.html',
+          controller: "kimController"
+        }},
+      reloadOnSearch: false
+    }).state('home.search', {
+      url: 'search?ProspectID&CustID&NCPDP&NPI',
+      views: {'content': {
+          templateUrl: 'views/search.html',
+          controller: "searchController"
+        }}
     });
   }]);
   var list = [1, 2, 3, 4];
@@ -624,6 +637,29 @@ var $__scripts__ = (function() {
       $scope.newActivity = {};
     };
   });
+  angular.module('uiRouterSample').controller('kimController', function($scope, $rootScope, $state, $alert, prospectFactory) {
+    console.log("Hello kim");
+    $scope.the_Prospect;
+    $scope.Contacts = [];
+    prospectFactory.getProspect_by_ID($state.params).then(function(data) {
+      console.log("Got prospect", data);
+      $scope.the_Prospect = new Prospect(data.data);
+      console.log($scope.the_Prospect);
+      $scope.currentContact = $scope.the_Prospect.Contacts[0];
+      $scope.the_Prospect.Activities.reverse();
+    });
+    $scope.contactsCollapsed = true;
+    $scope.issuesCollapsed = true;
+    $scope.notesCollapsed = false;
+    $scope.currentContact;
+    $scope.onClickTab = function(contact) {
+      $scope.currentContact = contact;
+    };
+    $scope.isActiveTab = function(contact) {
+      return contact == $scope.currentContact;
+    };
+    $scope.currentPage = 1;
+  });
   angular.module('uiRouterSample').controller('landingController', function($scope, $rootScope, $state, Tasks) {
     console.log("Landing Controller");
     if (!$rootScope.loggedIn) {
@@ -866,6 +902,665 @@ var $__scripts__ = (function() {
     $transition.animationEndEventName = findEndEventName(animationEndEventNames);
     return $transition;
   }]);
+  angular.module('uiRouterSample').filter('selectedTags', function() {
+    return function(tasks, tags) {
+      return tasks.filter(function(task) {
+        for (var i in task.Tags) {
+          if (tags.indexOf(task[$traceurRuntime.toProperty(i)]) != -1) {
+            return true;
+          }
+        }
+        return false;
+      });
+    };
+  });
+  angular.module('uiRouterSample').controller('navbarSearcher', function($scope, $rootScope, $state, $alert, prospectFactory) {
+    console.log("Hello navbar");
+    $scope.popover = {
+      "title": "Title",
+      "content": "Hello Popover<br />This is a multiline message!"
+    };
+  });
+  angular.module('uiRouterSample').directive('dirPaginate', ['$compile', '$parse', '$timeout', 'paginationService', function($compile, $parse, $timeout, paginationService) {
+    return {
+      priority: 5000,
+      terminal: true,
+      compile: function(element, attrs) {
+        attrs.$set('ngRepeat', attrs.dirPaginate);
+        var expression = attrs.dirPaginate;
+        var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/);
+        var filterPattern = /\|\s*itemsPerPage:[^|]*/;
+        if (match[2].match(filterPattern) === null) {
+          throw "pagination directive: the 'itemsPerPage' filter must be set.";
+        }
+        var itemsPerPageFilterRemoved = match[2].replace(filterPattern, '');
+        var collectionGetter = $parse(itemsPerPageFilterRemoved);
+        var compiled = $compile(element, null, 5000);
+        return function(scope, element, attrs) {
+          var paginationId;
+          paginationId = attrs.paginationId || "__default";
+          paginationService.registerInstance(paginationId);
+          var currentPageGetter;
+          if (attrs.currentPage) {
+            currentPageGetter = $parse(attrs.currentPage);
+          } else {
+            scope.__currentPage = 1;
+            currentPageGetter = $parse('__currentPage');
+          }
+          paginationService.setCurrentPageParser(paginationId, currentPageGetter, scope);
+          if (typeof attrs.totalItems !== 'undefined') {
+            paginationService.setAsyncModeTrue(paginationId);
+            scope.$watch(function() {
+              return $parse(attrs.totalItems)(scope);
+            }, function(result) {
+              if (0 < result) {
+                paginationService.setCollectionLength(paginationId, result);
+              }
+            });
+          } else {
+            scope.$watchCollection(function() {
+              return collectionGetter(scope);
+            }, function(collection) {
+              if (collection) {
+                paginationService.setCollectionLength(paginationId, collection.length);
+              }
+            });
+          }
+          compiled(scope);
+        };
+      }
+    };
+  }]).directive('dirPaginationControls', ['paginationService', function(paginationService) {
+    function generatePagesArray(currentPage, collectionLength, rowsPerPage, paginationRange) {
+      var pages = [];
+      var totalPages = Math.ceil(collectionLength / rowsPerPage);
+      var halfWay = Math.ceil(paginationRange / 2);
+      var position;
+      if (currentPage <= halfWay) {
+        position = 'start';
+      } else if (totalPages - halfWay < currentPage) {
+        position = 'end';
+      } else {
+        position = 'middle';
+      }
+      var ellipsesNeeded = paginationRange < totalPages;
+      var i = 1;
+      while (i <= totalPages && i <= paginationRange) {
+        var pageNumber = calculatePageNumber(i, currentPage, paginationRange, totalPages);
+        var openingEllipsesNeeded = (i === 2 && (position === 'middle' || position === 'end'));
+        var closingEllipsesNeeded = (i === paginationRange - 1 && (position === 'middle' || position === 'start'));
+        if (ellipsesNeeded && (openingEllipsesNeeded || closingEllipsesNeeded)) {
+          pages.push('...');
+        } else {
+          pages.push(pageNumber);
+        }
+        i++;
+      }
+      return pages;
+    }
+    function calculatePageNumber(i, currentPage, paginationRange, totalPages) {
+      var halfWay = Math.ceil(paginationRange / 2);
+      if (i === paginationRange) {
+        return totalPages;
+      } else if (i === 1) {
+        return i;
+      } else if (paginationRange < totalPages) {
+        if (totalPages - halfWay < currentPage) {
+          return totalPages - paginationRange + i;
+        } else if (halfWay < currentPage) {
+          return currentPage - halfWay + i;
+        } else {
+          return i;
+        }
+      } else {
+        return i;
+      }
+    }
+    return {
+      restrict: 'AE',
+      templateUrl: 'views/dirPagination.tpl.html',
+      scope: {
+        maxSize: '=?',
+        onPageChange: '&?'
+      },
+      link: function(scope, element, attrs) {
+        var paginationId;
+        paginationId = attrs.paginationId || "__default";
+        if (!scope.maxSize) {
+          scope.maxSize = 9;
+        }
+        scope.directionLinks = angular.isDefined(attrs.directionLinks) ? scope.$parent.$eval(attrs.directionLinks) : true;
+        scope.boundaryLinks = angular.isDefined(attrs.boundaryLinks) ? scope.$parent.$eval(attrs.boundaryLinks) : false;
+        if (!paginationService.isRegistered(paginationId)) {
+          var idMessage = (paginationId !== '__default') ? " (id: " + paginationId + ") " : " ";
+          throw "pagination directive: the pagination controls" + idMessage + "cannot be used without the corresponding pagination directive.";
+        }
+        var paginationRange = Math.max(scope.maxSize, 5);
+        scope.pages = [];
+        scope.pagination = {
+          last: 1,
+          current: 1
+        };
+        scope.$watch(function() {
+          return (paginationService.getCollectionLength(paginationId) + 1) * paginationService.getItemsPerPage(paginationId);
+        }, function(length) {
+          if (0 < length) {
+            generatePagination();
+          }
+        });
+        scope.$watch(function() {
+          return paginationService.getCurrentPage(paginationId);
+        }, function(currentPage) {
+          scope.pages = generatePagesArray(currentPage, paginationService.getCollectionLength(paginationId), paginationService.getItemsPerPage(paginationId), paginationRange);
+        });
+        scope.setCurrent = function(num) {
+          if (/^\d+$/.test(num)) {
+            if (0 < num && num <= scope.pagination.last) {
+              paginationService.setCurrentPage(paginationId, num);
+              scope.pages = generatePagesArray(num, paginationService.getCollectionLength(paginationId), paginationService.getItemsPerPage(paginationId), paginationRange);
+              scope.pagination.current = num;
+              if (scope.onPageChange) {
+                scope.onPageChange({newPageNumber: num});
+              }
+            }
+          }
+        };
+        function generatePagination() {
+          scope.pages = generatePagesArray(1, paginationService.getCollectionLength(paginationId), paginationService.getItemsPerPage(paginationId), paginationRange);
+          scope.pagination.current = parseInt(paginationService.getCurrentPage(paginationId));
+          scope.pagination.last = scope.pages[$traceurRuntime.toProperty(scope.pages.length - 1)];
+          if (scope.pagination.last < scope.pagination.current) {
+            scope.setCurrent(scope.pagination.last);
+          }
+        }
+      }
+    };
+  }]).filter('itemsPerPage', ['paginationService', function(paginationService) {
+    return function(collection, itemsPerPage, paginationId) {
+      if (typeof(paginationId) === 'undefined') {
+        paginationId = "__default";
+      }
+      if (!paginationService.isRegistered(paginationId)) {
+        throw "pagination directive: the itemsPerPage id argument (id: " + paginationId + ") does not match a registered pagination-id.";
+      }
+      var end;
+      var start;
+      if (collection instanceof Array) {
+        itemsPerPage = itemsPerPage || 9999999999;
+        if (paginationService.isAsyncMode(paginationId)) {
+          start = 0;
+        } else {
+          start = (paginationService.getCurrentPage(paginationId) - 1) * itemsPerPage;
+        }
+        end = start + itemsPerPage;
+        paginationService.setItemsPerPage(paginationId, itemsPerPage);
+        return collection.slice(start, end);
+      } else {
+        return collection;
+      }
+    };
+  }]).service('paginationService', function() {
+    var instances = {};
+    var lastRegisteredInstance;
+    this.paginationDirectiveInitialized = false;
+    this.registerInstance = function(instanceId) {
+      if (typeof instances[$traceurRuntime.toProperty(instanceId)] === 'undefined') {
+        $traceurRuntime.setProperty(instances, instanceId, {asyncMode: false});
+        lastRegisteredInstance = instanceId;
+      }
+    };
+    this.isRegistered = function(instanceId) {
+      return (typeof instances[$traceurRuntime.toProperty(instanceId)] !== 'undefined');
+    };
+    this.getLastInstanceId = function() {
+      return lastRegisteredInstance;
+    };
+    this.setCurrentPageParser = function(instanceId, val, scope) {
+      instances[$traceurRuntime.toProperty(instanceId)].currentPageParser = val;
+      instances[$traceurRuntime.toProperty(instanceId)].context = scope;
+    };
+    this.setCurrentPage = function(instanceId, val) {
+      instances[$traceurRuntime.toProperty(instanceId)].currentPageParser.assign(instances[$traceurRuntime.toProperty(instanceId)].context, val);
+    };
+    this.getCurrentPage = function(instanceId) {
+      return instances[$traceurRuntime.toProperty(instanceId)].currentPageParser(instances[$traceurRuntime.toProperty(instanceId)].context);
+    };
+    this.setItemsPerPage = function(instanceId, val) {
+      instances[$traceurRuntime.toProperty(instanceId)].itemsPerPage = val;
+    };
+    this.getItemsPerPage = function(instanceId) {
+      return instances[$traceurRuntime.toProperty(instanceId)].itemsPerPage;
+    };
+    this.setCollectionLength = function(instanceId, val) {
+      instances[$traceurRuntime.toProperty(instanceId)].collectionLength = val;
+    };
+    this.getCollectionLength = function(instanceId) {
+      return instances[$traceurRuntime.toProperty(instanceId)].collectionLength;
+    };
+    this.setAsyncModeTrue = function(instanceId) {
+      instances[$traceurRuntime.toProperty(instanceId)].asyncMode = true;
+    };
+    this.isAsyncMode = function(instanceId) {
+      return instances[$traceurRuntime.toProperty(instanceId)].asyncMode;
+    };
+  });
+  ;
+  var Prospect = function Prospect(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.Issues = (function() {
+      var $__1 = 0,
+          $__2 = [];
+      for (var $__5 = obj.Issues[$traceurRuntime.toProperty(Symbol.iterator)](),
+          $__6; !($__6 = $__5.next()).done; ) {
+        try {
+          throw undefined;
+        } catch (x) {
+          x = $__6.value;
+          $traceurRuntime.setProperty($__2, $__1++, new Issue(x));
+        }
+      }
+      return $__2;
+    }());
+    this.Activities = (function() {
+      var $__1 = 0,
+          $__2 = [];
+      for (var $__5 = obj.Activities[$traceurRuntime.toProperty(Symbol.iterator)](),
+          $__6; !($__6 = $__5.next()).done; ) {
+        try {
+          throw undefined;
+        } catch (x) {
+          x = $__6.value;
+          $traceurRuntime.setProperty($__2, $__1++, new Activity(x));
+        }
+      }
+      return $__2;
+    }());
+    this.Contacts = (function() {
+      var $__1 = 0,
+          $__2 = [];
+      for (var $__5 = obj.Contacts[$traceurRuntime.toProperty(Symbol.iterator)](),
+          $__6; !($__6 = $__5.next()).done; ) {
+        try {
+          throw undefined;
+        } catch (x) {
+          x = $__6.value;
+          $traceurRuntime.setProperty($__2, $__1++, new Contact(x));
+        }
+      }
+      return $__2;
+    }());
+    this.IssueCount = obj.Issues.length;
+    this.ActivityCount = obj.Activities.length;
+    this.ContactCount = obj.Contacts.length;
+  };
+  ($traceurRuntime.createClass)(Prospect, {}, {});
+  var Contact = function Contact(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.HumanTypes_ = _.pluck(obj.Types, 'Type');
+    this.OldTypes = [];
+  };
+  ($traceurRuntime.createClass)(Contact, {
+    set HumanTypes(value) {
+      this.OldTypes = this.HumanTypes_;
+      this.HumanTypes_ = value;
+    },
+    get HumanTypes() {
+      return this.HumanTypes_;
+    },
+    get old_vs_new() {
+      return {
+        'old': this.OldTypes,
+        'new': this.HumanTypes_
+      };
+    }
+  }, {});
+  var Issue = function Issue(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.issue = true;
+    this.start = obj.CreationDateTime;
+    this.end = obj.CompletionDateTime;
+    this.startHuman = moment(obj.CreationDateTime).format("LL");
+    this.endHuman = moment(obj.CompletionDateTime).format("ll");
+    this.content = obj.Description.substring(0, 5);
+    this.typeOf = "Closed Issues";
+    if (this.end == "1900-01-01T00:00:00") {
+      delete this.end;
+      this.endHuman = "Still opened";
+      this.className = "openIssue";
+      this.typeOf = "Open Issues";
+    }
+    this.year = parseInt(moment(obj.CreationDateTime).format("YYYY"));
+    this.month = parseInt(moment(obj.CreationDateTime).format("MM"));
+    this.day = parseInt(moment(obj.CreationDateTime).format("DDD"));
+    this.month_year = moment(obj.CreationDateTime).format("MM") + moment(obj.CreationDateTime).format("YYYY");
+    this.year_day = moment(obj.CreationDateTime).format("DDD") + moment(obj.CreationDateTime).format("YYYY");
+    this.replyCount = obj.Followups.length;
+    this.Followups = (function() {
+      var $__1 = 0,
+          $__2 = [];
+      for (var $__5 = obj.Followups[$traceurRuntime.toProperty(Symbol.iterator)](),
+          $__6; !($__6 = $__5.next()).done; ) {
+        try {
+          throw undefined;
+        } catch (x) {
+          x = $__6.value;
+          $traceurRuntime.setProperty($__2, $__1++, new Followups(x));
+        }
+      }
+      return $__2;
+    }());
+  };
+  ($traceurRuntime.createClass)(Issue, {}, {});
+  var Activity = function Activity(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.issue = false;
+    this.startHuman = moment(obj.CreationDateTime).format("LL");
+    this.start = obj.CreationDateTime;
+    this.content = "1 note";
+    this.typeOf = "All Activities";
+    this.year = parseInt(moment(obj.CreationDateTime).format("YYYY"));
+    this.month = parseInt(moment(obj.CreationDateTime).format("MM"));
+    this.day = parseInt(moment(obj.CreationDateTime).format("DDD"));
+    this.month_year = moment(obj.CreationDateTime).format("MM") + moment(obj.CreationDateTime).format("YYYY");
+    this.year_day = moment(obj.CreationDateTime).format("DDD") + moment(obj.CreationDateTime).format("YYYY");
+  };
+  ($traceurRuntime.createClass)(Activity, {}, {});
+  var Followups = function Followups(obj) {
+    var keys = Object.keys(obj);
+    var self = this;
+    keys.forEach((function(key) {
+      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
+    }));
+    this.issue = false;
+    this.startHuman = moment(obj.CreationDateTime).format("ll");
+  };
+  ($traceurRuntime.createClass)(Followups, {}, {});
+  angular.module('uiRouterSample').controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
+    console.log("Hello prospect");
+    var zoomcount = 3;
+    $scope.currentContact;
+    $scope.onClickTab = function(contact) {
+      $scope.currentContact = contact;
+    };
+    $scope.isActiveTab = function(contact) {
+      return contact == $scope.currentContact;
+    };
+    $scope.isCollapsed = true;
+    $scope.showDetails = false;
+    $scope.saveContact = function(contact) {
+      console.log("Saving contact...", contact);
+    };
+    $scope.filters = ['All Activities', 'Only My Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+    $scope.selection = ['All Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
+    $scope.toggleSelection = function toggleSelection(filterName) {
+      var idx = $scope.selection.indexOf(filterName);
+      if (idx > -1) {
+        $scope.selection.splice(idx, 1);
+        deleteFilter(filterName);
+      } else {
+        addFilter(filterName);
+        $scope.selection.push(filterName);
+      }
+    };
+    function deleteFilter(filterName) {
+      var itemsGet = items.get();
+      var remove = _.filter(itemsGet, function(num) {
+        return num.typeOf == filterName;
+      });
+      items.remove(remove);
+    }
+    function addFilter(filterName) {
+      var itemsGet = Activities_and_Issues;
+      var adds = _.filter(itemsGet, function(num) {
+        return num.typeOf == filterName;
+      });
+      items.add(adds);
+    }
+    $scope.the_Prospect;
+    $scope.Contacts = [];
+    console.log($state.params);
+    prospectFactory.getProspect_by_ID($state.params).then(function(data) {
+      console.log("Got prospect", data);
+      $scope.the_Prospect = new Prospect(data.data);
+      console.log($scope.the_Prospect);
+      makeTimeline();
+      $scope.currentContact = $scope.the_Prospect.Contacts[0];
+    });
+    var timeline;
+    var items;
+    var Activities_and_Issues;
+    function makeTimeline() {
+      console.log("Making timeline...this concats all events on the same day");
+      Activities_and_Issues = $scope.the_Prospect.Issues.concat($scope.the_Prospect.Activities);
+      function compareNumbers(a, b) {
+        return a.day - b.day;
+      }
+      Activities_and_Issues.sort(compareNumbers);
+      var dupes = [];
+      var ranges = _.pluck(Activities_and_Issues, 'year_day');
+      var ranges = _.uniq(ranges);
+      var mothership = [];
+      ranges.forEach(function(range, it) {
+        var groups = _.where(Activities_and_Issues, {'year_day': range});
+        var issues = [];
+        var found = false;
+        groups.forEach(function(type) {
+          if (type.issue && groups.length > 1) {
+            var index = groups.indexOf(type);
+            issues = groups.splice(index, 1);
+            found = true;
+          }
+        });
+        if (found) {
+          mothership.push(issues);
+          found = false;
+        }
+        mothership.push(groups);
+      });
+      Activities_and_Issues = [];
+      mothership.forEach(function(arr) {
+        if (arr[0].issue) {
+          console.log("Issue in mothership");
+          arr[0].content = "Issue";
+          Activities_and_Issues.push(arr[0]);
+        } else {
+          arr[0].content = arr.length + " Notes";
+          arr[0].warning = true;
+          arr[0].subnotes = arr;
+          Activities_and_Issues.push(arr[0]);
+        }
+      });
+      items = new vis.DataSet(Activities_and_Issues);
+      var container = document.getElementById('visualization');
+      var options = {
+        zoomable: false,
+        width: '100%',
+        minHeight: '150px',
+        editable: false,
+        start: new Date(2014, moment().subtract('month', 2).format("M"), 1),
+        max: new Date(2014, 7, 1)
+      };
+      timeline = new vis.Timeline(container, items, options);
+      timeline.on('select', function(properties) {
+        logEvent('select', properties);
+      });
+      timeline.on('rangechanged', function(time) {});
+    }
+    $scope.message = "Select an event";
+    function logEvent(event, properties) {
+      var content = items._data[$traceurRuntime.toProperty(properties.items[0])];
+      $scope.message = content.Note;
+      console.log(content);
+      if (content.warning) {
+        console.log("Special message -> goto note");
+        gotoNote(content);
+      } else if (content.issue) {
+        console.log("Special issue -> goto issue");
+        gotoIssue(content);
+      }
+      $scope.msgInfo = content;
+      $scope.showDetails = true;
+      $scope.$digest();
+    }
+    function gotoIssue(note) {
+      zoomcount = 3;
+      var container = document.getElementById('visualization');
+      var monthStart = moment(note.start).startOf('month').format("D");
+      var monthEnd = moment(note.start).endOf('month').format("D");
+      var options = {
+        zoomable: false,
+        width: '100%',
+        minHeight: '150px',
+        editable: false,
+        start: new Date(note.year, note.month - 1, monthStart),
+        max: new Date(note.year, note.month - 1, monthEnd)
+      };
+      note.content = note.Description.substring(0, 20);
+      $scope.message = note.Description;
+      timeline.destroy();
+      timeline = new vis.Timeline(container, items, options);
+      timeline.on('select', function(properties) {
+        logEvent('select', properties);
+      });
+    }
+    function gotoNote(note) {
+      zoomcount = 3;
+      var container = document.getElementById('visualization');
+      var monthStart = moment(note.start).startOf('month').format("D");
+      var monthEnd = moment(note.start).endOf('month').format("D");
+      var options = {
+        zoomable: false,
+        width: '100%',
+        minHeight: '150px',
+        editable: false,
+        start: new Date(note.year, note.month - 1, monthStart),
+        max: new Date(note.year, note.month - 1, monthEnd)
+      };
+      console.log(note, monthStart, monthEnd);
+      note.subnotes.forEach(function(notes) {
+        notes.content = notes.Note.substring(0, 20);
+        items.remove(note.id);
+        items.add(notes);
+      });
+      timeline.destroy();
+      timeline = new vis.Timeline(container, items, options);
+      timeline.on('select', function(properties) {
+        logEvent('select', properties);
+      });
+    }
+    function zoom(zoom_in) {
+      console.log("Amounts", zoomcount, zoom_in);
+      zoomcount = zoomcount + zoom_in;
+      var options;
+      if (zoomcount == 4) {
+        console.log("Zoom in", zoomcount);
+        options = {
+          zoomable: false,
+          width: '100%',
+          minHeight: '150px',
+          editable: false,
+          start: new Date(2014, 5, 1),
+          max: new Date(2014, 7, 1)
+        };
+        zoomcount = 3;
+        zoomTimeline();
+      } else if (zoomcount == 2) {
+        console.log("Zoom out 'month view' ", zoomcount);
+        coolnewSortMethod();
+        options = {
+          zoomable: false,
+          width: '100%',
+          minHeight: '150px',
+          editable: false,
+          start: new Date(2014, 1, 1),
+          max: new Date(2014, 7, 1)
+        };
+        zoomTimeline();
+      } else if (zoomcount == 1) {
+        console.error("Wildcard zoom, placeholder...Todo", zoomcount);
+        zoomTimeline();
+      } else if (zoomcount == 0) {
+        console.error("cancel zoom", zoomcount);
+        zoomcount++;
+        return;
+      }
+      function zoomTimeline() {
+        var container = document.getElementById('visualization');
+        timeline.destroy();
+        timeline = new vis.Timeline(container, items, options);
+        timeline.on('select', function(properties) {
+          logEvent('select', properties);
+        });
+      }
+    }
+    document.getElementById('zoomIn').onclick = function() {
+      zoom(1);
+    };
+    document.getElementById('zoomOut').onclick = function() {
+      zoom(-1);
+    };
+    $scope.icons = [{
+      value: 1,
+      label: 'Owner'
+    }, {
+      value: 2,
+      label: 'Person in'
+    }, {
+      value: 3,
+      label: 'Best Friend'
+    }];
+    $scope.update = function(contact) {
+      var targ = _.findWhere($scope.the_Prospect.Contacts, contact);
+      var diff = targ.old_vs_new;
+      if (diff.old.length > diff.new.length) {
+        var changed = _.difference(diff.old, diff.new);
+        console.log("Subtracted", changed);
+      } else {
+        var changed = _.difference(diff.new, diff.old);
+        console.log("Added", changed);
+      }
+    };
+    function coolnewSortMethod() {
+      var months = 12;
+      var years = [2010, 2011, 2012, 2013, 2014];
+      var ranges = _.pluck(Activities_and_Issues, 'month_year');
+      var ranges = _.uniq(ranges);
+      var mothership = [];
+      ranges.forEach(function(range, it) {
+        var groups = _.where(Activities_and_Issues, {'month_year': range});
+        $traceurRuntime.setProperty(mothership, it, groups);
+      });
+      items.clear();
+      mothership.forEach(function(arr) {
+        delete arr[0].id;
+        arr[0].content = arr.length + " Notes";
+        arr[0].warning = true;
+        arr[0].subnotes = arr;
+        items.add(arr[0]);
+      });
+    }
+  });
+  angular.module('uiRouterSample').factory('prospectFactory', function($http) {
+    return {getProspect_by_ID: function(prospect) {
+        return $http.get('http://10.1.1.118:8000/api/prospect/' + prospect.ProspectID);
+      }};
+  });
   angular.module('uiRouterSample').controller('queryController', function($scope, $rootScope, $state, $stateParams, $location, queryFactory, $q, $alert) {
     console.log("query Controller", $stateParams);
     $scope.resultsReturned = false;
@@ -1045,6 +1740,65 @@ var $__scripts__ = (function() {
       });
     };
   });
+  angular.module('uiRouterSample').controller('searchController', function($scope, $rootScope, $state, $alert, searchFactory, $timeout, $location) {
+    console.log("Hello search");
+    console.log($state.params);
+    var cow_dicks = $state.params;
+    Object.keys(cow_dicks).forEach(function(k) {
+      if (!cow_dicks[$traceurRuntime.toProperty(k)]) {
+        delete cow_dicks[$traceurRuntime.toProperty(k)];
+      }
+    });
+    console.log("Got", cow_dicks);
+    if (cow_dicks) {
+      console.log("There's params, guys!!!");
+      searchFactory.search(cow_dicks).then(function(res) {
+        console.log(res.data);
+        $scope.searchResults = [];
+        if (res.data.length > 0) {
+          $scope.emptyResults = false;
+          res.data.forEach(function(prospect) {
+            $scope.searchResults.push(new Prospect(prospect));
+          });
+        } else {
+          $scope.emptyResults = true;
+          console.log("No data");
+        }
+        console.log($scope.searchResults);
+      });
+    }
+    $scope.paramsObj = {ProspectID: ''};
+    $scope.config = {
+      itemsPerPage: 10,
+      fillLastPage: false
+    };
+    $scope.searchResults = [];
+    $scope.emptyResults = false;
+    $scope.searchString = '';
+    $scope.startSearch = function() {
+      Object.keys($scope.paramsObj).forEach(function(key) {
+        $traceurRuntime.setProperty($scope.paramsObj, key, $scope.searchString);
+      });
+      $location.search($scope.paramsObj);
+    };
+    $scope.searchOptions = ['ProspectID', 'CustID', 'NCPDP', 'NPI'];
+    $scope.item = $scope.searchOptions[0];
+    $scope.searchSet = function() {
+      Object.keys($scope.paramsObj).forEach(function(key) {
+        delete $scope.paramsObj[$traceurRuntime.toProperty(key)];
+      });
+      $traceurRuntime.setProperty($scope.paramsObj, $scope.item, '');
+    };
+    $scope.gotoProspect = function(prospectID) {
+      console.log("Okay");
+      $state.go('home.prospect', {ProspectID: prospectID});
+    };
+  });
+  angular.module('uiRouterSample').factory('searchFactory', function($http) {
+    return {search: function(paramsObj) {
+        return $http.get('http://10.1.1.118:8000/api/Prospect', {params: paramsObj});
+      }};
+  });
   angular.module('uiRouterSample').controller('taskController', function($scope, $rootScope, $state, Tasks) {
     console.log("Task Controller", $state);
     $scope.singleTask = {};
@@ -1117,210 +1871,6 @@ var $__scripts__ = (function() {
       }
     };
   }]);
-  var Prospect = function Prospect(obj) {
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((function(key) {
-      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
-    }));
-    this.Issues = (function() {
-      var $__1 = 0,
-          $__2 = [];
-      for (var $__5 = obj.Issues[$traceurRuntime.toProperty(Symbol.iterator)](),
-          $__6; !($__6 = $__5.next()).done; ) {
-        try {
-          throw undefined;
-        } catch (x) {
-          x = $__6.value;
-          $traceurRuntime.setProperty($__2, $__1++, new Issue(x));
-        }
-      }
-      return $__2;
-    }());
-    this.Activities = (function() {
-      var $__1 = 0,
-          $__2 = [];
-      for (var $__5 = obj.Activities[$traceurRuntime.toProperty(Symbol.iterator)](),
-          $__6; !($__6 = $__5.next()).done; ) {
-        try {
-          throw undefined;
-        } catch (x) {
-          x = $__6.value;
-          $traceurRuntime.setProperty($__2, $__1++, new Activity(x));
-        }
-      }
-      return $__2;
-    }());
-    this.Contacts = (function() {
-      var $__1 = 0,
-          $__2 = [];
-      for (var $__5 = obj.Contacts[$traceurRuntime.toProperty(Symbol.iterator)](),
-          $__6; !($__6 = $__5.next()).done; ) {
-        try {
-          throw undefined;
-        } catch (x) {
-          x = $__6.value;
-          $traceurRuntime.setProperty($__2, $__1++, new Contact(x));
-        }
-      }
-      return $__2;
-    }());
-  };
-  ($traceurRuntime.createClass)(Prospect, {}, {});
-  var Contact = function Contact(obj) {
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((function(key) {
-      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
-    }));
-    this.HumanTypes_ = _.pluck(obj.Types, 'Type');
-    this.OldTypes = [];
-  };
-  ($traceurRuntime.createClass)(Contact, {
-    set HumanTypes(value) {
-      this.OldTypes = this.HumanTypes_;
-      this.HumanTypes_ = value;
-    },
-    get HumanTypes() {
-      return this.HumanTypes_;
-    },
-    get old_vs_new() {
-      return {
-        'old': this.OldTypes,
-        'new': this.HumanTypes_
-      };
-    }
-  }, {});
-  var Issue = function Issue(obj) {
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((function(key) {
-      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
-    }));
-    this.start = obj.CreationDateTime;
-    this.end = obj.CompletionDateTime;
-    this.startHuman = moment(obj.CreationDateTime).format("ll");
-    this.endHuman = moment(obj.CompletionDateTime).format("ll");
-    this.content = obj.Description;
-    this.typeOf = "Closed Issues";
-    if (this.end == "1900-01-01T00:00:00") {
-      delete this.end;
-      this.endHuman = "Still opened";
-      this.className = "openIssue";
-      this.typeOf = "Open Issues";
-    }
-  };
-  ($traceurRuntime.createClass)(Issue, {}, {});
-  var Activity = function Activity(obj) {
-    var keys = Object.keys(obj);
-    var self = this;
-    keys.forEach((function(key) {
-      $traceurRuntime.setProperty(self, key, obj[$traceurRuntime.toProperty(key)]);
-    }));
-    this.startHuman = moment(obj.CreationDateTime).format("ll");
-    this.start = obj.CreationDateTime;
-    this.content = obj.Note;
-    this.typeOf = "All Activities";
-  };
-  ($traceurRuntime.createClass)(Activity, {}, {});
-  angular.module('uiRouterSample').controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory) {
-    console.log("Hello prospect");
-    $scope.isCollapsed = true;
-    $scope.filters = ['All Activities', 'Only My Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
-    $scope.selection = ['All Activities', 'Closed Issues', 'Open Issues', 'Trinet', 'ProfitGuard'];
-    $scope.toggleSelection = function toggleSelection(filterName) {
-      var idx = $scope.selection.indexOf(filterName);
-      if (idx > -1) {
-        $scope.selection.splice(idx, 1);
-        deleteFilter(filterName);
-      } else {
-        addFilter(filterName);
-        $scope.selection.push(filterName);
-      }
-    };
-    function deleteFilter(filterName) {
-      var itemsGet = items.get();
-      var remove = _.filter(itemsGet, function(num) {
-        return num.typeOf == filterName;
-      });
-      items.remove(remove);
-    }
-    function addFilter(filterName) {
-      var itemsGet = Activities_and_Issues;
-      var adds = _.filter(itemsGet, function(num) {
-        return num.typeOf == filterName;
-      });
-      items.add(adds);
-    }
-    $scope.the_Prospect;
-    prospectFactory.getProspect_by_ID().then(function(data) {
-      console.log("Got prospect", data);
-      $scope.the_Prospect = new Prospect(data.data);
-      console.log($scope.the_Prospect);
-      makeTimeline();
-    });
-    var timeline;
-    var items;
-    var Activities_and_Issues;
-    function makeTimeline() {
-      console.log("Making timeline");
-      Activities_and_Issues = $scope.the_Prospect.Issues.concat($scope.the_Prospect.Activities);
-      items = new vis.DataSet(Activities_and_Issues);
-      var container = document.getElementById('visualization');
-      var options = {
-        width: '100%',
-        minHeight: '150px',
-        editable: false,
-        min: new Date(2001, 0, 1),
-        zoomMin: 1000 * 60 * 60 * 24
-      };
-      timeline = new vis.Timeline(container, items, options);
-      timeline.on('select', function(properties) {
-        logEvent('select', properties);
-      });
-    }
-    $scope.message = "Select an event";
-    function logEvent(event, properties) {
-      var content = items._data[$traceurRuntime.toProperty(properties.items[0])];
-      $scope.message = content.content;
-      console.log(content);
-      $scope.msgInfo = content;
-      $scope.$digest();
-    }
-    function zoom(percentage) {
-      console.log(items._data);
-      var range = timeline.getWindow();
-      var interval = range.end - range.start;
-      timeline.setWindow({
-        start: range.start.valueOf() - interval * percentage,
-        end: range.end.valueOf() + interval * percentage
-      });
-    }
-    $scope.icons = [{
-      value: 1,
-      label: 'Owner'
-    }, {
-      value: 2,
-      label: 'Person in'
-    }, {
-      value: 3,
-      label: 'Best Friend'
-    }];
-    $scope.update = function(contact) {
-      var diff = $scope.the_Prospect.Contacts[0].old_vs_new;
-      var changed = _.difference(diff.old, diff.new);
-      if (diff.old.length > diff.new.length) {
-        console.log("Subtracted", changed);
-      } else {
-        console.log("Added", changed);
-      }
-    };
-  });
-  angular.module('uiRouterSample').factory('prospectFactory', function($http) {
-    return {getProspect_by_ID: function() {
-        return $http.get('http://10.1.1.118:8000/api/prospect/1');
-      }};
-  });
   return {
     get entries() {
       return entries;

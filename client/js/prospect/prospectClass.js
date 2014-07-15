@@ -1,4 +1,4 @@
-class Prospect {
+    class Prospect {
     constructor(obj) {
         var keys = Object.keys(obj);
         var self = this;
@@ -8,6 +8,9 @@ class Prospect {
         this.Issues = [ for(x of obj.Issues) new Issue(x) ]
         this.Activities = [ for(x of obj.Activities) new Activity(x) ]
         this.Contacts = [ for(x of obj.Contacts) new Contact(x) ]
+        this.IssueCount = obj.Issues.length;
+        this.ActivityCount = obj.Activities.length;
+        this.ContactCount = obj.Contacts.length;
     }
 }
 
@@ -40,11 +43,12 @@ class Issue {
         keys.forEach((key)=>{
             self[key] = obj[key]
         })
+        this.issue = true;
         this.start = obj.CreationDateTime;
         this.end = obj.CompletionDateTime
-        this.startHuman = moment(obj.CreationDateTime).format("ll")
+        this.startHuman = moment(obj.CreationDateTime).format("LL")
         this.endHuman = moment(obj.CompletionDateTime).format("ll")
-        this.content = obj.Description;
+        this.content = obj.Description.substring(0, 5);
         this.typeOf = "Closed Issues"
         if(this.end == "1900-01-01T00:00:00"){
             delete this.end
@@ -52,6 +56,13 @@ class Issue {
             this.className = "openIssue"
             this.typeOf = "Open Issues"
         }
+        this.year = parseInt( moment(obj.CreationDateTime).format("YYYY") );
+        this.month = parseInt( moment(obj.CreationDateTime).format("MM") );
+        this.day = parseInt( moment(obj.CreationDateTime).format("DDD") );
+        this.month_year = moment(obj.CreationDateTime).format("MM") + moment(obj.CreationDateTime).format("YYYY")
+        this.year_day = moment(obj.CreationDateTime).format("DDD") + moment(obj.CreationDateTime).format("YYYY")
+        this.replyCount = obj.Followups.length;
+        this.Followups = [ for(x of obj.Followups) new Followups(x) ]
     }
 }
 
@@ -62,11 +73,30 @@ class Activity {
         keys.forEach((key)=>{
             self[key] = obj[key]
         })
-        this.startHuman = moment(obj.CreationDateTime).format("ll")
+        this.issue = false;
+        this.startHuman = moment(obj.CreationDateTime).format("LL")
         this.start = obj.CreationDateTime;
         // delete Activities.CreationDateTime;
-        this.content = obj.Note;
+        // this.content = obj.Note.substring(0, 20)
+        this.content = "1 note"
         // delete activities.Note;
         this.typeOf = "All Activities";
+        this.year = parseInt( moment(obj.CreationDateTime).format("YYYY") );
+        this.month = parseInt( moment(obj.CreationDateTime).format("MM") );
+        this.day = parseInt( moment(obj.CreationDateTime).format("DDD") );
+        this.month_year = moment(obj.CreationDateTime).format("MM") + moment(obj.CreationDateTime).format("YYYY")
+        this.year_day = moment(obj.CreationDateTime).format("DDD") + moment(obj.CreationDateTime).format("YYYY")
+    }
+}
+
+class Followups {
+    constructor(obj) {
+        var keys = Object.keys(obj);
+        var self = this;
+        keys.forEach((key)=>{
+            self[key] = obj[key]
+        })
+        this.issue = false;
+        this.startHuman = moment(obj.CreationDateTime).format("ll")
     }
 }

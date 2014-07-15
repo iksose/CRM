@@ -1,0 +1,218 @@
+<div class="col-md-6 prospect-info" >
+    <table class="table table-condensed table-striped" >
+      <thead>
+        <!-- <tr>
+          <th>Head</th>
+        </tr> -->
+      </thead>
+      <tbody role="complementary" >
+        <tr>
+            <td>Name</td>
+            <!-- editable username (text with validation) -->
+            <td>
+            <span editable-text="the_Prospect.Name" e-name="name" e-form="rowform"
+                onbeforesave="checkName($data, the_Prospect.Name)" ng-click="rowform.$show()">
+            {{ the_Prospect.Name || 'empty' }}
+            </span>
+            </td>
+        </tr>
+        <tr>
+          <td>Wholesaler</td>
+          <td>{{the_Prospect.PriWholesalerID}}</td>
+        </tr>
+        <tr>
+          <td>Location</td>
+          <td>{{the_Prospect.City}}</td>
+        </tr>
+        <tr>
+          <td>Scripts/mo</td>
+          <td>{{the_Prospect.ScriptsPerMonth}}</td>
+        </tr>
+        <tr>
+          <td>NCPDP</td>
+          <td>{{the_Prospect.NCPDP}}</td>
+        </tr>
+        <tr>
+          <td>Wholesaler</td>
+          <td>{{the_Prospect.PriWholesalerID}}</td>
+        </tr>
+        <tr>
+          <td>Location</td>
+          <td>{{the_Prospect.City}}</td>
+        </tr>
+        <tr>
+          <td>Scripts/mo</td>
+          <td>{{the_Prospect.ScriptsPerMonth}}</td>
+        </tr>
+        <tr>
+          <td>NCPDP</td>
+          <td>{{the_Prospect.NCPDP}}</td>
+        </tr>
+        <tr>
+          <td>Wholesaler</td>
+          <td>{{the_Prospect.PriWholesalerID}}</td>
+        </tr>
+        <tr>
+          <td>Location</td>
+          <td>{{the_Prospect.City}}</td>
+        </tr>
+        <tr>
+          <td>Scripts/mo</td>
+          <td>{{the_Prospect.ScriptsPerMonth}}</td>
+        </tr>
+        <tr>
+          <td>NCPDP</td>
+          <td>{{the_Prospect.NCPDP}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+</div>
+<!-- END COLUMN -->
+<div class="col-md-5 col-md-offset-1" id='contact-parent'>
+<!-- <a><p>Contacts</p></a> -->
+
+<div id="contacts-field">
+    <!-- <div id="tabs">
+        <ul class="nav nav-tabs">
+            <li ng-repeat="contact in the_Prospect.Contacts"
+                ng-class="{active:isActiveTab(contact)}"
+                ng-click="onClickTab(contact)" >
+                    <a href>{{$index + 1}}</a>
+            </li>
+        </ul>
+        <div id="mainView">
+            <p>{{currentContact.Name}}</p>
+            <p>{{currentContact.Addr1}}</p>
+            <p>{{currentContact.Email}}</p>
+            <p>Person in Charge</p>
+            <a href class='pull-right' data-animation="am-fade-and-slide-top"
+                data-template="views/edit_contact.html" bs-modal="currentContact">Edit</a>
+        </div>
+    </div>
+    <br>
+    <hr> -->
+    <ul class="nav nav-pills nav-stacked">
+        <!-- CONTACTS -->
+        <!-- <li ng-class="{active:isActiveTab2('contacts-tab')}"> -->
+        <li ng-class="{active:!contactsCollapsed}">
+          <a href ng-click="contactsCollapsed = !contactsCollapsed; makeActive($event.target.id)" id="contacts-tab">
+            <span class="badge pull-right">{{the_Prospect.ContactCount}}</span>
+            Contacts
+          </a>
+        </li>
+        <!-- start contacts collapse -->
+        <div collapse="contactsCollapsed">
+            <div id="tabs">
+                <ul class="nav nav-tabs">
+                    <li ng-repeat="contact in the_Prospect.Contacts"
+                        ng-class="{active:isActiveTab(contact)}"
+                        ng-click="onClickTab(contact)" >
+                            <a href>{{$index + 1}}</a>
+                    </li>
+                </ul>
+                <div id="mainView" class="well well-sm">
+                    <p>{{currentContact.Name}}</p>
+                    <p>{{currentContact.Addr1}}</p>
+                    <p>{{currentContact.Email}}</p>
+                    <p>Person in Charge</p>
+                    <a href  data-animation="am-fade-and-slide-top"
+                        data-template="views/edit_contact.html" bs-modal="currentContact">Edit</a>
+                    <!-- <hr>
+                    <br> -->
+                </div>
+            </div>
+        </div>
+        <!-- end contacts collapse -->
+        <!-- ISSUES -->
+        <li ng-class="{active:!issuesCollapsed}">
+            <a href ng-click="issuesCollapsed = !issuesCollapsed; makeActive($event.target.id)" id="issues-tab">
+              <span class="badge pull-right">{{the_Prospect.IssueCount}}</span>
+              Issues
+            </a>
+        </li>
+        <div collapse="issuesCollapsed">
+            <br>
+            <input type="text" ng-model="k">
+            <a href><span class="glyphicon glyphicon-cog pull-right"></span></a>
+            <div dir-paginate="issue in the_Prospect.Issues | filter:k | itemsPerPage: 3: 'issues' " pagination-id="issues">
+                <table class="table table-condensed table-striped">
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{issue.startHuman}}
+                            </td>
+                            <td>
+                                {{issue.CreationUser}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan='2'>
+                                {{issue.Description}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+        </div>
+        <!-- NOTES/ACTIVITES -->
+        <li ng-class="{active:!notesCollapsed}">
+            <a href ng-click="notesCollapsed = !notesCollapsed; makeActive('notesCollapsed')" id="notes-tab">
+              <span class="badge pull-right">{{the_Prospect.ActivityCount}}</span>
+              Notes
+            </a>
+        </li>
+        <div collapse="notesCollapsed">
+            <br>
+            <input type="text" ng-model="q">
+            <a href><span class="glyphicon glyphicon-cog pull-right"></span></a>
+            <div dir-paginate="activity in the_Prospect.Activities | filter:q | itemsPerPage: 3: 'notes' " current-page="currentPage" pagination-id="notes">
+                <table class="table table-condensed table-striped">
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{activity.startHuman}}
+                            </td>
+                            <td>
+                                {{activity.CreationUser}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan='2'>
+                                {{activity.Note}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <dir-pagination-controls boundary-links="true" pagination-id="notes"></dir-pagination-controls>
+            <br>
+            <br>
+            <dir-pagination-controls boundary-links="true"  pagination-id="issues"></dir-pagination-controls>
+        </div>
+    </ul>
+</div>
+
+<style type="text/css">
+    /*body{
+        background-color: #f0f0f0 !important
+    }
+    .prospect-info{
+        box-shadow: 0px 0px 3px 2px gray;
+        background-color: white;
+    }
+
+    #contact-parent{
+        box-shadow: 0px 0px 3px 3px gray;
+        background-color: white;
+    }*/
+
+    #tabs > ul > li.ng-scope.active > a {
+        background-color: #f5f5f5;
+    }
+</style>

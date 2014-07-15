@@ -1,4 +1,5 @@
-<div class="col-md-8">
+<span class="pullright"><a ui-sref="home.kim($state.params)"><small>Kim View</small></a></span>
+<div class="col-md-7">
     <table class="table table-condensed table-striped">
       <thead>
         <!-- <tr>
@@ -10,7 +11,8 @@
             <td>Name</td>
             <!-- editable username (text with validation) -->
             <td>
-            <span editable-text="the_Prospect.Name" e-name="name" e-form="rowform" onbeforesave="checkName($data, the_Prospect.Name)" ng-click="rowform.$show()">
+            <span editable-text="the_Prospect.Name" e-name="name" e-form="rowform"
+                onbeforesave="checkName($data, the_Prospect.Name)" ng-click="rowform.$show()">
             {{ the_Prospect.Name || 'empty' }}
             </span>
             </td>
@@ -26,6 +28,10 @@
         <tr>
           <td>Scripts/mo</td>
           <td>{{the_Prospect.ScriptsPerMonth}}</td>
+        </tr>
+        <tr>
+          <td>NCPDP</td>
+          <td>{{the_Prospect.NCPDP}}</td>
         </tr>
       </tbody>
     </table>
@@ -65,48 +71,96 @@
       <!-- END COLLAPSE -->
 </div>
     <!-- END COLUMN -->
-<div class="col-md-4">
+<div class="col-md-4 col-md-offset-1" id='contact-parent'>
     <h3>Contacts</h3>
-    <ul class="example-animate-container">
+    <!-- <ul class="example-animate-container">
         <li class="animate-repeat" ng-repeat="contact in the_Prospect.Contacts | filter:q">
         [{{$index + 1}}] "PIC" - {{contact.Name}}  - {{contact.City}} -- {{contact.Email}}
         <br>
             <ul>
-                <!-- <li class="animate-repeat" ng-repeat="types in contact.Types | filter:q">
-                [{{$index + 1}}] Type {{types.Type}}
-                </li>
-                <a href>Add Type...</a> -->
-    <button type="button" class="btn btn-default" ng-model="contact.HumanTypes" data-html="1" data-multiple="1" data-animation="am-flip-x" ng-options="icon.value as icon.label for icon in icons" bs-select ng-change="update(contact)">
-      Action <span class="caret"></span>
+    <button type="button" class="btn btn-default"
+        ng-model="contact.HumanTypes" data-html="1" data-multiple="1" data-animation="am-flip-x"
+        ng-options="icon.value as icon.label for icon in icons" bs-select ng-change="update(contact)">
+        Action <span class="caret"></span>
     </button>
             </ul>
         </li>
-    </ul>
+    </ul> -->
+    <div id="contacts-field">
+        <!-- <div ng-repeat="contact in the_Prospect.Contacts">
+            <a href class='pull-right' data-animation="am-fade-and-slide-top"
+                data-template="views/edit_contact.html" bs-modal="contact">Edit</a>
+            <ul>
+                <li>{{contact.Name}}</li>
+                <li>{{contact.Addr1}}</li>
+                <li>{{contact.Addr2}}</li>
+                <li>{{contact.City}}</li>
+                <li>{{contact.State}}</li>
+                <li>{{contact.Email}}</li>
+                <li>{{contact.Phone}}</li>
+            </ul>
+        </div> -->
+        <div id="tabs" >
+            <ul class="nav nav-tabs">
+                <li ng-repeat="contact in the_Prospect.Contacts"
+                    ng-class="{active:isActiveTab(contact)}"
+                    ng-click="onClickTab(contact)" >
+                        <a href>{{$index + 1}}</a>
+                </li>
+            </ul>
+            <div id="mainView">
+                <p>{{currentContact.Name}}</p>
+                <p>{{currentContact.Addr1}}</p>
+                <p>{{currentContact.Email}}</p>
+                <p>Person in Charge</p>
+                <a href class='pull-right' data-animation="am-fade-and-slide-top"
+                    data-template="views/edit_contact.html" bs-modal="currentContact">Edit</a>
+            </div>
+        </div>
 </div>
+
+
+
+    </div>
+
+</div>
+<!-- END CONTACTS -->
 <div class="col-md-12">
-    <br>
     <hr>
-
-    <!-- FIELDS FOR LOG BOX -->
-    <small>Opened</small> <strong>{{msgInfo.startHuman}}</strong>  <small>by </small><strong>{{msgInfo.CreationUser}}</strong>
     <span class="pullright"><a href><small>New Note / Issue+</small></a></span>
-    <br>
-    <small>Closed</small> <strong>{{msgInfo.endHuman}}</strong> <small>by </small><strong>{{msgInfo.ClosedBy}}</strong>
-    <small>Product</small><strong></strong>
+    <!-- get rid of <br> when a detail is shown -->
+    <br ng-hide="showDetails">
+
+    <!-- HIDE WHEN NO TIMELINE EVENT SELECTED -->
+    <div ng-show="showDetails">
+        <!-- FIELDS FOR LOG BOX -->
+        <small>Opened</small> <strong>{{msgInfo.startHuman}}</strong>
+            <small>by </small><strong>{{msgInfo.CreationUser}}</strong>
+        <!-- <span class="pullright"><a href><small>New Note / Issue+</small></a></span> -->
+        <br>
+        <small>Closed</small> <strong>{{msgInfo.endHuman}}</strong> <small>by </small><strong>{{msgInfo.ClosedBy}}</strong>
+        <small>Product</small><strong></strong>
 
 
-    <div id="log" class="well wll-sm">
-      {{message}}
-      <br>
-      <a href>{{msgInfo.replyCount}} Follow-Ups</a>
+        <div id="log" class="well wll-sm">
+          {{message}}
+          <div ng-show="msgInfo.issue">
+              <a href>{{msgInfo.replyCount}} Follow-Ups :</a>
+              <hr>
+              <div ng-repeat="reply in msgInfo.Followups">
+                  <p>{{reply.startHuman}} by <strong> {{reply.LastUpdtUser}}</strong> </p>
+                  <p>{{reply.Description}}</p>
+              </div>
+          </div>
+        </div>
     </div>
 
 
     <div id="visualization">
-        <!-- <div class="menu">
+        <div class="menu">
             <input type="button" id="zoomIn" value="Zoom in" class="btn btn-primary sm"/>
             <input type="button" id="zoomOut" value="Zoom out" class="btn btn-primary sm"/>
-        </div> -->
+        </div>
     </div>
 
     <div id="filters">
@@ -150,6 +204,27 @@
         font-size: 12pt;
     }*/
 
+    .contact-table{
+        border: 1px solid #dfdfdf;
+    }
+
+    #contact-parent{
+        border-left: 1px solid #dfdfdf;
+    }
+
+    #contacts-field ul
+    {
+        list-style-type: none;
+        /*border-bottom: 1px solid #dfdfdf;*/
+    }
+
+    #contacts-field{
+        /*max-height: 130px;*/
+        min-height: 130px;
+        /*overflow-y: scroll;*/
+
+    }
+
     .pullright{
       float: right;
     }
@@ -161,9 +236,9 @@
     }
 
     #log{
-      max-height: 130px;
+      /*max-height: 130px;*/
       min-height: 130px;
-      overflow-y: scroll;
+      /*overflow-y: scroll;*/
     }
 
     #filters .checkbox-inline{
@@ -182,4 +257,5 @@
         margin: 10px;
         z-index: 9999;
     }
+
 </style>
