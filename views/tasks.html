@@ -1,0 +1,60 @@
+<h3>My Tasks</h3>
+
+<!-- If a  paramater is provided -->
+<div ng-show="singleTaskBool">
+  <ul>
+    <li>Assigned User?{{singleTask.assignedUser}}</li>
+    <li>Task ID {{singleTask.taskID}}</li>
+    <li>Activity Type: {{singleTask.taskName}}</li>
+    <li>Due Date: {{singleTask.taskStartDate}}</li>
+  <ul>
+
+    <!--     if task type is BULK -->
+    <div ng-show="taskTypeBulk">
+      <h4>Work on a Bulk Type <small> Mass email, fax, etc</small></h4>
+      <a href=''>Export Prospect List to CSV</a>
+      <br>
+      <button type="button" class="btn btn-default">Task Complete</button>
+    </div>
+
+    <!--     if task type is SINGLE -->
+    <div ng-show="taskTypeSingle">
+      <h4>Work on a Single Type <small> Phone, Visit, etc</small></h4>
+      <p>Contact Details</p>
+      {{workingProspect}}
+      <br>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" value="">
+          Option one is this and that&mdash;be sure to include why it's great
+        </label>
+      </div>
+
+      <div class="radio">
+        <label>
+          <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+          Option one is this and that&mdash;be sure to include why it's great
+        </label>
+      </div>
+      <div class="radio">
+        <label>
+          <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+          Option two can be something else and selecting it will deselect option one
+        </label>
+      </div>
+      <button type="button" class="btn btn-default">Task Complete</button>
+    </div>
+
+</div>
+
+
+<!-- If no param, show every task -->
+<div ng-show="everyTaskBool">
+
+  <h4>Every Task Ever</h4>
+  <ul class="example-animate-container">
+      <li class="animate-repeat" ng-repeat="friend in everyTask">
+        [{{$index + 1}}] {{friend.assignedUser}} likes to {{friend.taskName}}
+      </li>
+    </ul>
+</div>

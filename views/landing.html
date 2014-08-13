@@ -1,0 +1,25 @@
+Go to Random Campaign
+
+<ui-sref-active="active"><a ui-sref=".campaign.details({params:1337})">Go</a></li>
+<br>
+Go to Admin Panel
+
+<ui-sref-active="active"><a ui-sref=".admin">Go</a></li>
+
+
+<div ng-show="inMarketing">
+  <h2>Hi you're in marketing</h2>
+  <hr>
+  <small>Sort by....</small>
+  <br>
+
+  <ul class="example-animate-container">
+      <li class="animate-repeat" ng-repeat="friend in allTasks">
+      <a href='' ui-sref=".tasks({taskID : friend.taskID})">
+        [{{$index + 1}}] {{friend.assignedGroup}} - {{friend.assignedUser}} -
+        {{friend.taskName}}
+      </a>
+      </li>
+    </ul>
+
+</div>

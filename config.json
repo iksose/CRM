@@ -1,0 +1,11 @@
+{
+  "traceur": {
+    "experimental": true,
+    "asyncFunctions": true,
+    "blockBinding": true,
+    "symbols": true,
+    "types": true,
+    "typeAssertions": true,
+    "typeAssertionModule": "assert"
+  }
+}

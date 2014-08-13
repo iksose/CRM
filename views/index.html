@@ -1,0 +1,71 @@
+<!doctype html>
+<!-- Our uiRouterSample module defined here -->
+<html lang="en" ng-app="uiRouterSample">
+  <head>
+    <meta charset="utf-8">
+
+      <script>
+
+      </script>
+
+        <!-- styles for ng-animate are located here -->
+        <!-- <link rel="stylesheet" type="text/css" href="concat/css/myapp.css">
+        <link rel="stylesheet" type="text/css" href="concat/css/xeditable.css">
+        <link rel="stylesheet" type="text/css" href="css/timeline-theme.css"> -->
+
+        <!-- // <script src="./node_modules/traceur/bin/traceur-runtime.js"></script> -->
+        <script src="concat/require.js"></script>
+        <script src="concat/vendor.js"></script>
+
+
+
+<script>
+  // require.config({
+  //   paths: {
+  //     assert: './node_modules/assert/dist/amd/assert'
+  //   }
+</script>
+
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+<!--   <link rel="stylesheet" href="concat/css/font-awesome.min.css"> -->
+
+    <!-- could easily use a custom property of the state here instead of 'name' -->
+    <title ng-bind="$state.current.name + ' - ui-router'">ui-router</title>
+  </head>
+  <body>
+    <div id="alerts-container"></div>
+<!-- <img class='demo' src='/img/demo.png'> -->
+
+
+<!-- Here is the main ui-view (unnamed) and will be populate by its immediate children's templates
+     unless otherwise explicitly named views are targeted. It's also employing ng-animate. -->
+<div ui-view class="container slide"></div>
+
+
+
+<!-- <div ui-view='content' class="container slide" style="padding-top: 80px;"></div> -->
+
+    <hr>
+    <pre>
+      <!-- Here's some values to keep an eye on in the sample in order to understand $state and $stateParams -->
+      $state = {{$state.current.name}}
+      $stateParams = {{$stateParams}}
+      $state full url = {{ $state.$current.url.source }}
+       Username: {{credentials.username}}
+       Key: {{credentials.key}}
+       Group: {{credentials.group}}
+       Admin: {{credentials.admin}}
+       Logged in: {{loggedIn}}
+       Todo: Ad-hoc lead, can anyone navigate to any task?
+    </pre>
+
+<!--     {{metrics}} -->
+    <!-- <ul class="example-animate-container">
+      <li class="animate-repeat" ng-repeat="friend in metrics">
+        {{friend.name}} - {{friend.duration}}ms
+      </li>
+    </ul> -->
+
+  </body>
+  <!-- // <script src="concat/scripts.js"></script> -->
+</html>

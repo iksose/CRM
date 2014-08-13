@@ -1,0 +1,654 @@
+<span class="pullright"><a ui-sref="home.kim($state.params)"><small>Kim View</small></a></span>
+<div class="row">
+<div class="col-md-1">
+    <div data-offset-top="-80" bs-affix>
+    <br>
+    <!-- <p><a href ng-click="scrolltoHref('Top')">Top</a></p> -->
+    <p><a href ng-click="scrolltoHref('Details')">Details</a></p>
+    <p><a href ng-click="scrolltoHref('Purchasing')">Purchasing</a></p>
+
+    <!-- if it's P, they see wholesaler and PBA -->
+    <span ng-show="the_Prospect.CustomerType == 'P' && the_Prospect.ProspectType != 'P'">
+    <div id="wholesaler_pba_list">
+        <ul>
+        <li><a>Wholesaler</a></li>
+        <li><a>PBA</a></li>
+        </ul>
+    </div>
+    </span>
+    <!-- END if 'P' -->
+    <!-- if it's N, they just see PBA -->
+    <span ng-show="the_Prospect.CustomerType == 'N' && the_Prospect.ProspectType != 'P'">
+    <div id="wholesaler_pba_list">
+        <ul>
+        <!-- <li><a>Wholesaler</a></li> -->
+        <li><a>PBA</a></li>
+        </ul>
+    </div>
+    </span>
+    <!-- END if 'N' -->
+    <p><a  href ng-click="scrolltoHref('Services')">Services</a></p>
+    <p><a  href ng-click="scrolltoHref('Reporting')">Reporting</a></p>
+    </div>
+</div>
+<div class="col-md-8">
+    <h3><a name="Details">Details</a></h3>
+
+    <table class="table table-condensed table-striped">
+      <thead>
+        <!-- <tr>
+          <th>Head</th>
+        </tr> -->
+      </thead>
+      <tbody>
+        <tr>
+            <td>Name</td>
+            <!-- editable username (text with validation) -->
+            <td>
+            <span editable-text="the_Prospect.Name" e-name="name" e-form="rowform"
+                onbeforesave="checkName($data, the_Prospect.Name)" ng-click="rowform.$show()">
+            {{ the_Prospect.Name || 'empty' }}
+            </span>
+            </td>
+        </tr>
+        <tr>
+          <td>Wholesaler</td>
+          <td>{{the_Prospect.PriWholesalerID}}</td>
+        </tr>
+        <tr>
+          <td>Location</td>
+          <td>{{the_Prospect.City}}</td>
+        </tr>
+        <tr>
+          <td>Scripts/mo</td>
+          <td>{{the_Prospect.ScriptsPerMonth}}</td>
+        </tr>
+        <tr>
+          <td>NCPDP</td>
+          <td>{{the_Prospect.NCPDP}}</td>
+        </tr>
+        <tr>
+          <td>NPI</td>
+          <td>{{the_Prospect.NPI}}</td>
+        </tr>
+        <tr>
+            <td>
+                <strong>CustID :</strong> {{the_Prospect.CustID}}
+            </td>
+            <td>
+                <strong>CustomerType :</strong> {{the_Prospect.CustomerType}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Territory :</strong> {{the_Prospect.CustID}}
+            </td>
+            <td>
+                <strong>Prospect Type :</strong> {{the_Prospect.ProspectType}}
+            </td>
+        </tr>
+        <tr>
+            <td colspan='2'>Comments -- should it have it's own section?</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+<!-- COLLAPSE -->
+
+    <!-- <a href ng-click="isCollapsed = !isCollapsed"><small>More info...</small></a>
+      <div collapse="isCollapsed">
+        <table class="table table-condensed table-striped">
+          <thead>
+          </thead>
+          <tbody>
+              <tr ng-repeat="(key, value) in the_Prospect_clone">
+                  <td>
+                      <strong>{{key}}</strong>
+                  </td>
+                  <td>
+                      {{value}}
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+        <a href ng-click="isCollapsed = !isCollapsed"><small>Less </small></a>
+      </div> -->
+      <!-- END COLLAPSE -->
+</div>
+    <!-- END COLUMN -->
+<div class="col-md-3" id='contact-parent'>
+    <h3>Contacts</h3>
+    <!-- <ul class="example-animate-container">
+        <li class="animate-repeat" ng-repeat="contact in the_Prospect.Contacts | filter:q">
+        [{{$index + 1}}] "PIC" - {{contact.Name}}  - {{contact.City}} -- {{contact.Email}}
+        <br>
+            <ul>
+    <button type="button" class="btn btn-default"
+        ng-model="contact.HumanTypes" data-html="1" data-multiple="1" data-animation="am-flip-x"
+        ng-options="icon.value as icon.label for icon in icons" bs-select ng-change="update(contact)">
+        Action <span class="caret"></span>
+    </button>
+            </ul>
+        </li>
+    </ul> -->
+    <div id="contacts-field">
+        <!-- <div ng-repeat="contact in the_Prospect.Contacts">
+            <a href class='pull-right' data-animation="am-fade-and-slide-top"
+                data-template="views/edit_contact.html" bs-modal="contact">Edit</a>
+            <ul>
+                <li>{{contact.Name}}</li>
+                <li>{{contact.Addr1}}</li>
+                <li>{{contact.Addr2}}</li>
+                <li>{{contact.City}}</li>
+                <li>{{contact.State}}</li>
+                <li>{{contact.Email}}</li>
+                <li>{{contact.Phone}}</li>
+            </ul>
+        </div> -->
+        <li ng-repeat="contact in the_Prospect.Contacts" ng-class="{active:!contactsCollapsed}">
+          <a href ng-click="contactsCollapsed = !contactsCollapsed; makeActive($event.target.id)" id="contacts-tab">
+            {{contact.Name}}
+          </a>
+        </li>
+        <!-- <div id="tabs" >
+            <ul class="nav nav-tabs">
+                <li ng-repeat="contact in the_Prospect.Contacts"
+                    ng-class="{active:isActiveTab(contact)}"
+                    ng-click="onClickTab(contact)" >
+                        <a href>{{$index + 1}}</a>
+                </li>
+            </ul>
+            <div id="mainView">
+                <p>{{currentContact.Name}}</p>
+                <p>{{currentContact.Addr1}}</p>
+                <p>{{currentContact.Email}}</p>
+                <p>Person in Charge</p>
+                <a href class='pull-right' data-animation="am-fade-and-slide-top"
+                    data-template="views/edit_contact.html" bs-modal="currentContact">Edit</a>
+            </div>
+        </div> -->
+
+        <h3>Issues</h3>
+        <li ng-repeat="issue in the_Prospect.Issues" ng-class="{active:!contactsCollapsed}">
+          <a href ng-click="contactsCollapsed = !contactsCollapsed; makeActive($event.target.id)" id="contacts-tab">
+            {{issue.Description}}
+          </a>
+        </li>
+</div>
+
+
+
+    </div>
+
+<!-- END CONTACTS -->
+<div class="col-md-8">
+    <hr>
+    <span class="pullright"><a href><small>New Note / Issue+</small></a></span>
+    <!-- get rid of <br> when a detail is shown -->
+    <br ng-hide="showDetails">
+
+    <!-- HIDE WHEN NO TIMELINE EVENT SELECTED -->
+    <div ng-show="showDetails">
+        <!-- FIELDS FOR LOG BOX -->
+        <small>Opened</small> <strong>{{msgInfo.startHuman}}</strong>
+            <small>by </small><strong>{{msgInfo.CreationUser}}</strong>
+        <!-- <span class="pullright"><a href><small>New Note / Issue+</small></a></span> -->
+        <br>
+        <small>Closed</small> <strong>{{msgInfo.endHuman}}</strong> <small>by </small><strong>{{msgInfo.ClosedBy}}</strong>
+        <small>Product</small><strong></strong>
+
+
+        <div id="log" class="well wll-sm">
+          {{message}}
+          <div ng-show="msgInfo.issue">
+              <a href>{{msgInfo.replyCount}} Follow-Ups :</a>
+              <hr>
+              <div ng-repeat="reply in msgInfo.Followups">
+                  <p>{{reply.startHuman}} by <strong> {{reply.LastUpdtUser}}</strong> </p>
+                  <p>{{reply.Description}}</p>
+              </div>
+          </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div id="tabs" >
+        <ul class="nav nav-tabs">
+            <!-- <li ng-repeat="contact in the_Prospect.Contacts"
+                ng-class="{active:isActiveTab(contact)}"
+                ng-click="onClickTab(contact)" >
+                    <a href>{{$index + 1}}</a>
+            </li> -->
+            <li ng-class="{active:clickTab}" ng-click="onClickTab(1)">
+                <a href>Timeline</a>
+            </li>
+            <li ng-class="{active:!clickTab}" ng-click="onClickTab(0)">
+                <a href>List</a>
+            </li>
+        </ul>
+        <div id="mainView">
+            <div id="visualization"  ng-show="clickTab">
+                <div class="menu">
+                    <input type="button" id="zoomIn" value="Zoom in" class="btn btn-primary sm"/>
+                    <input type="button" id="zoomOut" value="Zoom out" class="btn btn-primary sm"/>
+                </div>
+            </div>
+            <div ng-show="!clickTab">
+                <!-- LIST VIEW -->
+
+            <input type="text" ng-model="q">
+            <!-- <a href><span class="glyphicon glyphicon-cog pull-right"></span></a> -->
+            <!-- <a href class='pull-right'>Add New Note</a> -->
+            <div dir-paginate="activity in the_Prospect.Activities | filter:q | itemsPerPage: 3 " current-page="currentPage">
+                <table class="table table-condensed table-striped">
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{activity.startHuman}}
+                            </td>
+                            <td>
+                                {{activity.Type_Human}}
+                            </td>
+                            <td>
+                                {{activity.CreationUser}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan='3'>
+                                {{activity.Note}}
+                            </td>
+                        </tr>
+                        <span class="timebetween">{{activity.timebetween}}</span>
+                    </tbody>
+                </table>
+            </div>
+            <dir-pagination-controls boundary-links="true" ></dir-pagination-controls>
+            <br>
+
+                <!-- END LIST VIEW -->
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="filters">
+
+
+      <label ng-repeat="filterName in filters" class="checkbox-inline">
+      <input
+        type="checkbox"
+        name="selectedFilter[]"
+        value="{{filterName}}"
+        ng-checked="selection.indexOf(filterName) > -1"
+        ng-click="toggleSelection(filterName)"
+        > {{filterName}}
+      </label>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- end div class row -->
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <!-- PURCHASING TAB -->
+        <a name="Purchasing" class="invisibleAnchor">serve</a>
+        <br>
+        <br>
+        <h2 bs-scrollspy-list><a>PURCHASING</a></h2>
+        <hr>
+        <table class="table table-condensed table-striped">
+          <thead>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>
+                      <strong>PriWholesalerID :</strong> {{the_Prospect.PriWholesalerID}}
+                  </td>
+                  <td>
+                      <strong>PriWholesalerID :</strong> {{the_Prospect.PriWholesalerID}}
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      <strong>Contract :</strong> {{the_Prospect.COGS}}
+                  </td>
+                  <td>
+                      <strong>Contract Term Date :</strong> {{the_Prospect.ContractTermDate}}
+                  </td>
+              </tr>
+              <tr>
+              <td>
+                  <strong>GPO :</strong> {{the_Prospect.GPOID}}
+              </td>
+              <td>
+                  <strong>GPOTermDate :</strong> {{the_Prospect.GPOTermDate}}
+              </td>
+          </tr>
+              <tr>
+
+                  <td>
+                      <strong>Total Purchase Volume :</strong> {{the_Prospect.ContractTermDate}}
+                  </td>
+                  <td>
+                      <strong>Scripts Per Month :</strong> {{the_Prospect.GPOID}}
+                  </td>
+              </tr>
+
+
+              <tr>
+                  <td>
+                      <strong>GenPct :</strong> {{the_Prospect.GenPct}}
+                  </td>
+                  <td>
+                      <strong>GenPurchaseVol :</strong> {{the_Prospect.GenPurchaseVol}}
+                  </td>
+              </tr>
+                  <tr>
+                  <td>
+                      <strong>GenRebatePct :</strong> {{the_Prospect.GenRebatePct}}
+                  </td>
+                  <td>
+                      <strong>Brand :</strong> {{the_Prospect.NCPDP}}
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      <strong>Number of Secondary Wholesalers :</strong> {{the_Prospect.NPI}}
+                  </td>
+                  <td>
+                      <!-- <strong>NegExclusion :</strong> {{the_Prospect.NegExclusion}} -->
+                  </td>
+              </tr>
+
+                <!-- <tr>
+                    <td>
+                        <strong>ScriptsPerMonth :</strong> {{the_Prospect.ScriptsPerMonth}}
+                    </td>
+                    <td>
+                        <strong>Territory :</strong> {{the_Prospect.Territory}}
+                    </td>
+                </tr>
+                    <tr>
+                    <td>
+                        <strong>ThirdPartyID :</strong> {{the_Prospect.ThirdPartyID}}
+                    </td>
+                    <td>
+                        <strong>TtlPurchaseVol :</strong> {{the_Prospect.TtlPurchaseVol}}
+                    </td>
+                </tr> -->
+          </tbody>
+        </table>
+        <!-- WHOLESALER -->
+        <span ng-show="the_Prospect.CustomerType == 'P' && the_Prospect.ProspectType != 'P'">
+            <h4><a name="Wholesaler">WholeSaler</a></h4>
+            <hr>
+            <table class="table table-condensed table-striped">
+              <thead>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>
+                          <strong>Wholesaler Target Gen Vol : </strong>
+                          {{the_Prospect.Customer.WhlTargetGenVol}}
+                      </td>
+                      <td>
+                          <strong>Wholesaler Target Vol : </strong>
+                          {{the_Prospect.Customer.WhlTargetVol}}
+                      </td>
+                  </tr>
+              </tbody>
+              </table>
+        </span>
+        <!-- end wholesaler -->
+        <!-- if it's P, they see wholesaler and PBA -->
+        <span ng-show="the_Prospect.CustomerType == 'P' && the_Prospect.ProspectType != 'P' || the_Prospect.CustomerType == 'N' && the_Prospect.ProspectType != 'P'">
+            <a name="PBA" class="invisibleAnchor">serve</a>
+            <br>
+            <br>
+            <h4><a name="PBA">PBA</a></h4>
+            <hr>
+            <table class="table table-condensed table-striped">
+              <thead>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>
+                          <strong>Credit Limit : </strong>
+                          {{the_Prospect.Customer.RecentBrdRebPct}}
+                      </td>
+                      <td>
+                          <strong>Available Credit : </strong>
+                          {{the_Prospect.Customer.RecentGenRebPct}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <strong>Pay Method: </strong>
+                          {{the_Prospect.Customer.RecentBrdRebPct}}
+                      </td>
+                      <td>
+                          <strong>PBA Status : </strong>
+                          {{the_Prospect.PBAStatus}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <strong>Recent Brand Rebate PCT : </strong>
+                          {{the_Prospect.Customer.RecentBrdRebPct}}
+                      </td>
+                      <td>
+                          <strong>Recent Gen Rebate PCT : </strong>
+                          {{the_Prospect.Customer.RecentGenRebPct}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <strong>Recent Rebate Date : </strong>
+                          {{the_Prospect.Customer.RecentRebDate}}
+                      </td>
+                      <td>
+                          <strong>Recent Rx Circuit Rebate PCT : </strong>
+                          {{the_Prospect.Customer.RecentRxCircuitRebPct}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td colspan='2'>
+                          <strong>Recent Total Rebate : </strong>
+                          {{the_Prospect.Customer.RecentTtlReb}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td colspan='2'>
+                          <strong>Recent Ordering Methods : </strong>
+                          {{the_Prospect.Customer.OrderingMethods}}
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+        </span>
+        <!-- END WHOLESALER -->
+
+        <!-- SERVICES -->
+
+
+            <a name="Services" class="invisibleAnchor">serve</a>
+            <br>
+            <br>
+            <h2 bs-scrollspy-list><a>SERVICES</a></h2>
+            <p>Break this out by programs and services?</p>
+            <hr>
+            <table class="table table-condensed table-striped">
+              <thead>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>
+                          <strong>Chain CD : </strong>
+                          {{the_Prospect.ChainCD}}
+                      </td>
+                      <td>
+                          <strong>3rd party :</strong>
+                          {{the_Prospect.ThirdPartyID}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <strong>Central Pay :  </strong>
+                          {{the_Prospect.CentralPay}}
+                      </td>
+                      <td>
+                          <strong>Reconciliation :</strong>
+                          {{the_Prospect.Reconciliation}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <strong>Software System :  </strong>
+                          {{the_Prospect.SoftwareSystemID}}
+                      </td>
+                      <td>
+                          <strong>Switch :</strong>
+                          {{the_Prospect.SwitchID}}
+                      </td>
+                  </tr>
+              </tbody>
+              </table>
+              <!-- END SUB SERVICES -->
+
+              <!-- ONLY HIDE THIS PART -->
+          <span ng-show="the_Prospect.ProspectType !== 'P'">
+            <table class="table table-condensed table-striped">
+              <thead>
+              </thead>
+              <tbody>
+                  <tr ng-repeat="service in the_Prospect.Customer.Services">
+                      <td>
+                          {{service.StartDate}}
+                      </td>
+                      <td>
+                          {{service.Name}}
+                      </td>
+                  </tr>
+              </tbody>
+            </table>
+        </span>
+        <!-- END SERVICES -->
+
+
+
+
+    <!-- REPORTING -->
+    <h2 bs-scrollspy-list><a name="Reporting">REPORTING</a></h2>
+    <hr>
+    <p>todo</p>
+
+
+    </div>
+
+
+</div>
+
+
+<style type="text/css">
+
+/*body, html, input {
+    font-family: sans-serif;
+    font-size: 12pt;
+}*/
+
+.contact-table{
+    border: 1px solid #dfdfdf;
+}
+
+#contact-parent{
+    border-left: 1px solid #dfdfdf;
+}
+
+#contacts-field ul
+{
+    list-style-type: none;
+    /*border-bottom: 1px solid #dfdfdf;*/
+}
+
+#contacts-field{
+    /*max-height: 130px;*/
+    min-height: 130px;
+    /*overflow-y: scroll;*/
+
+}
+
+.pullright{
+  float: right;
+}
+
+.vis.timeline .openIssue {
+  color: white;
+  background-color: red;
+  border-color: darkred;
+}
+
+#log{
+  /*max-height: 130px;*/
+  min-height: 130px;
+  /*overflow-y: scroll;*/
+}
+
+#filters .checkbox-inline{
+  margin: 10px;
+}
+
+
+#visualization {
+    position: relative;
+}
+
+.menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 10px;
+    z-index: 9999;
+}
+
+#visualization > div.vis.timeline.root.bottom{
+    border-top:none !important;
+    border-bottom: 1px black !important;
+}
+
+.timebetween{
+    padding-left: 40%
+}
+
+body > div.container.slide.ng-scope > div.container.slide.ng-scope > div:nth-child(2) > div.col-md-1{
+    margin-left: -80px;
+}
+
+body > div.container.slide.ng-scope > div.container.slide.ng-scope > div:nth-child(2) > div.col-md-1 > div{
+    margin-left: -40px
+}
+
+#wholesaler_pba_list{
+    margin-left: -10px;
+}
+
+
+/*invisible anchor*/
+.invisibleAnchor{
+    color: white;
+}
+
+
+</style>

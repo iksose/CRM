@@ -1,0 +1,4 @@
+js/app.js:84:            // TODO server should respond with detail error texts;
+js/campaign/campaignDetailsController.js:16:        // TODO ->
+js/campaign/campaignDetailsController.js:76:        // TODO
+js/query/queryController.js:69:    // TODO get Product from select

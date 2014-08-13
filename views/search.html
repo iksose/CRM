@@ -1,0 +1,123 @@
+<h4>Search</h4>
+   <form class="form-inline" role="form" ng-submit="startSearch()">
+        <div class="input-group">
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-model="item" data-html="1"
+                ng-options="icon as icon for icon in searchOptions" bs-select ng-change="searchSet()">
+              Action <span class="caret"></span>
+            </button>
+          </span>
+          <input type="text" class="form-control" ng-model="searchString" id="searchbox">
+          <span class="input-group-btn">
+              <button class='btn btn-primary' value="Submit">Search!</button>
+          </span>
+        </div><!-- /input-group -->
+    </form>
+
+    <center>or</center>
+
+    <div class="row">
+    <div class="col-md-4">
+    <!-- used to center -->
+    </div>
+    <form class="form-inline col-md-4" role="form" ng-submit="fnCityStateZip()">
+         <div class="input-group">
+           <input type="text" class="form-control" ng-model="CityStateZip_string"
+           placeholder="City, State, or Zip">
+           <span class="input-group-btn">
+               <button class='btn btn-default' value="Submit">Search!</button>
+           </span>
+         </div><!-- /input-group -->
+     </form>
+     <div class="col-md-4">
+     <!-- used to center -->
+     </div>
+     <!-- END ROW -->
+     </div>
+
+    <div id="prospectType">
+
+    <!-- <center> -->
+    <label>Prospect Type</label>
+    <br>
+     <button type="button" class="btn btn-default" ng-model="selectedProspectType" data-html="1" data-multiple="1" data-animation="am-flip-x" max-length="2" ng-options="icon.value as icon.label for icon in prospectType" bs-select>
+      Action <span class="caret"></span>
+    </button>
+    <!-- </center> -->
+    </div>
+    <div id="customerType">
+    <!-- <center> -->
+    <label>Customer Type</label>
+    <br>
+     <button type="button" class="btn btn-default" ng-model="selectedCustomerType" data-html="1" data-multiple="1" data-animation="am-flip-x" max-length="2" ng-options="icon.value as icon.label for icon in customerType" bs-select>
+      Action <span class="caret"></span>
+    </button>
+    <!-- </center> -->
+    </div>
+    <div id="BDM">
+    <!-- <center> -->
+    <label>BDM Territory</label>
+    <br>
+     <button type="button" class="btn btn-default" ng-model="selectedBDM" data-html="1" data-multiple="1" data-animation="am-flip-x" max-length="2" ng-options="icon as icon for icon in BDMs" bs-select>
+      Action <span class="caret"></span>
+    </button>
+    <!-- </center> -->
+    </div>
+
+
+
+<br>
+<hr>
+<br>
+
+
+<!-- <div ui-view='searchView' class="container slide" style="padding-top: 80px">
+    <h4>Here's search view</h4>
+</div> -->
+
+<div ng-show="searchResults">
+    <h4>Results:</h4>
+    <table class="table table-striped" at-table at-paginated at-list="searchResults" at-config="config">
+        <thead></thead>
+        <tbody>
+            <tr ng-click="gotoProspect(item.ProspectID)" class='tr-clickable'>
+              <td  at-implicit at-sortable at-attribute="Name"></td>
+              <td  at-implicit at-sortable at-attribute="NPI"></td>
+              <td  at-implicit at-sortable at-attribute="NCPDP"></td>
+              <td  at-implicit at-sortable at-attribute="CustID"></td>
+              <td  at-implicit at-sortable at-attribute="ProspectID"></td>
+              <td  at-implicit at-sortable at-attribute="Addr1"></td>
+              <td  at-implicit at-sortable at-attribute="City"></td>
+              <td  at-implicit at-sortable at-attribute="State"></td>
+              <td  at-implicit at-sortable at-attribute="Zip"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <at-pagination at-list="searchResults" at-config="config"></at-pagination>
+</div>
+<div ng-show="emptyResults">
+    <p class="text-danger">No results found. Try refining your input.</p>
+</div>
+
+
+<style type="text/css">
+    .tr-clickable{
+        cursor: pointer;
+    }
+
+    #prospectType{
+        float: left;
+        padding-left: 30%
+    }
+
+    #customerType{
+        float: left;
+        padding-left: 2%;
+        padding-right: 1%;
+    }
+
+    #BDM{
+        /*padding-left: 4%*/
+    }
+</style>

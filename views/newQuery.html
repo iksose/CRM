@@ -1,0 +1,225 @@
+/get /queries
+
+<select class="form-control" ng-model="selectedQuery"
+  ng-change="findQuery()" ng-options="query.Name for query in queryList">
+<option value="">-- choose saved query --</option>
+</select>
+
+
+<hr>
+
+Submit a new query?
+<!-- <hr> -->
+
+<!-- <small>Populates if a saved query is selected...</small> -->
+<hr>
+
+<form class="form-inline" role="form">
+
+  <div class="form-group">
+    <label class="col-sm-6 control-label">Product</label>
+    <div class="col-sm-4">
+      <select class="form-control" ng-model="saveObject.Product"
+      ng-options="product for product in productList">
+      <option value="">--</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-6 control-label">Distance</label>
+    <div class="col-sm-4">
+      <select class="form-control">
+      <option>10 miles</option>
+      <option>20</option>
+      <option>30</option>
+      <option>40</option>
+      <option>50</option>
+      </select>
+    </div>
+  </div>
+
+<div class="form-group">
+    <label class="col-sm-6 control-label">State</label>
+    <div class="col-sm-4">
+        <button type="button" class="btn btn-default"
+          ng-model="selectedStates" data-html="1" data-multiple="1"
+          data-animation="am-flip-x"
+          ng-options="state.value as state.label for state in states"
+          placeholder="State <i class='fa fa-globe'></i>" bs-select>
+          Action <span class="caret"></span>
+        </button>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-6 control-label">GPO</label>
+    <div class="col-sm-4">
+        <select class="form-control">
+        <option>10</option>
+        <option>20</option>
+        <option>30</option>
+        <option>40</option>
+        <option>50</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-6 control-label">Revenue/mo</label>
+    <div class="col-sm-4">
+        <select class="form-control">
+        <option>$50k</option>
+        <option>$100k</option>
+        <option>30</option>
+        <option>40</option>
+        <option>50</option>
+        </select>
+    </div>
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-6 control-label">Wholesaler</label>
+    <div class="col-sm-4">
+        <select class="form-control">
+        <option>Adams</option>
+        <option>20</option>
+        <option>30</option>
+        <option>40</option>
+        <option>50</option>
+        </select>
+    </div>
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-6 control-label">3rd Party Network</label>
+    <div class="col-sm-4">
+        <select class="form-control">
+        <option>McFarlen</option>
+        <option>20</option>
+        <option>30</option>
+        <option>40</option>
+        <option>50</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-6 control-label">PG Rating</label>
+    <div class="col-sm-4">
+        <select class="form-control">
+        <option>10</option>
+        <option>20</option>
+        <option>30</option>
+        <option>40</option>
+        <option>50</option>
+        </select>
+    </div>
+</div>
+
+
+
+
+</form>
+
+
+<br><br>
+<button type="button" class="btn btn-default" ng-click="querySearch()">Search</button>
+
+<div ng-show="resultsReturned">
+
+  <h2>Query Results</h2>
+
+
+<!--   <ul class="example-animate-container">
+      <li class="animate-repeat"
+      ng-repeat="friend in results"
+      ng-click="DeleteProspect(friend.name)" ng-class="{isActive: !friend.isActive}">
+        [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old. IsActive? {{friend.isActive}}
+      </li>
+  </ul> -->
+
+
+  <strong>Results:</strong> {{results.length}}
+  <small>Click Name to view full prospect profile. Select elsewhere to remove from campaign </small>
+  <table at-table at-list="results" at-paginated at-config="tableConfig" class="table table-striped table-condensed" id="queryTable">
+  <thead></thead>
+  <tbody>
+    <tr  ng-class="{isActive: !this.item.Status}" class='clickable' ng-click="DeleteProspect(this.item.ProspectID)">
+      <!-- TODO fn DeleteProspect only works for new queries, not selecting saved ones -->
+      <!-- <td at-implicit at-attribute="Name" class="fixedWidthTD" ng-click="goHref($event)"><a href>Info </a></td> -->
+      <td at-attribute="Name" class="fixedWidthTD" ng-click="goHref($event)"><a ui-sref='home.prospect({ProspectID: item.ProspectID})'>{{item.Name}}</a></td>
+      <td at-implicit at-attribute="Addr1" at-sortable at-initial-sorting="desc"></td>
+      <td at-implicit at-attribute="State"></td>
+      <td at-implicit at-attribute="Zip"></td>
+      <td at-implicit at-attribute="Status"></td>
+    </tr>
+  </tbody>
+</table>
+
+<at-pagination at-list="results" at-config="tableConfig"></at-pagination>
+
+<hr>
+
+<h3>Additional Information</h2>
+
+<!-- </ul> -->
+
+  <form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Query Name</label>
+    <div class="col-sm-10">
+      <input type="text" ng-model="saveObject.Name" class="form-control" id="inputEmail3" placeholder="Placeholder" >
+    </div>
+  </div>
+<!--   <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Product</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" id="inputPassword3" placeholder="Placeholder">
+    </div>
+  </div> -->
+<!--   <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Other Details</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" id="inputPassword3" placeholder="Placeholder">
+    </div>
+  </div> -->
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Product</label>
+    <div class="col-sm-10">
+  <select class="form-control">
+  <option>Profit Guard</option>
+  <option>Tri-Net</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+  </select>
+  </div>
+  </div>
+
+
+
+</form>
+
+<br><br>
+
+<button type="button" class="btn btn-default" ng-click="saveTemplate()">Save Query</button>
+
+</div>
+
+<style type="text/css">
+    body > div.container.slide.ng-scope > div.container.slide.ng-scope > div > small{
+        padding-left: 20%
+    }
+    tr.clickable{
+        cursor: pointer;
+    }
+
+    /*state dropdown*/
+    body > div.container.slide.ng-scope > div.container.slide.ng-scope > form > div:nth-child(3) > div{
+        padding-right:110px;
+    }
+</style>

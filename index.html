@@ -1,0 +1,42 @@
+<html lang="en" ng-app="uiRouterSample">
+  <head>
+    <title>ES6++ playground</title>
+    <link rel="stylesheet" type="text/css" href="./css/myapp.css">
+    <link rel="stylesheet" type="text/css" href="./css/timeline-theme.css">
+  </head>
+  <body>
+    <script src="./compiled/src/vendor.js"></script>
+    <script src="./node_modules/traceur/bin/traceur-runtime.js"></script>
+    <script src='./compiled/src/main.js'></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <!--   <link rel="stylesheet" href="concat/css/font-awesome.min.css"> -->
+
+    <!-- could easily use a custom property of the state here instead of 'name' -->
+    <title ng-bind="$state.current.name + ' - ui-router'">ui-router</title>
+    <div id="alerts-container"></div>
+    <!-- <img class='demo' src='/img/demo.png'> -->
+
+
+    <!-- Here is the main ui-view (unnamed) and will be populate by its immediate children's templates
+    unless otherwise explicitly named views are targeted. It's also employing ng-animate. -->
+    <div ui-view class="container slide"></div>
+
+
+    <!-- <div ui-view='content' class="container slide" style="padding-top: 80px;"></div> -->
+
+    <hr>
+    <pre>
+    <!-- Here's some values to keep an eye on in the sample in order to understand $state and $stateParams -->
+    $state = {{$state.current.name}}
+    $stateParams = {{$stateParams}}
+    $state full url = {{ $state.$current.url.source }}
+    Username: {{credentials.username}}
+    Key: {{credentials.key}}
+    Group: {{credentials.group}}
+    Admin: {{credentials.admin}}
+    Logged in: {{loggedIn}}
+    Todo: Ad-hoc lead, can anyone navigate to any task?
+    </pre>
+
+  </body>
+</html>

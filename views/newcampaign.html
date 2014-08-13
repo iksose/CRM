@@ -1,0 +1,144 @@
+<h3>New Campaign</h3>
+
+<!-- hides once 'convert to campaign' is selected -->
+<div ng-hide='campaignConverted'>
+<hr>
+
+<small>Select from a list of saved Queries</small>
+
+<!-- <form >
+  <select class="form-control" ng-model="newCampaign_from_query" ng-change="setBillGroup()">
+    <option selected="selected">
+      Select a Saved Query
+    </option>
+    <option>Alabama 25 Year Old Eskimos</option>
+    <option>Charles Xavier School of Gifted Intellectuals</option>
+    <option>Fortune 500 Top Ten Bikinis</option>
+    <option>How The Alamo Became a Tourist</option>
+    <option>16 Children and their Favorite Nurses</option>
+  </select>
+</form> -->
+
+ <span  class="nullable">
+    <select class="form-control"
+    ng-model="selectedQuery" ng-options="c.Name for c in savedQueries" ng-change="setBillGroup()">
+      <option value="">-- choose query --</option>
+    </select>
+  </span><br/>
+
+
+  <div ng-show="fetched">
+  <h3>Campaign</h3>
+  {{savedQueryData}}<br>
+
+<form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Campaign Name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="inputEmail3" placeholder="Placeholder" ng-model='campaignDetails.Name'>
+    </div>
+  </div>
+  <!-- <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Campaign Date</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputPassword3" placeholder="Date Picker?">
+    </div>
+  </div> -->
+  <div class="form-group">
+    <label class="control-label col-sm-2"><i class="fa fa-calendar"></i>
+      <i class="fa fa-arrows-h"></i>
+      <i class="fa fa-calendar"></i> Date
+    </label>
+    <div class="form-group col-sm-2">
+      <input type="text" class="form-control" ng-model="fromDate" data-max-date="{{untilDate}}" placeholder="From" bs-datepicker>
+    </div>
+    <div class="form-group col-sm-2">
+      <input type="text" class="form-control" ng-model="untilDate" data-min-date="{{fromDate}}" placeholder="Until" bs-datepicker>
+    </div>
+  </div>
+
+  <!-- END DATEPICKER -->
+
+
+  <div class="form-group">
+    <label for="inputPassword4" class="col-sm-2 control-label">Search Terms</label>
+    <div class="col-sm-10">
+      <p class="form-control-static">{{campaignDetails.ParamStrUnpacked}}</p>
+    </div>
+  </div>
+</form>
+
+
+
+ <!-- TABLE -->
+
+ <table at-table at-list="campaignDetails.rows" at-paginated at-config="tableConfig" class="table table-striped table-condensed" id="queryTable">
+ <thead></thead>
+ <tbody>
+   <tr  ng-class="{isActive: !this.item.Status}" ng-click="DeleteProspect(this.item.ProspectID)">
+     <!-- TODO fn DeleteProspect only works for new queries, not selecting saved ones -->
+     <td at-implicit at-attribute="Name" class="fixedWidthTD" at-sortable ></td>
+     <td at-implicit at-attribute="Addr1" at-sortable at-initial-sorting="desc"></td>
+     <td at-implicit at-attribute="State" at-sortable ></td>
+     <td at-implicit at-attribute="Zip" at-sortable ></td>
+     <td at-implicit at-attribute="Status" at-sortable ></td>
+   </tr>
+ </tbody>
+</table>
+
+<at-pagination at-list="campaignDetails.rows" at-config="tableConfig"></at-pagination>
+
+<!-- END TABLE -->
+
+<br>
+
+  <button ng-click="convert()">Convert to Campaign</button>
+
+  <!-- div ends hide toggle -->
+  </div >
+  </div>
+  </div>
+
+  <div ng-show='campaignConverted'>
+
+<hr>
+
+  <center>
+    <h4>Campaign ID {{campaignID}}</h4>
+    <hr>
+  </center>
+
+
+<!-- ADD NEW ACTIVITY IS A TEMPLATE -->
+  <h4>Add New Activities</h4>
+    <div class="slide-animate" ng-include="'views/add_activity.tmpl.html'"></div>
+
+
+<button ng-click="saveActivity()">Save Activity</button>
+<br>
+
+<h4>Activites: {{activityNo}}</h4>
+<ul class="example-animate-container">
+<!-- | orderBy: 'StartDateTime' -->
+    <li class="animate-repeat" ng-repeat="friend in savedActivities">
+      [{{$index + 1}}] Type: {{friend.Name}} -- Type: {{friend.ActivityType}} -- Assigned: {{friend.AssignedID}}
+      -- Date: {{friend.StartDateTime}} -- Order : {{friend.Order}}
+    </li>
+</ul>
+
+<br>
+<hr>
+
+<label>Prospects:</label> <a href="">Export Prospects to Excel</a>
+
+<br>
+
+  <button class='button' ng-click="changeState()">Create Campaign Template</button>
+  </div>
+
+
+  <style>
+  body > div.container.slide.ng-scope > div.container.slide.ng-scope > div:nth-child(2) > div > form > div:nth-child(2) > div:nth-child(2){
+      margin-left: 0px;
+  }
+  <style>

@@ -1,0 +1,22 @@
+<div class="popover" tabindex="-1" ng-show="content">
+  <div class="arrow"></div>
+  <h3 class="popover-title" ng-bind-html="title" ng-show="title"></h3>
+  <div class="popover-content">
+      <p>Yolo</p>
+    <form name="popoverForm">
+      <!-- <p ng-bind-html="content" style="min-width:300px;"></p> -->
+      <!-- <pre>2 + 3 = <span ng-cloak>{{ 2 + 3 }}</span></pre> -->
+      <p>Yolo</p>
+      <pre>
+        <input type="radio" ng-model="color" value="red">  Red <br/>
+  <input type="radio" ng-model="color" ng-value="specialValue"> Green <br/>
+  <input type="radio" ng-model="color" value="blue"> Blue <br/>
+  <tt>color = {{color | json}}</tt><br/>
+  </pre>
+      <div class="form-actions">
+        <button type="button" class="btn btn-danger" ng-click="$hide()">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="popover.saved=true;$hide()">Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>

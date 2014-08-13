@@ -1,0 +1,64 @@
+<form class="form-horizontal" role="form" ng-controller="activityController">
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">ActivityType</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" placeholder="Email" ng-model="model.ActivityType">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  placeholder="Password" ng-model="model.Name">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Descr</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  placeholder="Password" ng-model="model.Descr">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">User</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  ng-model="model.AssignedID"
+              ng-options="user.UserID as user.Name for user in userList" placeholder="Enter user" bs-typeahead>
+    </div>
+  </div>
+
+  <!-- ATTACHMENTS -->
+
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Attachments</label>
+    <div class="col-sm-10">
+        <input type="file" ng-file-select="setFile($files)">
+    </div>
+  </div>
+
+    <!-- <input type="text" ng-model="myModelObj"> -->
+
+
+
+  <!-- RESPONSE MECHANICSM -->
+
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">Response Mechanism</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control"  ng-model="selectedUser"
+              ng-options="state.Name for state in userList" placeholder="Customer response" bs-typeahead>
+    </div>
+  </div>
+
+
+  <div class="form-group">
+    <label class="control-label col-sm-2"><i class="fa fa-calendar"></i>
+      <i class="fa fa-arrows-h"></i>
+      <i class="fa fa-calendar"></i> Duration
+    </label>
+    <div class="form-group col-sm-4">
+      <input type="text" class="form-control" ng-model="model.StartDateTime" data-max-date="{{untilDate}}" placeholder="From" bs-datepicker>
+    </div>
+    <div class="form-group col-sm-4">
+      <input type="text" class="form-control" ng-model="model.CompletionDateTime" data-min-date="{{fromDate}}" placeholder="Until" bs-datepicker>
+    </div>
+  </div>
+</form>
