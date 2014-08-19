@@ -1,13 +1,27 @@
 <html lang="en" ng-app="uiRouterSample">
-  <head>
+
+<head>
+    <script src="./compiled/src/vendor.js"></script>
+    <script>
+    require.config({
+        paths: {
+            assert: './node_modules/assert/dist/amd/assert'
+        },
+        deps: ['assert', './compiled/src/main.js']
+    });
+    window.name = "NG_DEFER_BOOTSTRAP!";
+    </script>
+
     <title>ES6++ playground</title>
+    <!-- // <script src="http://requirejs.org/docs/release/2.1.14/comments/require.js"></script> -->
     <link rel="stylesheet" type="text/css" href="./css/myapp.css">
     <link rel="stylesheet" type="text/css" href="./css/timeline-theme.css">
-  </head>
-  <body>
-    <script src="./compiled/src/vendor.js"></script>
+
+</head>
+
+<body>
     <script src="./node_modules/traceur/bin/traceur-runtime.js"></script>
-    <script src='./compiled/src/main.js'></script>
+    <!-- // <script src='./compiled/src/main.js'></script> -->
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <!--   <link rel="stylesheet" href="concat/css/font-awesome.min.css"> -->
 
@@ -38,5 +52,6 @@
     Todo: Ad-hoc lead, can anyone navigate to any task?
     </pre>
 
-  </body>
+</body>
+
 </html>

@@ -1,41 +1,49 @@
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Project name</a>
-    </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li ui-sref-active="active"><a ui-sref="home">Home</a></li>
-        <li ui-sref-active="active"><a ui-sref=".query">Research</a></li>
-        <li ui-sref-active="active"><a ui-sref=".about">About</a></li>
-<!--         <li ui-sref-active="active"><a ui-sref=".contacts">Damn Son</a></li> -->
-        <li ng-class="{active: $state.includes('home.campaign')}" bs-dropdown="dropdown"><a href="">Campaign</a></li>
-        <li ui-sref-active="active"><a ui-sref=".tasks">Tasks</a></li>
-        <li ui-sref-active="active"><a ui-sref=".prospect({ProspectID:'1'})">Prospects</a></li>
-        <li ui-sref-active="active"><a ui-sref=".search">Search</a></li>
-        <li ng-show="{{credentials.admin}}" ui-sref-active="active"><a ui-sref=".admin">Admin</a></li>
-        <!-- <span ng-show="loggedIn"> -->
-          <li ng-show="loggedIn" ui-sref-active="active">
-<!--           <a ui-sref="newPost">New Post <i class="fa fa-rss-square"></i> </a></li> -->
-        <!-- </span> -->
-      </ul>
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Project name</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li ui-sref-active="active"><a ui-sref="home">Home</a>
+                </li>
+                <li ui-sref-active="active"><a ui-sref=".query">Research</a>
+                </li>
+                <li ui-sref-active="active"><a ui-sref=".about">About</a>
+                </li>
+                <!--         <li ui-sref-active="active"><a ui-sref=".contacts">Damn Son</a></li> -->
+                <li ng-class="{active: $state.includes('home.campaign')}" bs-dropdown="dropdown"><a href="">Campaign</a>
+                </li>
+                <li ui-sref-active="active"><a ui-sref=".tasks">Tasks</a>
+                </li>
+                <li ui-sref-active="active"><a ui-sref=".prospect({ProspectID:'1'})">Prospects</a>
+                </li>
+                <li ui-sref-active="active"><a ui-sref=".search">Search</a>
+                </li>
+                <li ng-show="{{credentials.admin}}" ui-sref-active="active"><a ui-sref=".admin">Admin</a>
+                </li>
+                <!-- <span ng-show="loggedIn"> -->
+                <li ng-show="loggedIn" ui-sref-active="active">
+                    <!--           <a ui-sref="newPost">New Post <i class="fa fa-rss-square"></i> </a></li> -->
+                    <!-- </span> -->
+            </ul>
 
-      <ul class="nav navbar-nav navbar-right" >
-          <li class="dropdown" id="loginDropdown">
-            <a class="dropdown-toggle">
-              <span ng-hide="loggedIn">Log In</span>
-              <span ng-show="loggedIn">{{credentials.username}}</span>
-            </a>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown" id="loginDropdown">
+                    <a class="dropdown-toggle">
+                        <span ng-hide="loggedIn">Log In</span>
+                        <span ng-show="loggedIn">{{credentials.username}}</span>
+                    </a>
 
-      </ul>
-      <!-- SEARCH BAR -->
-        <!-- <div class="row">
+            </ul>
+            <!-- SEARCH BAR -->
+            <!-- <div class="row">
             <div class="col-md-3" ng-controller='navbarSearcher'>
                 <form class="navbar-form navbar-left" role="search">
                  <div class="input-group">
@@ -52,25 +60,24 @@
                 </form>
             </div>
         </div> -->
-        <!-- END SEARCH BAR -->
-    </div><!--/.nav-collapse -->
-  </div>
+            <!-- END SEARCH BAR -->
+        </div>
+        <!--/.nav-collapse -->
+    </div>
 </div>
 Hello from not sure
 
-  <div ui-view='content' class="container slide" style="padding-top: 80px">
-
-  </div>
-
-  <div ui-view='taskbar'></div>
+<div ui-view='content' class="container slide" style="padding-top: 80px">
+</div>
+<div ui-view='taskbar'></div>
 
 <!--   <div ui-view='tasks' class="container slide" style="padding-top: 80px">
 
   </div> -->
 
 
-  <style type="text/css">
-  body > div.container.slide.ng-scope > div.navbar.navbar-default.navbar-fixed-top.ng-scope > div > div.navbar-collapse.collapse > div > div > form > div > span > div > div.popover-content > p{
-      color: red;
-  }
-  </style>
+<style type="text/css">
+body > div.container.slide.ng-scope > div.navbar.navbar-default.navbar-fixed-top.ng-scope > div > div.navbar-collapse.collapse > div > div > form > div > span > div > div.popover-content > p {
+    color: red;
+}
+</style>

@@ -1,5 +1,26 @@
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-  <div class="container">
-  <h3>Hello</h3>
-  </div>
+    <div class="container task-container">
+        <h3 class='pull-right'>Hello
+            <small ng-click='popTasks()'>- {{tasks.length}} Tasks</small>
+        </h3>
+        <div class="well well-sm task-well" ng-show="showTasks">List of tasks
+            <hr>
+            <div ng-repeat="task in tasks">
+                <p>{{task.Descr}}</p>
+                <a ui-sref=".prospect({ProspectID: task.ProspectID})" ng-click="navigate($event)">Prospect {{task.ProspectID}}</a>
+                <p>{{task.DueDate}}</p>
+            </div>
+        </div>
 </nav>
+
+<style>
+.task-container > h3 {
+    display: inline;
+    cursor: pointer;
+}
+.task-well {
+    position: absolute;
+    right: 0;
+    bottom: 40;
+}
+</style>
