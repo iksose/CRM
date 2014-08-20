@@ -1,13 +1,16 @@
 angular.module('uiRouterSample')
-    .controller('taskController', function($scope, hubFactory) {
+    .controller('taskController', function($scope, hubFactory, TaskService) {
         console.log("Task Controller loaded")
 
-        $scope.tasks = []
+        // $scope.tasks = new TaskList([]);
+        $scope.tasks = TaskService.TaskList
+
+        window.dicks = $scope.tasks;
 
         var [methods, init] = hubFactory;
         init.then(function() {
             console.log("Double done")
-            // get all events
+            // register username with server
             methods.WhoAmI().then(function() {
                 console.log("told server who we are")
                 methods.GetTasks().then(function(res) {
@@ -16,9 +19,8 @@ angular.module('uiRouterSample')
                     // $scope.tasks = res.Tasks.map(T => new Task(T));
                     // console.log("Done son", $scope.tasks)
                     // turn associative array into regular array
-                    assMap(res.Tasks)
+                    assMap(res.Tasks);
                     $scope.tasks = arrCopy.map(T => new Task(T));
-                    console.log("scope tasks", $scope.tasks)
                 })
             })
         }).catch(function() {
@@ -30,7 +32,7 @@ angular.module('uiRouterSample')
 
         function assMap(map) {
             for (var key in map) {
-                arrCopy.push(map[key])
+                arrCopy.push(map[key]);
             }
         }
 
@@ -39,11 +41,10 @@ angular.module('uiRouterSample')
             $scope.showTasks = !$scope.showTasks ? true : false;
         }
 
-        $scope.navigate = function(event) {
-            console.log("Event", event)
-            event.preventDefault();
-            event.stopPropagation();
-            return false;
+        $scope.navigate = function($event, activityID: number) {
+            console.log("activity ID", activityID)
+            $event.preventDefault();
+            $event.stopPropagation();
         }
 
 

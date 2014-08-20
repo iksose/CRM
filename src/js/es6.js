@@ -3,13 +3,28 @@ function checkTest(age: number) {
 }
 checkTest(20)
 
+var customers = [];
+var customer = {}
+customer.city = "Seattle"
+var customer2 = {}
+customer2.city = "Kansas City"
+customers.push(customer);
+customers.push(customer);
+customers.push(customer2);
 
-// console.log("Mapped", arrObj)
+var results = [
+    for (c of customers)
+        if (c.city == "Seattle") {
+            name: c.name,
+            age: c.age
+        }
+]
 
 
-// var evens = [2, 4, 6]
 
-// var odds = evens.map(v => v + 1);
+var evens = [2, 4, 6];
+
+var odds = evens.map(v => v + 1);
 
 // console.log("odds", odds)
 

@@ -1,27 +1,12 @@
 angular.module('uiRouterSample')
-    .controller('loginController', function($scope, $rootScope, Privilege, $cookies, $alert, $http) {
+    .controller('loginController', function($scope, $state, Privilege, LoginService) {
         console.log("Controller loaded")
-        $rootScope.loggedIn = $rootScope.loggedIn || false;
         $scope.creds = {};
-        $scope.creds.userid = $cookies.userid;
-        // $rootScope.credentials = {}
-        // decided to define this in app.run
-
+        $scope.creds.userid = LoginService.cookie_user
         $scope.loginSubmit = function() {
-            console.log("EXISTING XKEY IS", $http.defaults.headers.common['XKey'])
-            delete $http.defaults.headers.common['XKey'];
             Privilege.Login($scope.creds).then((data) => {
-                // handle success
-                console.log("Then....", data.data)
-                $rootScope.loggedIn = true;
-                $rootScope.$state.go("home");
-                $rootScope.credentials.username = data.data.userid;
-                $rootScope.credentials.key = data.data.key;
-                $rootScope.credentials.admin = data.admin;
-                $rootScope.credentials.group = data.group;
-                $cookies.xkey = data.data.key;
-                $cookies.userid = data.data.userid;
-                $http.defaults.headers.common['XKey'] = data.data.key;
+                LoginService.setUser(data.data)
+                $state.go("home");
             }).catch((err) => {
                 // do something
             })

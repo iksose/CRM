@@ -17,7 +17,7 @@ angular.module('uiRouterSample')
                 }
             },
 
-            // rootPath:"http://10.1.1.226/signalr",
+            // rootPath: "http://10.1.1.226/signalr",
             rootPath: "http://10.1.1.118:8000/signalr",
 
             //server side methods

@@ -1,13 +1,13 @@
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
     <div class="container task-container">
-        <h3 class='pull-right'>Hello
-            <small ng-click='popTasks()'>- {{tasks.length}} Tasks</small>
+        <h3 class='pull-right'>
+            <small ng-click='popTasks()'>{{tasks.length}} Tasks</small>
         </h3>
-        <div class="well well-sm task-well" ng-show="showTasks">List of tasks
+        <div class="task-well" ng-show="showTasks">List of tasks
             <hr>
-            <div ng-repeat="task in tasks">
+            <div ng-repeat="task in tasks" class='well well-sm'>
                 <p>{{task.Descr}}</p>
-                <a ui-sref=".prospect({ProspectID: task.ProspectID})" ng-click="navigate($event)">Prospect {{task.ProspectID}}</a>
+                <a href="#" ng-click="navigate($event, task.ActivityID)">Prospect {{task.ProspectID}}</a>
                 <p>{{task.DueDate}}</p>
             </div>
         </div>
@@ -21,6 +21,10 @@
 .task-well {
     position: absolute;
     right: 0;
-    bottom: 40;
+    bottom: 58;
+    background-color: white;
+    border: #d0d0d0 solid 1px;
+    padding: .5%;
+    max-height: 600px;
 }
 </style>
