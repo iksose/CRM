@@ -1,22 +1,35 @@
 angular.module('uiRouterSample')
     .service('TaskService', function() {
-        class TaskList extends Array {
-            constructor(array) {
-                this.array = array || [];
-            }
-            get length() {
-                return this.array.length;
-            }
-            set length(value) {
-                this.array.length + value
-            }
-            get dicks() {
-                return "dicks";
+        class Task {
+            constructor(obj) {
+                Object.assign(this, obj);
             }
         }
-        var TaskService = {}
-        TaskService.name = "Peter"
-        TaskService.TaskList = new TaskList([])
-        // obj.TaskList = []
-        return TaskService;
+
+        class TaskList extends Array {
+            constructor(...args) {
+                super(...args);
+            }
+            add(array) {
+                while (this.length) {
+                    this.pop();
+                }
+                for (var i = 0; i < array.length; i++) {
+                    this.push(new Task(array[i]))
+                }
+            }
+            remove(ActivityID) {
+                var indx = this.indexOf(ActivityID)
+                this.splice(indx, 1)
+            }
+        }
+
+        class TaskService {
+            constructor(obj) {
+                this.TaskList = new TaskList()
+            }
+        }
+
+        var taskService = new TaskService();
+        return taskService;
     });

@@ -4,8 +4,33 @@ angular.module('uiRouterSample')
 
         // $scope.tasks = new TaskList([]);
         $scope.tasks = TaskService.TaskList
+        // $scope.tasksMap = TaskService.TaskMap;
 
-        window.dicks = $scope.tasks;
+        // console.log($scope.tasks)
+
+        // $scope.tasks.push(1)
+
+        // console.log($scope.tasks)
+
+        // // $scope.tasks.poop();
+
+        // // $scope.tasks.push(2)
+
+        // // console.log($scope.tasks.length)
+
+        // // $scope.tasks.forEach(function(num) {
+        // //     console.log("Ha", num)
+        // // })
+
+        // // // $scope.tasks = TaskService.TaskList("uno", "dos")
+
+        // $scope.tasks.add(["Uno", "Dos"])
+
+        // $scope.tasks.push("Tres")
+
+        // console.log($scope.tasks)
+        // console.log($scope.tasks.length)
+
 
         var [methods, init] = hubFactory;
         init.then(function() {
@@ -20,7 +45,9 @@ angular.module('uiRouterSample')
                     // console.log("Done son", $scope.tasks)
                     // turn associative array into regular array
                     assMap(res.Tasks);
-                    $scope.tasks = arrCopy.map(T => new Task(T));
+                    // $scope.tasks.add(arrCopy.map(T => new Task(T)))
+                    $scope.tasks.add(arrCopy)
+                    // console.log(TaskService.TaskList)
                 })
             })
         }).catch(function() {
@@ -45,7 +72,13 @@ angular.module('uiRouterSample')
             console.log("activity ID", activityID)
             $event.preventDefault();
             $event.stopPropagation();
+            $scope.tasks.remove(activityID)
+            console.log($scope.tasks)
         }
+
+        // function markComplete() {
+
+        // }
 
 
     })

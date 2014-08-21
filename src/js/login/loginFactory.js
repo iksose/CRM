@@ -4,7 +4,7 @@ angular.module('uiRouterSample')
         return {
             Login: function(creds) {
                 console.log("POST DUDE", creds)
-                // delete $http.defaults.headers.common['XKey'];
+                delete $http.defaults.headers.common['XKey'];
                 return $http({
                     method: 'POST',
                     url: 'http://10.1.1.118:8000/api/Auth',

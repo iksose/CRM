@@ -1,5 +1,5 @@
-class Task {
-    constructor(obj) {
-        Object.assign(this, obj);
-    }
-}
+// class Task {
+//     constructor(obj) {
+//         Object.assign(this, obj);
+//     }
+// }
