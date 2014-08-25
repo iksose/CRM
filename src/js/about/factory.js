@@ -7,13 +7,16 @@ angular.module('uiRouterSample')
 
             //client side methods
             listeners: {
-                'updateShape': function(model) {
-                    console.log("Changed", model)
-                },
-                'unlockEmployee': function(id) {
-                    var employee = find(id);
-                    employee.Locked = false;
-                    $rootScope.$apply();
+                // 'updateShape': function(model) {
+                //     console.log("Changed", model)
+                // },
+                // 'unlockEmployee': function(id) {
+                //     var employee = find(id);
+                //     employee.Locked = false;
+                //     $rootScope.$apply();
+                // },
+                'taskWorking': function(info) {
+                    console.log("a task was changed....", info)
                 }
             },
 

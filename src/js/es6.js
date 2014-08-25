@@ -3,31 +3,49 @@ function checkTest(age: number) {
 }
 checkTest(20)
 
-var customers = [];
-var customer = {}
-customer.city = "Seattle"
-var customer2 = {}
-customer2.city = "Kansas City"
-customers.push(customer);
-customers.push(customer);
-customers.push(customer2);
+// var customers = [];
+// var customer = {}
+// customer.city = "Seattle"
+// var customer2 = {}
+// customer2.city = "Kansas City"
+// customers.push(customer);
+// customers.push(customer);
+// customers.push(customer2);
 
-var results = [
-    for (c of customers)
-        if (c.city == "Seattle") {
-            name: c.name,
-            age: c.age
-        }
-]
+// var results = [
+//     for (c of customers)
+//         if (c.city == "Seattle") {
+//             name: c.name,
+//             age: c.age
+//         }
+// ]
 
 
 
-var evens = [2, 4, 6];
+// var evens = [2, 4, 6];
 
-var odds = evens.map(v => v + 1);
+// var odds = evens.map(v => v + 1).filter(v => v > 0)
 
 // console.log("odds", odds)
 
+// var hello = {
+//     hello: 'world',
+//     foo: 'bar'
+// };
+// var qaz = {
+//     hello: 'stevie',
+//     foo: 'baz'
+// }
+
+// var myArray = [];
+// myArray.push(hello, hello, qaz);
+
+// var pos = myArray.map(v => v.hello).indexOf('stevie');
+
+// console.log("position", pos)
+
+// myArray.splice(myArray.map(v => v.hello).indexOf('stevie'), 1);
+// console.log("myArray", myArray)
 
 
 // var testArray = [1, 2, 3, 4]

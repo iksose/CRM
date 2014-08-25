@@ -61,13 +61,23 @@ angular.module('SignalR', [])
                 // var deferred = $q.defer();
                 Hub.init = function() {
                     var deferred = $q.defer();
-                    Hub.connection.start().then(function(res) {
-                        // console.log("Done", res)
+                    Hub.connection.start().done(function(res) {
+                        console.log("Done", res)
                         return deferred.resolve(res);
-                    });
+                    })
+                        .fail(function(res) {
+                            console.log('Could not connect', Hub.connection);
+                            Hub.connection.start()
+                            return deferred.reject(res);
+                        });
+
+                    Hub.connection.disconnected(function() {
+                        console.log("Disconnected")
+                        // Hub.connection.start()
+                    })
+                    console.log("Not done, but not failed", Hub.connection)
                     return deferred.promise
                 }
-                // Hub.promise = "dicks"
                 return Hub;
             };
         }

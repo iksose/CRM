@@ -5,10 +5,14 @@
         </h3>
         <div class="task-well" ng-show="showTasks">List of tasks
             <hr>
-            <div ng-repeat="task in tasks" class='well well-sm'>
+            <div ng-repeat="task in tasks" class='well well-sm' ng-show="tasks.length">
                 <p>{{task.Descr}}</p>
-                <a href="#" ng-click="navigate($event, task.ActivityID)">Prospect {{task.ProspectID}}</a>
+                <p ng-click="navigate(task.ProspectID)" class='link'>Prospect {{task.ProspectID}}</p>
                 <p>{{task.DueDate}}</p>
+                <!-- <p>{{task}} -->
+            </div>
+            <div class='well well-sm' ng-hide="tasks.length">
+                No current tasks
             </div>
         </div>
 </nav>
@@ -26,5 +30,9 @@
     border: #d0d0d0 solid 1px;
     padding: .5%;
     max-height: 600px;
+}
+.link {
+    color: blue;
+    cursor: pointer;
 }
 </style>

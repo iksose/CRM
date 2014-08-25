@@ -18,9 +18,8 @@ angular.module('uiRouterSample')
                     this.push(new Task(array[i]))
                 }
             }
-            remove(ActivityID) {
-                var indx = this.indexOf(ActivityID)
-                this.splice(indx, 1)
+            remove(activityID) {
+                this.splice(this.map(tasks => tasks.ActivityID).indexOf(activityID), 1);
             }
         }
 
