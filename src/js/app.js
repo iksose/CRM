@@ -184,7 +184,7 @@ var app = angular.module('uiRouterSample', [
                 reloadOnSearch: false,
                 views: {
                     'content': {
-                        templateUrl: 'views/newQuery.html',
+                        templateUrl: 'views/Research.html',
                         controller: "queryController",
                     }
                 }
@@ -208,7 +208,7 @@ var app = angular.module('uiRouterSample', [
                 url: '/new/:campaignID',
                 views: {
                     'content@home': {
-                        templateUrl: 'views/newcampaign.html',
+                        templateUrl: 'views/campaign-convert.html',
                         controller: "newCampaignController"
                     }
                 }
@@ -299,7 +299,7 @@ var app = angular.module('uiRouterSample', [
                 url: 'search?ProspectID&CustID&NCPDP&NPI&Zip&City&State&ProspectType&CustomerType',
                 views: {
                     'content': {
-                        templateUrl: 'views/search.html',
+                        templateUrl: 'views/Prospect-query.html',
                         controller: "searchController"
                     }
                 }

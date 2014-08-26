@@ -1,0 +1,6 @@
+<p>{{task.Descr}}</p>
+<p ng-click="navigate(task.ProspectID)" class='link'>Prospect {{task.ProspectID}}</p>
+<p>{{task.DueDate}}</p>
+<button type="button" class="btn btn-default btn-xs" ng-click='ChangeTaskStatus(task.ActivityID)'>
+    <span class="glyphicon glyphicon-ok"></span>
+</button>

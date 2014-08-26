@@ -1,6 +1,114 @@
 angular.module('uiRouterSample')
-    .controller('prospectController', function($scope, $rootScope, $state, $alert, prospectFactory, $location) {
+    .controller('prospectController', function($scope, $rootScope, $state, prospectFactory, $location, LoginService, $modal) {
         console.log("Hello prospect")
+        $scope.details = {
+            user: LoginService.user
+        }
+        $scope.contactCollapse = true;
+        $scope.issueCollapse = true;
+
+        $scope.AddEvent = {};
+        $scope.AddContact = {};
+        $scope.ContactKeys = []
+
+        $scope.the_Prospect;
+        // $scope.Contacts = [];
+        console.log($state.params)
+        $scope.contactType = [{
+            value: '1',
+            label: 'Owner'
+        }, {
+            value: '2',
+            label: 'In Charge'
+        }, {
+            value: '3',
+            label: 'Gambler'
+        }];
+        $scope.selectedContactType = [];
+
+        init();
+
+        function init() {
+            prospectFactory.getProspect_by_ID($state.params).then(function(data) {
+                console.log("Got prospect", data)
+                $scope.the_Prospect = new Prospect(data.data);
+                $scope.the_Prospect.Activities.reverse();
+                console.log($scope.the_Prospect)
+                timeBetween();
+                makeTimeline();
+                $scope.currentContact = $scope.the_Prospect.Contacts[0]
+                $scope.details.CampaignID = 0;
+                $scope.details.CreationUser = "me";
+                $scope.details.ProductID = 0;
+                // cast to new Contact so on save it has properties
+                $scope.AddContact = new Contact({});
+                delete $scope.AddContact.HumanTypes_;
+                delete $scope.AddContact.OldTypes;
+                $scope.ContactKeys = Object.keys($scope.AddContact)
+            })
+        }
+
+        // when loading modal, clear the model. Else set "edit" to false
+        $scope.clearModel = function() {
+            $scope.AddContact = new Contact({});
+            delete $scope.AddContact.HumanTypes_;
+            delete $scope.AddContact.OldTypes;
+            $scope.editContactBool = false;
+        }
+
+        $scope.editContactBool = false;
+        $scope.modalSaveContact = function(contact, modal) {
+            console.log("Herp derp", contact)
+            if (!contact.Types.length) {
+                console.log("Must select a type")
+                return;
+            }
+            // if we're editing and not saving
+            if ($scope.editContactBool) {
+                console.log("Do some edit http")
+                prospectFactory.EditContact(contact).then(function() {
+                    modal.$hide();
+                })
+                return
+            }
+            prospectFactory.AddContact(contact).then(function() {
+                modal.$hide();
+                $scope.the_Prospect.Contacts.push(new Contact(contact))
+            })
+        }
+
+        $scope.editContact = function(contact) {
+            console.log("edit", contact)
+            $scope.AddContact = contact;
+            $scope.editContactBool = true;
+            // prospectFactory.EditContact(contact)
+        }
+
+        $scope.editEvent = function(evt) {
+            console.log("herp", evt)
+        }
+
+
+        $scope.modalSaveActivity = function(evt, modal) {
+            var activity = new AddEvent(evt, $scope.details);
+            // console.log("My activity ", activity)
+            prospectFactory.AddEvent(activity).then(function() {
+                modal.$hide();
+                $scope.the_Prospect.Activities.unshift(new Activity(evt))
+            })
+        }
+
+        $scope.modalSaveIssue = function(issue, modal) {
+            var issue = new AddIssue(issue)
+            prospectFactory.AddIssue(issue).then(function() {
+                modal.$hide();
+                $scope.the_Prospect.Issues.push(new Issue(issue))
+            })
+        }
+
+        $scope.makeActive = function(contact) {
+            console.log("Make active", contact)
+        }
 
         $scope.scrolltoHref = function(id) {
             console.log(id)
@@ -63,6 +171,7 @@ angular.module('uiRouterSample')
             }
         };
 
+        // annotate 'notes' with time diff, ie. 'two days since last'
         function timeBetween() {
             var array = $scope.the_Prospect.Activities
             if (array.length > 0) {
@@ -103,21 +212,6 @@ angular.module('uiRouterSample')
             });
             items.add(adds)
         }
-
-        $scope.the_Prospect;
-        $scope.Contacts = [];
-        console.log($state.params)
-        prospectFactory.getProspect_by_ID($state.params).then(function(data) {
-            console.log("Got prospect", data)
-            $scope.the_Prospect = new Prospect(data.data);
-            $scope.the_Prospect.Activities.reverse();
-            // console.log($scope.the_Prospect.latest);
-            console.log($scope.the_Prospect)
-            timeBetween();
-            // makeTimeline();
-            // cloneProspect();
-            $scope.currentContact = $scope.the_Prospect.Contacts[0]
-        })
 
         var timeline;
         var items;
@@ -336,12 +430,12 @@ angular.module('uiRouterSample')
         }
 
         // attach events to the navigation buttons
-        document.getElementById('zoomIn').onclick = function() {
-            zoom(1);
-        };
-        document.getElementById('zoomOut').onclick = function() {
-            zoom(-1);
-        };
+        // document.getElementById('zoomIn').onclick = function() {
+        //     zoom(1);
+        // };
+        // document.getElementById('zoomOut').onclick = function() {
+        //     zoom(-1);
+        // };
         $scope.icons = [{
             value: 1,
             label: 'Owner'

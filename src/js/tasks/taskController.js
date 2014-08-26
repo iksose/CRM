@@ -1,5 +1,5 @@
 angular.module('uiRouterSample')
-    .controller('taskController', function($scope, hubFactory, TaskService, $state) {
+    .controller('taskController', function($scope, TaskService, $state) {
         console.log("Task Controller loaded")
 
         // $scope.tasks = new TaskList([]);
@@ -26,26 +26,28 @@ angular.module('uiRouterSample')
 
         // $scope.tasks.add(["Uno", "Dos"])
 
-        // $scope.tasks.push("Tres")
+        var task = {}
+        task.Descr = "Sample descr"
+        $scope.tasks.push(task)
 
         // console.log($scope.tasks)
         // console.log($scope.tasks.length)
 
 
-        var [methods, init] = hubFactory;
-        init.then(function() {
-            console.log("Double done")
-            // register username with server
-            methods.WhoAmI().then(function() {
-                console.log("told server who we are")
-                methods.GetTasks().then(function(res) {
-                    console.log("Got tasks", res)
-                    $scope.tasks.add(res)
-                })
-            })
-        }).catch(function() {
-            console.log("Fudge")
-        })
+        // var [methods, init] = hubFactory;
+        // init.then(function() {
+        //     console.log("Double done")
+        //     // register username with server
+        //     methods.WhoAmI().then(function() {
+        //         console.log("told server who we are")
+        //         methods.GetTasks().then(function(res) {
+        //             console.log("Got tasks", res)
+        //             $scope.tasks.add(res)
+        //         })
+        //     })
+        // }).catch(function() {
+        //     console.log("Fudge")
+        // })
 
         $scope.showTasks = false;
         $scope.popTasks = function() {
@@ -65,12 +67,16 @@ angular.module('uiRouterSample')
         }
 
         $scope.ChangeTaskStatus = function(activityID, status) {
-            methods.ChangeTaskStatus(activityID, status)
+            console.log("activity id", activityID)
+            // methods.ChangeTaskStatus(activityID, status)
         }
 
         // function markComplete() {
 
         // }
+
+
+
 
 
     })

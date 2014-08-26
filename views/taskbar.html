@@ -6,10 +6,13 @@
         <div class="task-well" ng-show="showTasks">List of tasks
             <hr>
             <div ng-repeat="task in tasks" class='well well-sm' ng-show="tasks.length">
-                <p>{{task.Descr}}</p>
+                <div tasks></div>
+                <!--                 <p>{{task.Descr}}</p>
                 <p ng-click="navigate(task.ProspectID)" class='link'>Prospect {{task.ProspectID}}</p>
                 <p>{{task.DueDate}}</p>
-                <!-- <p>{{task}} -->
+                <button type="button" class="btn btn-default btn-xs" ng-click='ChangeTaskStatus(task.ActivityID)'>
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button> -->
             </div>
             <div class='well well-sm' ng-hide="tasks.length">
                 No current tasks
