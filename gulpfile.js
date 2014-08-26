@@ -9,27 +9,27 @@ var livereload = require('gulp-livereload');
 
 
 var path = {
-  src: './src/**/*.js'
+    src: './src/**/*.js'
 };
 
 
 // TRANSPILE ES6
 gulp.task('build', function() {
     gulp.src(path.src)
-        .pipe(sourcemaps.init())
-        .pipe(traceur(traceurOptions))
+    // .pipe(sourcemaps.init())
+    .pipe(traceur(traceurOptions))
         .on('error', gutil.log)
         .pipe(concat('main.js'))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('compiled/src'));
+    // .pipe(sourcemaps.write())
+    .pipe(gulp.dest('compiled/src'));
 });
 
 // WATCH LIBS
 gulp.task('vendor', function() {
-  gulp.src('./libs/*.js')
-    .pipe(sourcemaps.init())
+    gulp.src('./libs/*.js')
+    // .pipe(sourcemaps.init())
     .pipe(concat('vendor.js'))
-    .pipe(sourcemaps.write())
+    // .pipe(sourcemaps.write())
     .pipe(gulp.dest('compiled/src'))
     // .pipe(filesize())
     // .pipe(uglify())
@@ -45,7 +45,7 @@ gulp.task('watch', function() {
     var server = livereload();
     gulp.watch(path.src, ['build']);
     gulp.watch('./libs/*.js', ['vendor']);
-    gulp.watch('compiled/src/**').on('change', function(file){
+    gulp.watch('compiled/src/**').on('change', function(file) {
         console.log("Gotcha")
         server.changed(file.path)
         // connect.reload(file)
@@ -55,8 +55,8 @@ gulp.task('watch', function() {
 
 // WEB SERVER
 gulp.task('serve', connect.server({
-  root: [__dirname],
-  port: 7000,
-  open: true,
-  livereload: false
+    root: [__dirname],
+    port: 7000,
+    open: true,
+    livereload: false
 }));
