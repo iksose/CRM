@@ -12,6 +12,7 @@ angular.module('uiRouterSample')
         $scope.ContactKeys = []
 
         $scope.the_Prospect;
+        $scope.the_Prospect_edit = {};
         // $scope.Contacts = [];
         console.log($state.params)
         $scope.contactType = [{
@@ -79,27 +80,83 @@ angular.module('uiRouterSample')
 
         $scope.editContact = function(contact) {
             console.log("edit", contact)
+            // prepopulate the model
             $scope.AddContact = contact;
             $scope.editContactBool = true;
             // prospectFactory.EditContact(contact)
         }
 
+        $scope.prospectEdit = function() {
+            console.log("Editing prospect")
+            $scope.the_Prospect_edit = Object.assign($scope.the_Prospect_edit, $scope.the_Prospect);
+            delete $scope.the_Prospect_edit.Activities;
+            delete $scope.the_Prospect_edit.Contacts;
+            delete $scope.the_Prospect_edit.Customer;
+            delete $scope.the_Prospect_edit.Issues;
+        }
+
+        $scope.editIssueBool = false;
+        $scope.editEventBool = false;
         $scope.editEvent = function(evt) {
             console.log("herp", evt)
+            if (evt.issue) {
+                console.log("....issue...")
+                // prepopulate model
+                $scope.AddIssue = new AddIssue(evt)
+                var myModal = $modal({
+                    scope: $scope,
+                    template: '/src/js/prospect/add-issue.html',
+                    show: true
+                });
+                $scope.editIssueBool = true;
+                return;
+            } else {
+                console.log("....note/event...")
+                $scope.AddEvent = new AddEvent(evt)
+                var myModal = $modal({
+                    scope: $scope,
+                    template: '/src/js/prospect/add-event.html',
+                    show: true
+                });
+                $scope.editEventBool = true;
+            }
+        }
+
+        $scope.modalSaveProspect = function(evt, modal) {
+            console.log("Saving prospect")
+            prospectFactory.EditProspect(evt).then(function() {
+                modal.$hide();
+                // $scope.the_Prospect.Activities.unshift(new Activity(evt))
+            })
         }
 
 
         $scope.modalSaveActivity = function(evt, modal) {
             var activity = new AddEvent(evt, $scope.details);
             // console.log("My activity ", activity)
-            prospectFactory.AddEvent(activity).then(function() {
-                modal.$hide();
-                $scope.the_Prospect.Activities.unshift(new Activity(evt))
-            })
+            if ($scope.editEventBool) {
+                console.log("We're editing an event")
+                prospectFactory.EditEvent(activity).then(function() {
+                    modal.$hide();
+                })
+                return;
+            } else {
+                prospectFactory.AddEvent(activity).then(function() {
+                    modal.$hide();
+                    $scope.the_Prospect.Activities.unshift(new Activity(evt))
+                })
+            }
         }
 
         $scope.modalSaveIssue = function(issue, modal) {
             var issue = new AddIssue(issue)
+            if ($scope.editIssueBool) {
+                console.log("Edit not save")
+                prospectFactory.EditIssue(issue).then(function() {
+                    modal.$hide();
+                })
+                return
+            }
             prospectFactory.AddIssue(issue).then(function() {
                 modal.$hide();
                 $scope.the_Prospect.Issues.push(new Issue(issue))
@@ -277,7 +334,8 @@ angular.module('uiRouterSample')
                 editable: false,
                 //   min: new Date(2014, moment().subtract('month', 2).format("M"), 1), //furthest back you can go
                 start: new Date(2014, moment().subtract('month', 2).format("M"), 1),
-                max: new Date(2014, 7, 1)
+                // max: new Date(2014, 7, 1)
+                max: new Date(2014, moment().add('month', 2).format("M"), 1)
                 //   zoomMin: 1000 * 60 * 60 * 24            // one day in milliseconds, furthest "in"
                 // zoomMax: 1000 * 60 * 60 * 24 * 31 * 3   // about three months in milliseconds
             };

@@ -16,8 +16,8 @@ var app = angular.module('uiRouterSample', [
 ])
 
 .run(
-    ['$rootScope', '$state', '$stateParams', '$cookies', "$http",
-        function($rootScope, $state, $stateParams, $cookies, $http) {
+    ['$rootScope', '$state', '$stateParams', '$cookies', "$http", 'LoginService',
+        function($rootScope, $state, $stateParams, $cookies, $http, LoginService) {
 
 
             $http.defaults.headers.common['XKey'] = $cookies.xkey;
@@ -35,15 +35,10 @@ var app = angular.module('uiRouterSample', [
                 group: "Undefined",
                 username: $cookies.userid
             };
-
-            // perform an API call to see if xkey is still valid or needs to be re-authed;
-            // var testKey = $http({
-            //     method: 'GET',
-            //     url: 'http://10.1.1.118:8000/api/Research/list',
-            //     // url: 'http://10.1.1.118:8000/api/Campaign',
-            //     headers : { 'Accept': 'application/json', 'XKey': $cookies.xkey}
-            //   })
-
+            // if ($cookies.pbauser) {
+            //     console.log("user", $cookies.pbauser)
+            //     LoginService.setUser($cookies.pbauser)
+            // }
         }
     ]
 )

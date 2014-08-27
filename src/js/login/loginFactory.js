@@ -17,9 +17,13 @@ angular.module('uiRouterSample')
             Logout: function() {
                 console.log("Todo")
             },
-            SetSession: function(xkey: string, user: string) {
-                $cookies.xkey = xkey
-                $cookies.userid = user
+            SetSession: function(xkey: string, userid: string, pbauser) {
+                $cookies.xkey = xkey;
+                $cookies.userid = userid;
+                // $cookies.pbauser = pbauser;
+                // for (var key in pbauser) {
+                //     console.log("user", key)
+                // }
                 $http.defaults.headers.common['XKey'] = xkey
             }
         }

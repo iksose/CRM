@@ -11,7 +11,7 @@ angular.module('uiRouterSample')
         var LoginService = {}
         LoginService.setUser = function(user) {
             LoginService.user = new User(user);
-            Privilege.SetSession(user.key, this.user.user)
+            Privilege.SetSession(user.key, this.user.user, this.user)
         }
         LoginService.cookie_user = function() {
             return $cookies.userid;

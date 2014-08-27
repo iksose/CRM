@@ -43,7 +43,9 @@
         </div>
     </div>
     <div class="col-md-8">
-        <h3><a name="Details">Details</a>
+        <h3><a href name="Details">Details <small><a href ref data-animation="am-fade-and-slide-top" data-template="/src/js/prospect/prospect-edit.html" bs-modal="modal" ng-click="prospectEdit()">Edit</a>
+            </small>
+            </a>
         </h3>
 
         <table class="table table-condensed table-striped">
@@ -125,7 +127,7 @@
                         <thead>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="(key, value) in contact">
+                            <tr ng-repeat="(key, value) in contact" ng-show="value.length">
                                 <td>{{ key }}</td>
                                 <td>{{ value }}</td>
                             </tr>
@@ -159,7 +161,7 @@
     </div>
 
     <!-- END CONTACTS -->
-    <div class="col-md-8">
+    <div class="col-md-8 col-md-offset-1">
         <hr>
         <span class="pullright">
             <a href ref data-animation="am-fade-and-slide-top" data-template="/src/js/prospect/add-event.html" bs-modal="modal">
@@ -198,7 +200,8 @@
                         <p>{{reply.Description}}</p>
                     </div>
                 </div>
-                <a href ref data-animation="am-fade-and-slide-top" data-template="/src/js/prospect/add-event.html" bs-modal="modal" class="pullright" ng-click="editEvent(msgInfo)">Edit</a>
+                <!-- don't inline the modal because we don't know if they're editing an issue or event -->
+                <a ng-click="editEvent(msgInfo)">Edit</a>
             </div>
         </div>
 
@@ -286,7 +289,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-9 col-md-offset-1">
         <!-- PURCHASING TAB -->
         <a name="Purchasing" class="invisibleAnchor">serve</a>
         <br>

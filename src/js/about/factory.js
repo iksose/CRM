@@ -1,5 +1,5 @@
 angular.module('uiRouterSample')
-    .factory('hubFactory', function($rootScope, Hub, $q) {
+    .factory('hubFactory', function($rootScope, Hub, $q, TaskService) {
 
         //declaring the hub connection
         var hub = new Hub('activityQueueHub', {
@@ -7,16 +7,20 @@ angular.module('uiRouterSample')
 
             //client side methods
             listeners: {
-                // 'updateShape': function(model) {
-                //     console.log("Changed", model)
-                // },
-                // 'unlockEmployee': function(id) {
-                //     var employee = find(id);
-                //     employee.Locked = false;
-                //     $rootScope.$apply();
-                // },
                 'taskWorking': function(info) {
-                    console.log("a task was changed....", info)
+                    console.log("a task status was changed....", info);
+                    TaskService.TaskList.update(info.ActivityID, info.Status);
+                    $rootScope.$apply();
+                },
+                'userJoined': function(user) {
+                    console.log("User joined", user)
+                    TaskService.UserList.push(user);
+                    $rootScope.$apply();
+                },
+                'userLeft': function(user) {
+                    console.log("User left", user)
+                    TaskService.UserList.remove(user.UserID);
+                    $rootScope.$apply();
                 }
             },
 
@@ -24,7 +28,7 @@ angular.module('uiRouterSample')
             rootPath: "http://10.1.1.118:8000/signalr",
 
             //server side methods
-            methods: ['lock', 'unlock', 'hello_Im_Connected', 'GetTasks', 'changeTaskStatusD', 'WhoAmI'],
+            methods: ['lock', 'unlock', 'hello_Im_Connected', 'GetTasks', 'changeTaskStatusD', 'WhoAmI', 'ChangeTaskStatus'],
 
             //query params sent on initial connection
             // queryParams:{
@@ -68,7 +72,28 @@ angular.module('uiRouterSample')
         var getUser = function() {
             var def = $q.defer();
             console.log("get WhoAmI")
-            hub.WhoAmI("pbajoj").then(function(data) {
+            hub.WhoAmI("pbajoj").then(function(users) {
+                TaskService.UserList.push(...users);
+                users.forEach(function(user) {
+                    for (var key in TaskService.Groups) {
+                        TaskService.Groups[key].forEach(function(role) {
+                            var idx = TaskService.Groups[key].map(user => user.UserID).indexOf(user.UserID)
+                            if (idx != -1) {
+                                TaskService.Groups[key][idx].online = true;
+                            }
+                        })
+                    }
+                })
+                $rootScope.$apply();
+                def.resolve()
+            })
+            return def.promise;
+        }
+
+        var ChangeTaskStatus = function(activityID, status) {
+            var def = $q.defer();
+            hub.ChangeTaskStatus(activityID, status).then(function(data) {
+                console.log("Done changing status")
                 def.resolve()
             })
             return def.promise;
@@ -114,7 +139,8 @@ angular.module('uiRouterSample')
                 map: getCurrent,
                 map2: richardsmethod,
                 WhoAmI: getUser,
-                GetTasks: GetTasks
+                GetTasks: GetTasks,
+                ChangeTaskStatus: ChangeTaskStatus
             },
             deferred.promise
         ]

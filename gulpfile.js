@@ -16,21 +16,21 @@ var path = {
 // TRANSPILE ES6
 gulp.task('build', function() {
     gulp.src(path.src)
-    // .pipe(sourcemaps.init())
-    .pipe(traceur(traceurOptions))
+        .pipe(sourcemaps.init())
+        .pipe(traceur(traceurOptions))
         .on('error', gutil.log)
         .pipe(concat('main.js'))
-    // .pipe(sourcemaps.write())
-    .pipe(gulp.dest('compiled/src'));
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('compiled/src'));
 });
 
 // WATCH LIBS
 gulp.task('vendor', function() {
     gulp.src('./libs/*.js')
-    // .pipe(sourcemaps.init())
-    .pipe(concat('vendor.js'))
-    // .pipe(sourcemaps.write())
-    .pipe(gulp.dest('compiled/src'))
+        .pipe(sourcemaps.init())
+        .pipe(concat('vendor.js'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('compiled/src'))
     // .pipe(filesize())
     // .pipe(uglify())
     // .pipe(rename('vendor.min.js'))

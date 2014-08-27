@@ -18,6 +18,12 @@ angular.module('uiRouterSample')
                     var nEvent = $.param(nEvent)
                     return this._request('post', `Activity`, nEvent)
                 },
+                EditEvent: function(myEvent) {
+                    // var eventID = Event.EventID; not used
+                    delete myEvent.subnotes // array throws error
+                    var myEvent = $.param(myEvent);
+                    return this._request('put', `Activity`, myEvent)
+                },
                 AddContact: function(contact) {
                     var contact = $.param(contact)
                     return this._request('post', `Contact`, contact)
@@ -30,6 +36,24 @@ angular.module('uiRouterSample')
                 AddIssue: function(issue) {
                     var issue = $.param(issue);
                     return this._request('post', `Issue`, issue)
+                },
+                EditIssue: function(issue) {
+                    console.log("issue", issue)
+                    var issueID = issue.IssueID;
+                    var issue = $.param(issue);
+                    return this._request('put', `Issue/${issueID}`, issue)
+                },
+                EditProspect: function(prospect) {
+                    // var prospectID = prospect.ProspectID;
+                    for (var key in prospect) {
+                        // console.log(key)
+                        if (prospect[key] == '' || prospect[key] == undefined) {
+                            // console.log("Blank value")
+                            prospect[key] = " ";
+                        }
+                    }
+                    var prospect = $.param(prospect);
+                    return this._request('put', '', prospect)
                 }
             };
         }

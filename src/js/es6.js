@@ -6,6 +6,12 @@ checkTest(20)
 // var customers = [];
 // var customer = {}
 // customer.city = "Seattle"
+
+
+// for (var key in customer) {
+//     console.log(key)
+// }
+
 // var customer2 = {}
 // customer2.city = "Kansas City"
 // customers.push(customer);

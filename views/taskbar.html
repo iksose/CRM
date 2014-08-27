@@ -1,26 +1,72 @@
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+    <div class="container user-container">
+        <h3 class='pull-left'>
+            <small ng-click='popUsers()'>{{users.length}} Users Online</small>
+        </h3>
+        <div class="user-well" ng-show="showUsers">List of users
+            <hr>
+            <div ng-repeat="department in departments track by $index">
+                <p>{{department}}</p>
+                <div ng-repeat="user in groups[department]">
+                    <p ng-show="user.online" ng-click="userMethod(user)">{{user.Name}}</p>
+                </div>
+            </div>
+            <hr>
+            <p>Offline</p>
+            <div ng-repeat="department in departments track by $index">
+                <p>{{department}}</p>
+                <div ng-repeat="user in groups[department]">
+                    <p ng-hide="user.online" ng-click="userMethod(user)">{{user.Name}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container task-container">
         <h3 class='pull-right'>
             <small ng-click='popTasks()'>{{tasks.length}} Tasks</small>
         </h3>
         <div class="task-well" ng-show="showTasks">List of tasks
             <hr>
-            <div ng-repeat="task in tasks" class='well well-sm' ng-show="tasks.length">
-                <div tasks></div>
-                <!--                 <p>{{task.Descr}}</p>
-                <p ng-click="navigate(task.ProspectID)" class='link'>Prospect {{task.ProspectID}}</p>
+            <div ng-repeat="task in tasks track by $index" class='well well-sm status{{task.Status}}' ng-show="tasks.length">
+                <!-- <div tasks></div> -->
+                <p>{{task.Descr}}</p>
+                <p ng-click="navigate(task.ProspectID, task.Status)" class='link'>Prospect {{task.ProspectID}}</p>
                 <p>{{task.DueDate}}</p>
-                <button type="button" class="btn btn-default btn-xs" ng-click='ChangeTaskStatus(task.ActivityID)'>
+                <button type="button" class="btn btn-default btn-xs" ng-click='ChangeTaskStatus(task.ActivityID, task.Status)'>
                     <span class="glyphicon glyphicon-ok"></span>
-                </button> -->
+                </button>
             </div>
             <div class='well well-sm' ng-hide="tasks.length">
                 No current tasks
             </div>
         </div>
+    </div>
 </nav>
 
 <style>
+.user-container {
+    /*display: inline;*/
+    float: left;
+}
+.user-well {
+    position: absolute;
+    left: 0;
+    bottom: 58;
+    background-color: white;
+    border: #d0d0d0 solid 1px;
+    padding: .5%;
+    max-height: 600px;
+}
+.status1 {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.status1 > .task-container > h3 {
+    cursor: not-allowed;
+}
+.status1 > .link {
+    cursor: not-allowed;
+}
 .task-container > h3 {
     display: inline;
     cursor: pointer;
