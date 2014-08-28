@@ -28,7 +28,7 @@ angular.module('uiRouterSample')
             rootPath: "http://10.1.1.118:8000/signalr",
 
             //server side methods
-            methods: ['lock', 'unlock', 'hello_Im_Connected', 'GetTasks', 'changeTaskStatusD', 'WhoAmI', 'ChangeTaskStatus'],
+            methods: ['GetTasks', 'changeTaskStatusD', 'WhoAmI', 'ChangeTaskStatus'],
 
             //query params sent on initial connection
             // queryParams:{
@@ -47,18 +47,6 @@ angular.module('uiRouterSample')
         })
 
         //moveShapeHub.invoke('updateModel', shapeModel)
-
-        var shapeModel = {
-            left: 0,
-            top: 0
-        }
-
-        var edit = function(employee) {
-            hub.lock(employee.Id); //Calling a server method
-        };
-        var done = function(employee) {
-            hub.unlock(employee.Id); //Calling a server method
-        }
 
         var getCurrent = function() {
             var def = $q.defer();
@@ -99,30 +87,6 @@ angular.module('uiRouterSample')
             return def.promise;
         }
 
-        var richardsmethod = function() {
-            console.log("Start")
-            var counter = 0
-            var start = new Date().getTime();
-            // console.log("Calling richard's")
-            for (var i = 0; i < 1000; i++) {
-                hub.changeTaskStatusD('4', '1').then(function(data) {
-                    //
-                    // for(var i = 0; i < 1; i++){
-                    hub.getTasks('pbamrb').then(function(data) {
-                        counter++
-                        if (counter == 1000) {
-                            var end = new Date().getTime();
-                            var time = end - start;
-                            console.log('Execution time from inside: ' + time);
-                        }
-                    })
-                    // }
-                })
-            }
-            var end = new Date().getTime();
-            var time = end - start;
-            console.log('Execution time outside: ' + time);
-        }
 
         var GetTasks = function() {
             console.log("Getting tasks")
@@ -134,10 +98,7 @@ angular.module('uiRouterSample')
         }
 
         return [{
-                editEmployee: edit,
-                doneWithEmployee: done,
                 map: getCurrent,
-                map2: richardsmethod,
                 WhoAmI: getUser,
                 GetTasks: GetTasks,
                 ChangeTaskStatus: ChangeTaskStatus

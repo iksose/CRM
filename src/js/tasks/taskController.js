@@ -6,6 +6,10 @@ angular.module('uiRouterSample')
         $scope.users = TaskService.UserList;
         $scope.departments = TaskService.Departments;
 
+        $scope.depCollapseOnline = false;
+
+        $scope.depCollapse = true;
+
         $scope.groups = TaskService.Groups;
 
         var [methods, init] = hubFactory;
@@ -35,11 +39,15 @@ angular.module('uiRouterSample')
             $scope.showUsers = !$scope.showUsers ? true : false;
         }
 
+        $scope.showTaskOptions = false;
+        $scope.prospectID;
         $scope.navigate = function(prospectID: number, Status: number) {
             if (Status > 0) {
                 console.log("No go, it's being worked already")
                 return;
             }
+            $scope.showTaskOptions = true;
+            $scope.prospectID = prospectID
             $state.go('home.prospect', {
                 ProspectID: prospectID
             })

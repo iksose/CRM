@@ -1,4 +1,16 @@
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+    <div class="container options-containers" ng-show="showTaskOptions">
+        <center>
+            Prospect {{prospectID}}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default">Worked</button>
+                <button type="button" class="btn btn-default">No Answer</button>
+                <button type="button" class="btn btn-default">Lead Gen</button>
+                <button type="button" class="btn btn-default">Opt Out</button>
+            </div>
+            <span class="glyphicon glyphicon-remove"></span>
+        </center>
+    </div>
     <div class="container user-container">
         <h3 class='pull-left'>
             <small ng-click='popUsers()'>{{users.length}} Users Online</small>
@@ -6,18 +18,18 @@
         <div class="user-well" ng-show="showUsers">List of users
             <hr>
             <div ng-repeat="department in departments track by $index">
-                <p>{{department}}</p>
-                <div ng-repeat="user in groups[department]">
-                    <p ng-show="user.online" ng-click="userMethod(user)">{{user.Name}}</p>
-                </div>
+                <p ng-show="groups[department].length > 1" ng-click="depCollapseOnline = !depCollapseOnline;">{{department}}</p>
+                <ul ng-repeat="user in groups[department]" collapse="depCollapseOnline">
+                    <li ng-show="user.online" ng-click="userMethod(user)" class="usernames">{{user.Name}}</li>
+                </ul>
             </div>
             <hr>
             <p>Offline</p>
             <div ng-repeat="department in departments track by $index">
-                <p>{{department}}</p>
-                <div ng-repeat="user in groups[department]">
-                    <p ng-hide="user.online" ng-click="userMethod(user)">{{user.Name}}</p>
-                </div>
+                <p ng-click="depCollapse = !depCollapse;">{{department}}</p>
+                <ul ng-repeat="user in groups[department]" collapse="depCollapse">
+                    <li ng-hide="user.online" ng-click="userMethod(user)" class="usernames">{{user.Name}}</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -44,6 +56,14 @@
 </nav>
 
 <style>
+.usernames {
+    margin-left: -20px;
+}
+.options-containers {
+    border-bottom: 2px dotted gray;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
 .user-container {
     /*display: inline;*/
     float: left;
@@ -54,7 +74,8 @@
     bottom: 58;
     background-color: white;
     border: #d0d0d0 solid 1px;
-    padding: .5%;
+    padding-left: 1%;
+    padding-right: 3%;
     max-height: 600px;
 }
 .status1 {

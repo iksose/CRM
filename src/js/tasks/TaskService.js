@@ -3,6 +3,7 @@ angular.module('uiRouterSample')
         class Task {
             constructor(obj) {
                 Object.assign(this, obj);
+                this.DueDate = moment(obj.CompletionDateTime).format("ll")
             }
         }
 
@@ -50,7 +51,7 @@ angular.module('uiRouterSample')
             }
             remove(UserID) {
                 if (LoginService.cookie_user() == UserID) {
-                    // console.log("can't remove yourself")
+                    // can't remove yourself
                     return;
                 }
                 this.splice(this.map(user => user.UserID).indexOf(UserID), 1);
@@ -68,9 +69,6 @@ angular.module('uiRouterSample')
 
         var taskService = new TaskService();
         taskFactory.getUsers().then(function(users) {
-            if (taskService.UserList.length) {
-
-            }
             taskService.Departments.push(..._.chain(users.data.UserList)
                 .pluck('Department')
                 .uniq()

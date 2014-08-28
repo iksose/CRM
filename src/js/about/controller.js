@@ -1,22 +1,10 @@
 angular.module('uiRouterSample')
-.controller('aboutController', function($scope, $rootScope, hubFactory) {
-    console.log("About controller")
+    .controller('aboutController', function($scope, $rootScope, $http) {
+        console.log("About controller")
+        $scope.dataset = [5, 10, 15, 20, 25];
 
-    var [methods, promise] = hubFactory;
-    promise.then(function(){
-        console.log("Double done")
-        // get all events
-        methods.map().then(function(data){
-            console.log("Cranked", data)
-        })
-
-        // var start = new Date().getTime();
-        // // for(var i = 0; i < 1000; i++){
-        //     methods.wtf2();
-        // // }
-        // var end = new Date().getTime();
-        // var time = end - start;
-        // console.error('Execution time: ' + time);
+        $scope.inc = function() {
+            $scope.dataset[4]++;
+            console.log($scope.dataset)
+        }
     })
-
-})
