@@ -1,5 +1,5 @@
 angular.module('uiRouterSample')
-    .factory('notused', function($rootScope, Hub, $q, TaskService) {
+    .factory('hubFactory', function($rootScope, Hub, $q, TaskService) {
 
         //declaring the hub connection
         var hub = new Hub('activityQueueHub', {

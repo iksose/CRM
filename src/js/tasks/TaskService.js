@@ -27,7 +27,16 @@ angular.module('uiRouterSample')
             }
             push(...args) {
                 for (var i = 0; i < args.length; i++) {
-                    this.unshift(new Task(args[i]));
+                    // this.unshift(new Task(args[i]));
+                    var duplicate = false;
+                    for (var ii = 0; ii < this.length; ii++) {
+                        if (args[i].ActivityID == this[ii].ActivityID) {
+                            duplicate = true;
+                        }
+                    }
+                    if (!duplicate) {
+                        this.unshift(new Task(args[i]));
+                    }
                 }
             }
         }
@@ -76,7 +85,8 @@ angular.module('uiRouterSample')
             var groups = _.groupBy(users.data.UserList, "Department");
             for (var key in groups) {
                 taskService.Groups[key] = groups[key];
-                taskService.Groups[key].forEach(x => x.online = false)
+                taskService.Groups[key].forEach(x => x.online = false);
+                taskService.Groups[key].forEach(x => x.img = Math.floor(Math.random() * (4 - 1) + 1));
             }
         })
         return taskService;

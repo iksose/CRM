@@ -1,7 +1,7 @@
 angular.module('uiRouterSample')
-    .controller('taskController', function($scope, TaskService, $state, hubFactory) {
+    .controller('taskController', function($scope, TaskService, $state, hubFactory, $interval) {
         console.log("Task Controller loaded")
-
+        $scope.time;
         $scope.tasks = TaskService.TaskList;
         $scope.users = TaskService.UserList;
         $scope.departments = TaskService.Departments;
@@ -22,6 +22,11 @@ angular.module('uiRouterSample')
                     console.log("Got tasks", tasks)
                     // $scope.tasks.add(res)
                     $scope.tasks.push(...tasks)
+                    // $scope.tasks.push(...tasks)
+                    methods.TimeUntilNextFill().then(function(time) {
+                        console.log("Got time", time)
+                        $scope.time = time.toString();
+                    })
                 })
             })
         }).catch(function() {
@@ -66,4 +71,31 @@ angular.module('uiRouterSample')
         $scope.userMethod = function(user) {
             console.log("user", user)
         }
+
+        var stop = $interval(function() {
+            // if time something something
+            if (moment($scope.time).isBefore(moment(new Date))) {
+                methods.GetTasks().then(function(tasks) {
+                    console.log("Got", tasks)
+                    $scope.tasks.push(...tasks)
+                    methods.TimeUntilNextFill().then(function(time) {
+                        console.log("Got time", time)
+                        $scope.time = time.toString();
+                    })
+                })
+            }
+
+        }, 10000);
+
+        $scope.stopFight = function() {
+            if (angular.isDefined(stop)) {
+                $interval.cancel(stop);
+                stop = undefined;
+            }
+        };
+
+        $scope.$on('$destroy', function() {
+            // Make sure that the interval is destroyed too
+            $scope.stopFight();
+        });
     })

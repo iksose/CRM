@@ -18,18 +18,20 @@
         <div class="user-well" ng-show="showUsers">List of users
             <hr>
             <div ng-repeat="department in departments track by $index">
-                <p ng-show="groups[department].length > 1" ng-click="depCollapseOnline = !depCollapseOnline;">{{department}}</p>
-                <ul ng-repeat="user in groups[department]" collapse="depCollapseOnline">
-                    <li ng-show="user.online" ng-click="userMethod(user)" class="usernames">{{user.Name}}</li>
-                </ul>
+                <p ng-show="groups[department].length > 1" ng-click="depCollapseOnline = !depCollapseOnline;" class='well well-sm'>{{department}}</p>
+                <div ng-repeat="user in groups[department]" collapse="depCollapseOnline">
+                    <p ng-show="user.online" ng-click="userMethod(user)" class="usernames">
+                        <img src="img/{{user.img}}.jpg" class='chatpic'>{{user.Name}}</p>
+                </div>
             </div>
             <hr>
             <p>Offline</p>
             <div ng-repeat="department in departments track by $index">
-                <p ng-click="depCollapse = !depCollapse;">{{department}}</p>
-                <ul ng-repeat="user in groups[department]" collapse="depCollapse">
-                    <li ng-hide="user.online" ng-click="userMethod(user)" class="usernames">{{user.Name}}</li>
-                </ul>
+                <p ng-click="depCollapse = !depCollapse;" class='well well-sm'>{{department}}</p>
+                <div ng-repeat="user in groups[department]" collapse="depCollapse">
+                    <p ng-hide="user.online" ng-click="userMethod(user)" class="usernames">
+                        <img src="img/{{user.img}}.jpg" class='chatpic'>{{user.Name}}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -56,6 +58,9 @@
 </nav>
 
 <style>
+.chatpic {
+    height: 40px;
+}
 .usernames {
     margin-left: -20px;
 }
@@ -77,6 +82,7 @@
     padding-left: 1%;
     padding-right: 3%;
     max-height: 600px;
+    overflow-y: scroll;
 }
 .status1 {
     opacity: 0.5;
@@ -100,6 +106,7 @@
     border: #d0d0d0 solid 1px;
     padding: .5%;
     max-height: 600px;
+    overflow-y: scroll;
 }
 .link {
     color: blue;

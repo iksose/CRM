@@ -7,4 +7,7 @@ angular.module('uiRouterSample')
             $scope.dataset[4]++;
             console.log($scope.dataset)
         }
+
+
+        $scope.dataset2 = [5, 10, 15, 20, 25];
     })
