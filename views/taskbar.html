@@ -20,8 +20,11 @@
             <div ng-repeat="department in departments track by $index">
                 <p ng-show="groups[department].length > 1" ng-click="depCollapseOnline = !depCollapseOnline;" class='well well-sm'>{{department}}</p>
                 <div ng-repeat="user in groups[department]" collapse="depCollapseOnline">
-                    <p ng-show="user.online" ng-click="userMethod(user)" class="usernames">
-                        <img src="img/{{user.img}}.jpg" class='chatpic'>{{user.Name}}</p>
+                    <div ng-show="user.online" ng-click="userMethod(user)" class="usernames">
+                        <img ng-src="img/{{user.img}}.jpg" class='chatpic'>
+                        <p>{{user.Name}}</p>
+                        <p>{{user.Task.Descr}} -- #{{user.Task.ProspectID}}</p>
+                    </div>
                 </div>
             </div>
             <hr>
@@ -30,7 +33,7 @@
                 <p ng-click="depCollapse = !depCollapse;" class='well well-sm'>{{department}}</p>
                 <div ng-repeat="user in groups[department]" collapse="depCollapse">
                     <p ng-hide="user.online" ng-click="userMethod(user)" class="usernames">
-                        <img src="img/{{user.img}}.jpg" class='chatpic'>{{user.Name}}</p>
+                        <img ng-src="img/{{user.img}}.jpg" class='chatpic'>{{user.Name}}</p>
                 </div>
             </div>
         </div>
@@ -39,10 +42,32 @@
         <h3 class='pull-right'>
             <small ng-click='popTasks()'>{{tasks.length}} Tasks</small>
         </h3>
-        <div class="task-well" ng-show="showTasks">List of tasks
+        <div ng-show="showTasks" class="task-well">
+            <div id="cranked">Timer:</div>
+            <span class="glyphicon glyphicon-remove" id="closeTasks"></span>
+            <hr>
+            <table class="table table-striped" at-table at-paginated at-list="tasks" at-config="config">
+                <thead></thead>
+                <tbody>
+                    <tr class="status{{item.Status}}">
+                        <td at-implicit at-sortable at-attribute="Descr" width="150" at-initial-sorting="asc"></td>
+                        <td at-implicit at-sortable at-attribute="DueDate" width="250"></td>
+                        <td at-implicit at-sortable at-attribute="ProspectID" ng-click="navigate(task.ProspectID, task.Status)"></td>
+                        <td>
+                            <button type="button" class="btn btn-default btn-xs" ng-click='ChangeTaskStatus(item.ActivityID, item.Status)'>
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <at-pagination at-list="list" at-config="config"></at-pagination>
+        </div>
+
+        <!--         <div class="task-well" ng-show="showTasks">List of tasks
             <hr>
             <div ng-repeat="task in tasks track by $index" class='well well-sm status{{task.Status}}' ng-show="tasks.length">
-                <!-- <div tasks></div> -->
                 <p>{{task.Descr}}</p>
                 <p ng-click="navigate(task.ProspectID, task.Status)" class='link'>Prospect {{task.ProspectID}}</p>
                 <p>{{task.DueDate}}</p>
@@ -53,13 +78,20 @@
             <div class='well well-sm' ng-hide="tasks.length">
                 No current tasks
             </div>
-        </div>
+        </div> -->
     </div>
 </nav>
 
 <style>
+#cranked {
+    float: left;
+}
+#closeTasks {
+    float: right;
+}
 .chatpic {
     height: 40px;
+    float: left;
 }
 .usernames {
     margin-left: -20px;
@@ -83,6 +115,9 @@
     padding-right: 3%;
     max-height: 600px;
     overflow-y: scroll;
+    overflow-x: hidden;
+    max-width: 300px;
+    min-width: 280px;
 }
 .status1 {
     opacity: 0.5;

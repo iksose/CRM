@@ -1,5 +1,5 @@
 angular.module('uiRouterSample')
-    .controller('taskController', function($scope, TaskService, $state, hubFactory, $interval) {
+    .controller('taskController', function($scope, TaskService, $state, hubFactory, $interval, $compile) {
         console.log("Task Controller loaded")
         $scope.time;
         $scope.tasks = TaskService.TaskList;
@@ -11,6 +11,11 @@ angular.module('uiRouterSample')
         $scope.depCollapse = true;
 
         $scope.groups = TaskService.Groups;
+
+        $scope.config = {
+            itemsPerPage: 5,
+            fillLastPage: false
+        }
 
         var [methods, init] = hubFactory;
         init.then(function() {
@@ -26,6 +31,8 @@ angular.module('uiRouterSample')
                     methods.TimeUntilNextFill().then(function(time) {
                         console.log("Got time", time)
                         $scope.time = time.toString();
+                        $("#cranked").append('<timer end-time="time">{{hours}} hours, {{minutes}} minutes, {{seconds}} seconds.</timer>');
+                        $compile($("#cranked"))($scope);
                     })
                 })
             })
@@ -81,6 +88,9 @@ angular.module('uiRouterSample')
                     methods.TimeUntilNextFill().then(function(time) {
                         console.log("Got time", time)
                         $scope.time = time.toString();
+                        $("#cranked").empty();
+                        $("#cranked").append('<timer end-time="time">{{hours}} hours, {{minutes}} minutes, {{seconds}} seconds.</timer>');
+                        $compile($("#cranked"))($scope);
                     })
                 })
             }

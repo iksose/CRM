@@ -9,7 +9,9 @@ angular.module('uiRouterSample')
             listeners: {
                 'taskWorking': function(info) {
                     console.log("a task status was changed....", info);
-                    TaskService.TaskList.update(info.ActivityID, info.Status);
+                    var task = TaskService.TaskList.find(x => x.ActivityID == info.ActivityID)
+                    task.Status = info.Status;
+                    TaskService.FindUser(info.UserID).Task = task
                     $rootScope.$apply();
                 },
                 'userJoined': function(user) {
@@ -73,14 +75,7 @@ angular.module('uiRouterSample')
             hub.WhoAmI("pbajoj").then(function(users) {
                 TaskService.UserList.push(...users);
                 users.forEach(function(user) {
-                    for (var key in TaskService.Groups) {
-                        TaskService.Groups[key].forEach(function(role) {
-                            var idx = TaskService.Groups[key].map(user => user.UserID).indexOf(user.UserID)
-                            if (idx != -1) {
-                                TaskService.Groups[key][idx].online = true;
-                            }
-                        })
-                    }
+                    TaskService.FindUser(user.UserID).online = true;
                 })
                 $rootScope.$apply();
                 def.resolve()

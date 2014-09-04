@@ -124,7 +124,7 @@ angular.module('uiRouterSample')
                     .enter().append("g")
                     .attr("class", "arc");
 
-                g.append("bubbles")
+                g.append("path")
                     .attr("d", arc);
 
                 // g.append("text")

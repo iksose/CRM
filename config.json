@@ -5,7 +5,7 @@
         "blockBinding": true,
         "symbols": true,
         "types": true,
-        "typeAssertions": false,
+        "typeAssertions": true,
         "typeAssertionModule": "assert",
         "annotations": false
     }

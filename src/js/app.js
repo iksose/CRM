@@ -12,7 +12,8 @@ var app = angular.module('uiRouterSample', [
     'xeditable',
     'ui.calendar',
     'angularFileUpload',
-    'SignalR'
+    'SignalR',
+    'timer'
 ])
 
 .run(
